@@ -323,7 +323,7 @@
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
-            "CELL_FIX": "",
+            "CELL_FIX": "B2",
             "CELL_LOGIC": ""
         },
         {
