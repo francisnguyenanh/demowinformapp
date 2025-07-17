@@ -2663,8 +2663,8 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 6,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
-            "CELL_FIX": 999999,
+            "VALUE": 999999,
+            "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
         {

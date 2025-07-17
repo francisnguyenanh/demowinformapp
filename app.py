@@ -62,7 +62,7 @@ STOP_VALUES = {
     '【表示位置定義】'
 }
 
-def read_table_info_to_dict(filename):
+def read_table_info(filename):
     """
     Reads the JSON content from the given filename and returns it as a dictionary.
     """
@@ -132,7 +132,7 @@ def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
             return True
     return False
 
-def process_column_value_generic(
+def set_value_generic(
     col_info, 
     ws, 
     row_num, 
@@ -216,10 +216,10 @@ def process_column_value_generic(
         return fallback_processor(col_info, ws, systemid_value, system_date_value)
     
     # Default fallback to original process_column_value
-    return process_column_value(col_info, ws, systemid_value, system_date_value)
+    return column_value(col_info, ws, systemid_value, system_date_value)
 
 
-def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
+def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
     """Process column value for T_KIHON_PJ_KOUMOKU table"""
     seq_mappings = {
         'SEQ_K': seq_k_value,
@@ -230,7 +230,7 @@ def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, 
         'T_KIHON_PJ_KOUMOKU.SEQ_K': seq_k_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
@@ -239,11 +239,11 @@ def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, 
         secondary_seq_value=seq_k_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_func(col_info, ws, row_num, sheet_seq, seq_f_value, seq_f_l_value=None):
+def func_set_value(col_info, ws, row_num, sheet_seq, seq_f_value, seq_f_l_value=None):
     """Process column value for T_KIHON_PJ_FUNC table"""
     seq_mappings = {
         'SEQ_F': seq_f_value,
@@ -254,7 +254,7 @@ def process_column_value_func(col_info, ws, row_num, sheet_seq, seq_f_value, seq
         'T_KIHON_PJ_FUNC.SEQ_F': seq_f_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
@@ -263,11 +263,11 @@ def process_column_value_func(col_info, ws, row_num, sheet_seq, seq_f_value, seq
         secondary_seq_value=seq_f_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_csv(col_info, ws, row_num, sheet_seq, seq_csv_value, seq_csv_l_value=None):
+def csv_set_value(col_info, ws, row_num, sheet_seq, seq_csv_value, seq_csv_l_value=None):
     """Process column value for T_KIHON_PJ_KOUMOKU_CSV table"""
     seq_mappings = {
         'SEQ_CSV': seq_csv_value,
@@ -278,7 +278,7 @@ def process_column_value_csv(col_info, ws, row_num, sheet_seq, seq_csv_value, se
         'T_KIHON_PJ_KOUMOKU_CSV.SEQ_CSV': seq_csv_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
@@ -287,11 +287,11 @@ def process_column_value_csv(col_info, ws, row_num, sheet_seq, seq_csv_value, se
         secondary_seq_value=seq_csv_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_re(col_info, ws, row_num, sheet_seq, seq_re_value, seq_re_l_value=None):
+def re_set_value(col_info, ws, row_num, sheet_seq, seq_re_value, seq_re_l_value=None):
     """Process column value for T_KIHON_PJ_KOUMOKU_RE table"""
     seq_mappings = {
         'SEQ_RE': seq_re_value,
@@ -302,7 +302,7 @@ def process_column_value_re(col_info, ws, row_num, sheet_seq, seq_re_value, seq_
         'T_KIHON_PJ_KOUMOKU_RE.SEQ_RE': seq_re_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
@@ -311,101 +311,101 @@ def process_column_value_re(col_info, ws, row_num, sheet_seq, seq_re_value, seq_
         secondary_seq_value=seq_re_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_message(col_info, ws, row_num, sheet_seq, seq_ms_value):
+def message_set_value(col_info, ws, row_num, sheet_seq, seq_ms_value):
     """Process column value for T_KIHON_PJ_MESSAGE table"""
     seq_mappings = {
         'SEQ_MS': seq_ms_value,
         'ROW_NO': seq_ms_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_ms_value,
         seq_mappings=seq_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_tab(col_info, ws, row_num, sheet_seq, seq_t_value):
+def tab_set_value(col_info, ws, row_num, sheet_seq, seq_t_value):
     """Process column value for T_KIHON_PJ_TAB table"""
     seq_mappings = {
         'SEQ_T': seq_t_value,
         'ROW_NO': seq_t_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_t_value,
         seq_mappings=seq_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_ichiran(col_info, ws, row_num, sheet_seq, seq_i_value):
+def ichiran_set_value(col_info, ws, row_num, sheet_seq, seq_i_value):
     """Process column value for T_KIHON_PJ_ICHIRAN table"""
     seq_mappings = {
         'SEQ_I': seq_i_value,
         'ROW_NO': seq_i_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_i_value,
         seq_mappings=seq_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_menu(col_info, ws, row_num, sheet_seq, seq_m_value):
+def menu_set_value(col_info, ws, row_num, sheet_seq, seq_m_value):
     """Process column value for T_KIHON_PJ_MENU table"""
     seq_mappings = {
         'SEQ_M': seq_m_value,
         'ROW_NO': seq_m_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_m_value,
         seq_mappings=seq_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value_ipo(col_info, ws, row_num, sheet_seq, seq_ipo_value):
+def ipo_set_value(col_info, ws, row_num, sheet_seq, seq_ipo_value):
     """Process column value for T_KIHON_PJ_IPO table"""
     seq_mappings = {
         'SEQ_IPO': seq_ipo_value,
         'ROW_NO': seq_ipo_value
     }
     
-    return process_column_value_generic(
+    return set_value_generic(
         col_info=col_info,
         ws=ws,
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_ipo_value,
         seq_mappings=seq_mappings,
-        fallback_processor=process_column_value
+        fallback_processor=column_value
     )
 
 
-def process_column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
+def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
     """Process column value based on VALUE rules"""
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
@@ -467,7 +467,7 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
     Unified function to generate INSERT statements for all table types
     """
     # Read table info JSON
-    table_info = read_table_info_to_dict(table_info_file)
+    table_info = read_table_info(table_info_file)
     if table_key not in table_info:
         raise ValueError(f"Table key '{table_key}' not found in table info.")
     
@@ -498,7 +498,7 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
             seq_per_sheet_dict[sheet_idx] = seq_value
             for col_info in columns_info:
                 col_name = col_info.get('COLUMN_NAME', '')
-                val = process_column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
+                val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
                 row_data[col_name] = val
             columns_str = ", ".join(row_data.keys())
             values_str = ", ".join(row_data.values())
@@ -519,7 +519,7 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
         for col_info in columns_info:
             col_name = col_info['COLUMN_NAME']
             cols.append(col_name)
-            val = process_column_value(col_info, ws, systemid_value, system_date_value)
+            val = column_value(col_info, ws, systemid_value, system_date_value)
             vals.append(val)
 
         columns_str = ", ".join(cols)
@@ -542,7 +542,7 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
             for col_info in columns_info:
                 col_name = col_info['COLUMN_NAME']
                 cols.append(col_name)
-                val = process_column_value(col_info, ws, systemid_value, system_date_value)
+                val = column_value(col_info, ws, systemid_value, system_date_value)
                 vals.append(val)
             columns_str = ", ".join(cols)
             values_str = ", ".join(vals)
@@ -552,7 +552,7 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
     return insert_statements
 
 
-def process_all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.sql'):
+def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.sql'):
     """
     Process all tables in the correct sequence:
     1. Create INSERT for T_KIHON_PJ
@@ -571,7 +571,7 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
     
     # Step 2: Process T_KIHON_PJ_GAMEN for sheets from index 2 onwards
     print("Processing T_KIHON_PJ_GAMEN...")
-    table_info = read_table_info_to_dict(table_info_file)
+    table_info = read_table_info(table_info_file)
     gamen_columns_info = table_info.get('T_KIHON_PJ_GAMEN', [])
     
     wb = load_workbook(excel_file, data_only=True)
@@ -596,7 +596,7 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
         seq_per_sheet_dict[sheet_idx] = seq_value
         for col_info in gamen_columns_info:
             col_name = col_info.get('COLUMN_NAME', '')
-            val = process_column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
+            val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
             row_data[col_name] = val
         columns_str = ", ".join(row_data.keys())
         values_str = ", ".join(row_data.values())
@@ -607,51 +607,51 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
         # Xử lý theo từng loại sheet_check_value
         if sheet_check_value == '項目定義書_帳票':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_KOUMOKU_RE, T_KIHON_PJ_KOUMOKU_RE_LOGIC
-            re_inserts = process_re_data_for_single_sheet(
+            re_inserts = re_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(re_inserts)
         elif sheet_check_value == '項目定義書_CSV':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_KOUMOKU_CSV, T_KIHON_PJ_KOUMOKU_CSV_LOGIC
-            csv_inserts = process_csv_data_for_single_sheet(
+            csv_inserts = csv_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(csv_inserts)
         elif sheet_check_value == '項目定義書_IPO図':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_IPO
-            ipo_inserts = process_ipo_data_for_single_sheet(
+            ipo_inserts = ipo_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(ipo_inserts)
         elif sheet_check_value == '項目定義書_ﾒﾆｭｰ':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_MENU
-            menu_inserts = process_menu_data_for_single_sheet(
+            menu_inserts = menu_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(menu_inserts)
         elif sheet_check_value == '項目定義書_画面':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_FUNC, T_KIHON_PJ_FUNC_LOGIC, T_KIHON_PJ_KOUMOKU, T_KIHON_PJ_KOUMOKU_LOGIC, T_KIHON_PJ_MESSAGE, T_KIHON_PJ_TAB, T_KIHON_PJ_ICHIRAN, T_KIHON_PJ_HYOUJI
-            func_inserts = process_func_data_for_single_sheet(
+            func_inserts = func_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(func_inserts)
-            koumoku_inserts = process_koumoku_data_for_single_sheet(
+            koumoku_inserts = koumoku_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(koumoku_inserts)
-            message_inserts = process_message_data_for_single_sheet(
+            message_inserts = message_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(message_inserts)
-            tab_inserts = process_tab_data_for_single_sheet(
+            tab_inserts = tab_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(tab_inserts)
-            ichiran_inserts = process_ichiran_data_for_single_sheet(
+            ichiran_inserts = ichiran_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(ichiran_inserts)
-            hyouji_inserts = process_hyouji_data_for_single_sheet(
+            hyouji_inserts = hyouji_row(
                 excel_file, sheet_idx, seq_value, table_info_file
             )
             all_insert_statements.extend(hyouji_inserts)
@@ -666,7 +666,7 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
     return all_insert_statements
 
 
-def process_table_data_for_single_sheet(
+def gen_row_single_sheet(
     excel_file,
     sheet_idx,
     sheet_seq,
@@ -687,7 +687,7 @@ def process_table_data_for_single_sheet(
     if stop_values is None:
         stop_values = STOP_VALUES
 
-    table_info = read_table_info_to_dict(table_info_file)
+    table_info = read_table_info(table_info_file)
     columns_info = table_info.get(table_name, [])
     logic_columns_info = table_info.get(logic_table_name, []) if logic_table_name else []
 
@@ -744,7 +744,7 @@ def process_table_data_for_single_sheet(
                             if column_value_processor:
                                 val = column_value_processor(col_info, ws, check_row, sheet_seq, current_seq)
                             else:
-                                val = process_column_value(col_info, ws, systemid_value, system_date_value)
+                                val = column_value(col_info, ws, systemid_value, system_date_value)
                             row_data[col_name] = val
                         
                         columns_str = ", ".join(row_data.keys())
@@ -763,7 +763,7 @@ def process_table_data_for_single_sheet(
                         elif logic_table_name and merged_b_to_bn:
                             # Special case for RE table logic processing
                             if 'process_re_logic_for_seq_re' in globals():
-                                logic_inserts = process_re_logic_for_seq_re(
+                                logic_inserts = re_logic(
                                     ws, check_row, sheet_seq, current_seq, logic_columns_info, cell_b_value
                                 )
                                 insert_statements.extend(logic_inserts)
@@ -773,7 +773,7 @@ def process_table_data_for_single_sheet(
     return insert_statements
 
 
-def process_koumoku_data_for_single_sheet(
+def koumoku_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -785,7 +785,7 @@ def process_koumoku_data_for_single_sheet(
     Process KOUMOKU data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU and T_KIHON_PJ_KOUMOKU_LOGIC
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
@@ -793,14 +793,14 @@ def process_koumoku_data_for_single_sheet(
         table_name='T_KIHON_PJ_KOUMOKU',
         logic_table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_koumoku,
-        logic_processor=process_koumoku_logic_for_seq_k,
+        column_value_processor=koumoku_set_value,
+        logic_processor=koumoku_logic,
         seq_prefix='SEQ_K',
         stop_values=stop_values
     )
 
 
-def process_logic_data_generic(
+def logic_data_generic(
     ws, 
     start_row, 
     sheet_seq, 
@@ -863,24 +863,24 @@ def process_logic_data_generic(
     return insert_statements
 
 
-def process_koumoku_logic_for_seq_k(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
+def koumoku_logic(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
     """
     Process T_KIHON_PJ_KOUMOKU_LOGIC for a specific SEQ_K
     """
-    return process_logic_data_generic(
+    return logic_data_generic(
         ws=ws,
         start_row=start_row,
         sheet_seq=sheet_seq,
         parent_seq_value=seq_k_value,
         logic_columns_info=koumoku_logic_columns_info,
         table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
-        column_value_processor=process_column_value_koumoku,
+        column_value_processor=koumoku_set_value,
         seq_counter_name='SEQ_K_L',
         cell_b_value='【項目定義】'
     )
 
 
-def process_func_data_for_single_sheet(
+def func_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -892,7 +892,7 @@ def process_func_data_for_single_sheet(
     Process FUNC data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_FUNC and T_KIHON_PJ_FUNC_LOGIC
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
@@ -900,31 +900,31 @@ def process_func_data_for_single_sheet(
         table_name='T_KIHON_PJ_FUNC',
         logic_table_name='T_KIHON_PJ_FUNC_LOGIC',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_func,
-        logic_processor=process_func_logic_for_seq_f,
+        column_value_processor=func_set_value,
+        logic_processor=func_logic,
         seq_prefix='SEQ_F',
         stop_values=stop_values
     )
 
 
-def process_func_logic_for_seq_f(ws, start_row, sheet_seq, seq_f_value, func_logic_columns_info):
+def func_logic(ws, start_row, sheet_seq, seq_f_value, func_logic_columns_info):
     """
     Process T_KIHON_PJ_FUNC_LOGIC for a specific SEQ_F
     """
-    return process_logic_data_generic(
+    return logic_data_generic(
         ws=ws,
         start_row=start_row,
         sheet_seq=sheet_seq,
         parent_seq_value=seq_f_value,
         logic_columns_info=func_logic_columns_info,
         table_name='T_KIHON_PJ_FUNC_LOGIC',
-        column_value_processor=process_column_value_func,
+        column_value_processor=func_set_value,
         seq_counter_name='SEQ_F_L',
         cell_b_value='【ファンクション定義】'
     )
 
 
-def process_csv_data_for_single_sheet(
+def csv_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -936,7 +936,7 @@ def process_csv_data_for_single_sheet(
     Process CSV data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_CSV and T_KIHON_PJ_KOUMOKU_CSV_LOGIC
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
@@ -944,31 +944,31 @@ def process_csv_data_for_single_sheet(
         table_name='T_KIHON_PJ_KOUMOKU_CSV',
         logic_table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_csv,
-        logic_processor=process_csv_logic_for_seq_csv,
+        column_value_processor=csv_set_value,
+        logic_processor=csv_logic,
         seq_prefix='SEQ_CSV',
         stop_values=stop_values
     )
 
 
-def process_csv_logic_for_seq_csv(ws, start_row, sheet_seq, seq_csv_value, csv_logic_columns_info):
+def csv_logic(ws, start_row, sheet_seq, seq_csv_value, csv_logic_columns_info):
     """
     Process T_KIHON_PJ_KOUMOKU_CSV_LOGIC for a specific SEQ_CSV
     """
-    return process_logic_data_generic(
+    return logic_data_generic(
         ws=ws,
         start_row=start_row,
         sheet_seq=sheet_seq,
         parent_seq_value=seq_csv_value,
         logic_columns_info=csv_logic_columns_info,
         table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
-        column_value_processor=process_column_value_csv,
+        column_value_processor=csv_set_value,
         seq_counter_name='SEQ_CSV_L',
         cell_b_value='【CSVデータ】'
     )
 
 
-def process_re_data_for_single_sheet(
+def re_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -980,7 +980,7 @@ def process_re_data_for_single_sheet(
     Process RE data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
@@ -988,32 +988,32 @@ def process_re_data_for_single_sheet(
         table_name='T_KIHON_PJ_KOUMOKU_RE',
         logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
         cell_b_value=cell_b_value,
-        column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: process_column_value_re(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
+        column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: re_set_value(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
         seq_prefix='SEQ_RE',
         stop_values=stop_values,
         use_should_stop_row=True
     )
 
 
-def process_re_logic_for_seq_re(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】'):
+def re_logic(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】'):
     """
     Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for a specific SEQ_RE
     """
-    return process_logic_data_generic(
+    return logic_data_generic(
         ws=ws,
         start_row=start_row,
         sheet_seq=sheet_seq,
         parent_seq_value=seq_re_value,
         logic_columns_info=re_logic_columns_info,
         table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
-        column_value_processor=process_column_value_re,
+        column_value_processor=re_set_value,
         seq_counter_name='SEQ_RE_L',
         cell_b_value=cell_b_value,
         use_should_stop_logic_row=True
     )
 
 
-def process_message_data_for_single_sheet(
+def message_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -1025,20 +1025,20 @@ def process_message_data_for_single_sheet(
     Process MESSAGE data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_MESSAGE
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
         table_info_file=table_info_file,
         table_name='T_KIHON_PJ_MESSAGE',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_message,
+        column_value_processor=message_set_value,
         seq_prefix='SEQ_MS',
         stop_values=stop_values
     )
 
 
-def process_tab_data_for_single_sheet(
+def tab_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -1050,20 +1050,20 @@ def process_tab_data_for_single_sheet(
     Process TAB data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_TAB
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
         table_info_file=table_info_file,
         table_name='T_KIHON_PJ_TAB',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_tab,
+        column_value_processor=tab_set_value,
         seq_prefix='SEQ_T',
         stop_values=stop_values
     )
 
 
-def process_hyouji_data_for_single_sheet(
+def hyouji_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -1075,20 +1075,20 @@ def process_hyouji_data_for_single_sheet(
     Process HYOUJI data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_HYOUJI
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
         table_info_file=table_info_file,
         table_name='T_KIHON_PJ_HYOUJI',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_message,  # Sử dụng processor message
+        column_value_processor=message_set_value,  # Sử dụng processor message
         seq_prefix='SEQ_HYOUJI',
         stop_values=stop_values
     )
 
 
-def process_ichiran_data_for_single_sheet(
+def ichiran_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -1100,20 +1100,20 @@ def process_ichiran_data_for_single_sheet(
     Process ICHIRAN data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_ICHIRAN
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
         table_info_file=table_info_file,
         table_name='T_KIHON_PJ_ICHIRAN',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_ichiran,
+        column_value_processor=ichiran_set_value,
         seq_prefix='SEQ_I',
         stop_values=stop_values
     )
 
 
-def process_menu_data_for_single_sheet(
+def menu_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -1125,20 +1125,20 @@ def process_menu_data_for_single_sheet(
     Process MENU data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_MENU
     """
-    return process_table_data_for_single_sheet(
+    return gen_row_single_sheet(
         excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
         table_info_file=table_info_file,
         table_name='T_KIHON_PJ_MENU',
         cell_b_value=cell_b_value,
-        column_value_processor=process_column_value_menu,
+        column_value_processor=menu_set_value,
         seq_prefix='SEQ_M',
         stop_values=stop_values
     )
 
 
-def process_ipo_data_for_single_sheet(
+def ipo_row(
     excel_file, 
     sheet_idx, 
     sheet_seq, 
@@ -1153,7 +1153,7 @@ def process_ipo_data_for_single_sheet(
     if stop_values is None:
         stop_values = STOP_VALUES
 
-    table_info = read_table_info_to_dict(table_info_file)
+    table_info = read_table_info(table_info_file)
     ipo_columns_info = table_info.get('T_KIHON_PJ_IPO', [])
 
     wb = load_workbook(excel_file, data_only=True)
@@ -1197,7 +1197,7 @@ def process_ipo_data_for_single_sheet(
                         row_data = {}
                         for col_info in ipo_columns_info:
                             col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_ipo(col_info, ws, check_row, sheet_seq, current_seq_ipo)
+                            val = ipo_set_value(col_info, ws, check_row, sheet_seq, current_seq_ipo)
                             row_data[col_name] = val
                         
                         columns_str = ", ".join(row_data.keys())
@@ -1214,7 +1214,7 @@ def process_ipo_data_for_single_sheet(
 
 # Example usage:
 print("Starting processing all tables in sequence...")
-all_inserts = process_all_tables_in_sequence('doc.xlsx', 'table_info.txt', 'insert_all.sql')
+all_inserts = all_tables_in_sequence('doc_gamen.xlsx', 'table_info.txt', 'insert_all.sql')
 print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
