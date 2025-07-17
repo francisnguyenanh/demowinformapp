@@ -983,19 +983,37 @@ def process_koumoku_data_for_single_sheet(
     )
 
 
-def process_koumoku_logic_for_seq_k(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
+def process_logic_data_generic(
+    ws, 
+    start_row, 
+    sheet_seq, 
+    parent_seq_value, 
+    logic_columns_info,
+    table_name,
+    column_value_processor,
+    seq_counter_name,
+    stop_values=None,
+    cell_b_value=None,
+    use_should_stop_logic_row=False
+):
     """
-    Process T_KIHON_PJ_KOUMOKU_LOGIC for a specific SEQ_K
+    Generic function to process logic table data
     """
+    if stop_values is None:
+        stop_values = STOP_VALUES
+        
     insert_statements = []
-    seq_k_l_counter = 1
+    seq_counter = 1
     
-    # Check if B~BN are merged (indicating KOUMOKU_LOGIC data)
     for check_row in range(start_row, ws.max_row + 1):
+        # Use appropriate stopping condition
+        if use_should_stop_logic_row and should_stop_logic_row(ws, check_row, stop_values, cell_b_value):
+            break
+        
+        # Check if B~BN are merged (indicating LOGIC data)
         merged_b_to_bn = False
         for merged_range in ws.merged_cells.ranges:
             if f"B{check_row}" in merged_range:
-                # Check if range extends to at least BN (column 66)
                 start_col = merged_range.min_col
                 end_col = merged_range.max_col
                 if start_col == 2 and end_col >= 66:  # B=2, BN=66
@@ -1003,27 +1021,46 @@ def process_koumoku_logic_for_seq_k(ws, start_row, sheet_seq, seq_k_value, koumo
                     break
         
         if merged_b_to_bn:
-            # Create KOUMOKU_LOGIC insert
+            # Create LOGIC insert
             row_data = {}
-            for col_info in koumoku_logic_columns_info:
+            for col_info in logic_columns_info:
                 col_name = col_info.get('COLUMN_NAME', '')
-                val = process_column_value_koumoku(col_info, ws, check_row, sheet_seq, seq_k_value, seq_k_l_counter)
+                val = column_value_processor(col_info, ws, check_row, sheet_seq, parent_seq_value, seq_counter)
                 row_data[col_name] = val
             
             columns_str = ", ".join(row_data.keys())
             values_str = ", ".join(row_data.values())
-            sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_LOGIC ({columns_str}) VALUES ({values_str});"
+            sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
             
-            print(f"      Created KOUMOKU_LOGIC with SEQ_K_L {seq_k_l_counter} at row {check_row}")
-            seq_k_l_counter += 1
+            logic_type = table_name.split('_')[-1]  # Extract LOGIC type name
+            print(f"      Created {logic_type} with {seq_counter_name} {seq_counter} at row {check_row}")
+            seq_counter += 1
         
-        # Stop if we hit a stop value or another KOUMOKU section
-        cell_b_check = ws[f"B{check_row}"].value
-        if cell_b_check in STOP_VALUES or cell_b_check == '【項目定義】':
-            break
+        # Default stopping condition for non-RE logic tables
+        if not use_should_stop_logic_row:
+            cell_b_check = ws[f"B{check_row}"].value
+            if cell_b_check in stop_values or (cell_b_value and cell_b_check == cell_b_value):
+                break
     
     return insert_statements
+
+
+def process_koumoku_logic_for_seq_k(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
+    """
+    Process T_KIHON_PJ_KOUMOKU_LOGIC for a specific SEQ_K
+    """
+    return process_logic_data_generic(
+        ws=ws,
+        start_row=start_row,
+        sheet_seq=sheet_seq,
+        parent_seq_value=seq_k_value,
+        logic_columns_info=koumoku_logic_columns_info,
+        table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
+        column_value_processor=process_column_value_koumoku,
+        seq_counter_name='SEQ_K_L',
+        cell_b_value='【項目定義】'
+    )
 
 
 def process_func_data_for_single_sheet(
@@ -1057,43 +1094,17 @@ def process_func_logic_for_seq_f(ws, start_row, sheet_seq, seq_f_value, func_log
     """
     Process T_KIHON_PJ_FUNC_LOGIC for a specific SEQ_F
     """
-    insert_statements = []
-    seq_f_l_counter = 1
-    
-    # Check if B~BN are merged (indicating FUNC_LOGIC data)
-    for check_row in range(start_row, ws.max_row + 1):
-        merged_b_to_bn = False
-        for merged_range in ws.merged_cells.ranges:
-            if f"B{check_row}" in merged_range:
-                # Check if range extends to at least BN (column 66)
-                start_col = merged_range.min_col
-                end_col = merged_range.max_col
-                if start_col == 2 and end_col >= 66:  # B=2, BN=66
-                    merged_b_to_bn = True
-                    break
-        
-        if merged_b_to_bn:
-            # Create FUNC_LOGIC insert
-            row_data = {}
-            for col_info in func_logic_columns_info:
-                col_name = col_info.get('COLUMN_NAME', '')
-                val = process_column_value_func(col_info, ws, check_row, sheet_seq, seq_f_value, seq_f_l_counter)
-                row_data[col_name] = val
-            
-            columns_str = ", ".join(row_data.keys())
-            values_str = ", ".join(row_data.values())
-            sql = f"INSERT INTO T_KIHON_PJ_FUNC_LOGIC ({columns_str}) VALUES ({values_str});"
-            insert_statements.append(sql)
-            
-            print(f"      Created FUNC_LOGIC with SEQ_F_L {seq_f_l_counter} at row {check_row}")
-            seq_f_l_counter += 1
-        
-        # Stop if we hit a stop value or another FUNC section
-        cell_b_check = ws[f"B{check_row}"].value
-        if cell_b_check in STOP_VALUES or cell_b_check == '【ファンクション定義】':
-            break
-    
-    return insert_statements
+    return process_logic_data_generic(
+        ws=ws,
+        start_row=start_row,
+        sheet_seq=sheet_seq,
+        parent_seq_value=seq_f_value,
+        logic_columns_info=func_logic_columns_info,
+        table_name='T_KIHON_PJ_FUNC_LOGIC',
+        column_value_processor=process_column_value_func,
+        seq_counter_name='SEQ_F_L',
+        cell_b_value='【ファンクション定義】'
+    )
 
 
 def process_csv_data_for_single_sheet(
@@ -1127,43 +1138,17 @@ def process_csv_logic_for_seq_csv(ws, start_row, sheet_seq, seq_csv_value, csv_l
     """
     Process T_KIHON_PJ_KOUMOKU_CSV_LOGIC for a specific SEQ_CSV
     """
-    insert_statements = []
-    seq_csv_l_counter = 1
-    
-    # Check if B~BN are merged (indicating CSV_LOGIC data)
-    for check_row in range(start_row, ws.max_row + 1):
-        merged_b_to_bn = False
-        for merged_range in ws.merged_cells.ranges:
-            if f"B{check_row}" in merged_range:
-                # Check if range extends to at least BN (column 66)
-                start_col = merged_range.min_col
-                end_col = merged_range.max_col
-                if start_col == 2 and end_col >= 66:  # B=2, BN=66
-                    merged_b_to_bn = True
-                    break
-        
-        if merged_b_to_bn:
-            # Create CSV_LOGIC insert
-            row_data = {}
-            for col_info in csv_logic_columns_info:
-                col_name = col_info.get('COLUMN_NAME', '')
-                val = process_column_value_csv(col_info, ws, check_row, sheet_seq, seq_csv_value, seq_csv_l_counter)
-                row_data[col_name] = val
-            
-            columns_str = ", ".join(row_data.keys())
-            values_str = ", ".join(row_data.values())
-            sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_CSV_LOGIC ({columns_str}) VALUES ({values_str});"
-            insert_statements.append(sql)
-            
-            print(f"      Created CSV_LOGIC with SEQ_CSV_L {seq_csv_l_counter} at row {check_row}")
-            seq_csv_l_counter += 1
-        
-        # Stop if we hit a stop value or another CSV section
-        cell_b_check = ws[f"B{check_row}"].value
-        if cell_b_check in STOP_VALUES or cell_b_check == '【CSVデータ】':
-            break
-    
-    return insert_statements
+    return process_logic_data_generic(
+        ws=ws,
+        start_row=start_row,
+        sheet_seq=sheet_seq,
+        parent_seq_value=seq_csv_value,
+        logic_columns_info=csv_logic_columns_info,
+        table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
+        column_value_processor=process_column_value_csv,
+        seq_counter_name='SEQ_CSV_L',
+        cell_b_value='【CSVデータ】'
+    )
 
 
 def process_re_data_for_single_sheet(
@@ -1193,38 +1178,22 @@ def process_re_data_for_single_sheet(
     )
 
 
-def process_re_logic_for_seq_re(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】' ):
+def process_re_logic_for_seq_re(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】'):
     """
     Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for a specific SEQ_RE
     """
-    insert_statements = []
-    seq_re_l_counter = 1
-    
-    for check_row in range(start_row, ws.max_row + 1):
-        if should_stop_logic_row(ws, check_row, STOP_VALUES, cell_b_value):
-            break
-        merged_b_to_bn = False
-        for merged_range in ws.merged_cells.ranges:
-            if f"B{check_row}" in merged_range:
-                start_col = merged_range.min_col
-                end_col = merged_range.max_col
-                if start_col == 2 and end_col >= 66:
-                    merged_b_to_bn = True
-        if merged_b_to_bn:
-            # Create RE_LOGIC insert
-            row_data = {}
-            for col_info in re_logic_columns_info:
-                col_name = col_info.get('COLUMN_NAME', '')
-                val = process_column_value_re(col_info, ws, check_row, sheet_seq, seq_re_value, seq_re_l_counter)
-                row_data[col_name] = val
-            columns_str = ", ".join(row_data.keys())
-            values_str = ", ".join(row_data.values())
-            sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_RE_LOGIC ({columns_str}) VALUES ({values_str});"
-            insert_statements.append(sql)
-            print(f"      Created RE_LOGIC with SEQ_RE_L {seq_re_l_counter} at row {check_row}")
-            seq_re_l_counter += 1
-    
-    return insert_statements
+    return process_logic_data_generic(
+        ws=ws,
+        start_row=start_row,
+        sheet_seq=sheet_seq,
+        parent_seq_value=seq_re_value,
+        logic_columns_info=re_logic_columns_info,
+        table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
+        column_value_processor=process_column_value_re,
+        seq_counter_name='SEQ_RE_L',
+        cell_b_value=cell_b_value,
+        use_should_stop_logic_row=True
+    )
 
 
 def process_message_data_for_single_sheet(
