@@ -113,479 +113,277 @@ def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
             return True
     return False
 
-def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
-    """Process column value for T_KIHON_PJ_KOUMOKU table"""
+def process_column_value_generic(
+    col_info, 
+    ws, 
+    row_num, 
+    sheet_seq, 
+    primary_seq_value, 
+    secondary_seq_value=None,
+    seq_mappings=None,
+    reference_mappings=None,
+    fallback_processor=None
+):
+    """
+    Generic function to process column values for all table types
+    
+    Args:
+        col_info: Column information dictionary
+        ws: Worksheet object
+        row_num: Current row number
+        sheet_seq: Sheet sequence value
+        primary_seq_value: Primary sequence value (SEQ_K, SEQ_F, etc.)
+        secondary_seq_value: Secondary sequence value (SEQ_K_L, SEQ_F_L, etc.)
+        seq_mappings: Dictionary mapping column names to sequence values
+        reference_mappings: Dictionary mapping VALUE rules to reference values
+        fallback_processor: Fallback processor function for unhandled cases
+    """
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_K':
-        val = str(seq_k_value) if seq_k_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_k_value) if seq_k_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'SEQ_K_L':
-        val = str(seq_k_l_value) if seq_k_l_value is not None else "''"
-    elif val_rule == 'MAPPING':
+    # Handle AUTO_ID cases with sequence mappings
+    if val_rule == 'AUTO_ID' and seq_mappings:
+        if col_name in seq_mappings:
+            seq_val = seq_mappings[col_name]
+            return str(seq_val) if seq_val is not None else "''"
+    
+    # Handle specific reference mappings
+    if reference_mappings and val_rule in reference_mappings:
+        ref_val = reference_mappings[val_rule]
+        return str(ref_val) if ref_val is not None else "''"
+    
+    # Handle MAPPING case
+    if val_rule == 'MAPPING':
         if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
             col_letter = cell_fix
             cell_ref = f"{col_letter}{row_num}"
             cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
+            return KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
         else:
-            val = "''"
-    elif val_rule == '':
+            return "''"
+    
+    # Handle empty value rule (direct cell reading)
+    if val_rule == '':
         if cell_fix:
             try:
                 col_letter = cell_fix
                 cell_ref = f"{col_letter}{row_num}"
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
                 if cell_value is None:
-                    val = "''"
+                    return "''"
                 elif isinstance(cell_value, str):
                     if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
+                        return f"N'{cell_value}'"
                     else:
-                        val = f"'{cell_value}'"
+                        return f"'{cell_value}'"
                 elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
+                    return str(cell_value)
                 elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
+                    return f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
                 else:
-                    val = f"'{str(cell_value)}'"
+                    return f"'{str(cell_value)}'"
             except Exception:
-                val = "''"
+                return "''"
         else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    elif val_rule == 'T_KIHON_PJ_KOUMOKU.SEQ_K':
-        val = str(seq_k_value) if seq_k_value is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
+            return "''"
     
-    return val
+    # Handle T_KIHON_PJ_GAMEN.SEQ reference
+    if val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
+        return str(sheet_seq) if sheet_seq is not None else "''"
+    
+    # Use fallback processor if provided
+    if fallback_processor:
+        return fallback_processor(col_info, ws, systemid_value, system_date_value)
+    
+    # Default fallback to original process_column_value
+    return process_column_value(col_info, ws, systemid_value, system_date_value)
+
+
+def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
+    """Process column value for T_KIHON_PJ_KOUMOKU table"""
+    seq_mappings = {
+        'SEQ_K': seq_k_value,
+        'ROW_NO': seq_k_value,
+        'SEQ_K_L': seq_k_l_value
+    }
+    reference_mappings = {
+        'T_KIHON_PJ_KOUMOKU.SEQ_K': seq_k_value
+    }
+    
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_k_value,
+        secondary_seq_value=seq_k_l_value,
+        seq_mappings=seq_mappings,
+        reference_mappings=reference_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_func(col_info, ws, row_num, sheet_seq, seq_f_value, seq_f_l_value=None):
     """Process column value for T_KIHON_PJ_FUNC table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_F': seq_f_value,
+        'ROW_NO': seq_f_value,
+        'SEQ_F_L': seq_f_l_value
+    }
+    reference_mappings = {
+        'T_KIHON_PJ_FUNC.SEQ_F': seq_f_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_F':
-        val = str(seq_f_value) if seq_f_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_f_value) if seq_f_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'SEQ_F_L':
-        val = str(seq_f_l_value) if seq_f_l_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    elif val_rule == 'T_KIHON_PJ_FUNC.SEQ_F':
-        val = str(seq_f_value) if seq_f_value is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_f_value,
+        secondary_seq_value=seq_f_l_value,
+        seq_mappings=seq_mappings,
+        reference_mappings=reference_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_csv(col_info, ws, row_num, sheet_seq, seq_csv_value, seq_csv_l_value=None):
     """Process column value for T_KIHON_PJ_KOUMOKU_CSV table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_CSV': seq_csv_value,
+        'ROW_NO': seq_csv_value,
+        'SEQ_CSV_L': seq_csv_l_value
+    }
+    reference_mappings = {
+        'T_KIHON_PJ_KOUMOKU_CSV.SEQ_CSV': seq_csv_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_CSV':
-        val = str(seq_csv_value) if seq_csv_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_csv_value) if seq_csv_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'SEQ_CSV_L':
-        val = str(seq_csv_l_value) if seq_csv_l_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    elif val_rule == 'T_KIHON_PJ_KOUMOKU_CSV.SEQ_CSV':
-        val = str(seq_csv_value) if seq_csv_value is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_csv_value,
+        secondary_seq_value=seq_csv_l_value,
+        seq_mappings=seq_mappings,
+        reference_mappings=reference_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_re(col_info, ws, row_num, sheet_seq, seq_re_value, seq_re_l_value=None):
     """Process column value for T_KIHON_PJ_KOUMOKU_RE table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_RE': seq_re_value,
+        'ROW_NO': seq_re_value,
+        'SEQ_RE_L': seq_re_l_value
+    }
+    reference_mappings = {
+        'T_KIHON_PJ_KOUMOKU_RE.SEQ_RE': seq_re_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_RE':
-        val = str(seq_re_value) if seq_re_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_re_value) if seq_re_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'SEQ_RE_L':
-        val = str(seq_re_l_value) if seq_re_l_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    elif val_rule == 'T_KIHON_PJ_KOUMOKU_RE.SEQ_RE':
-        val = str(seq_re_value) if seq_re_value is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_re_value,
+        secondary_seq_value=seq_re_l_value,
+        seq_mappings=seq_mappings,
+        reference_mappings=reference_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_message(col_info, ws, row_num, sheet_seq, seq_ms_value):
     """Process column value for T_KIHON_PJ_MESSAGE table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_MS': seq_ms_value,
+        'ROW_NO': seq_ms_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_MS':
-        val = str(seq_ms_value) if seq_ms_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_ms_value) if seq_ms_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_ms_value,
+        seq_mappings=seq_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_tab(col_info, ws, row_num, sheet_seq, seq_t_value):
     """Process column value for T_KIHON_PJ_TAB table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_T': seq_t_value,
+        'ROW_NO': seq_t_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_T':
-        val = str(seq_t_value) if seq_t_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_t_value) if seq_t_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_t_value,
+        seq_mappings=seq_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_ichiran(col_info, ws, row_num, sheet_seq, seq_i_value):
     """Process column value for T_KIHON_PJ_ICHIRAN table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_I': seq_i_value,
+        'ROW_NO': seq_i_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_I':
-        val = str(seq_i_value) if seq_i_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_i_value) if seq_i_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_i_value,
+        seq_mappings=seq_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_menu(col_info, ws, row_num, sheet_seq, seq_m_value):
     """Process column value for T_KIHON_PJ_MENU table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_M': seq_m_value,
+        'ROW_NO': seq_m_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_M':
-        val = str(seq_m_value) if seq_m_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_m_value) if seq_m_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_m_value,
+        seq_mappings=seq_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value_ipo(col_info, ws, row_num, sheet_seq, seq_ipo_value):
     """Process column value for T_KIHON_PJ_IPO table"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
+    seq_mappings = {
+        'SEQ_IPO': seq_ipo_value,
+        'ROW_NO': seq_ipo_value
+    }
     
-    if val_rule == 'AUTO_ID' and col_name == 'SEQ_IPO':
-        val = str(seq_ipo_value) if seq_ipo_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'ROW_NO':
-        val = str(seq_ipo_value) if seq_ipo_value is not None else "''"
-    elif val_rule == 'MAPPING':
-        if cell_fix:
-            # Get column letter from cell_fix (e.g., 'B' from 'B')
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            val = KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
-        else:
-            val = "''"
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    elif val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        val = str(sheet_seq) if sheet_seq is not None else "''"
-    else:
-        # Use existing process_column_value logic
-        val = process_column_value(col_info, ws, systemid_value, system_date_value)
-    
-    return val
+    return process_column_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_ipo_value,
+        seq_mappings=seq_mappings,
+        fallback_processor=process_column_value
+    )
 
 
 def process_column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
