@@ -37,7 +37,7 @@ def read_excel_to_json(excel_file, output_file):
         grouped[table_name] = group_df.drop(columns=['TABLE_NAME']).to_dict(orient='records')
 
     # Define the desired key order
-    key_order = ['T_KIHON_PJ', 'T_KIHON_PJ_GAMEN', 'T_KIHON_PJ_GAMEN_YOUKEN', 'T_KIHON_PJ_KOUMOKU', 'T_KIHON_PJ_KOUMOKU_LOGIC', 'T_KIHON_PJ_FUNC', 'T_KIHON_PJ_FUNC_LOGIC', 'T_KIHON_PJ_IPO',  'T_KIHON_PJ_KOUMOKU_CSV', 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',  'T_KIHON_PJ_KOUMOKU_RE', 'T_KIHON_PJ_KOUMOKU_RE_LOGIC', 'T_KIHON_PJ_MENU', 'T_KIHON_PJ_MESSAGE', 'T_KIHON_PJ_TAB']
+    key_order = ['T_KIHON_PJ', 'T_KIHON_PJ_GAMEN', 'T_KIHON_PJ_GAMEN_YOUKEN', 'T_KIHON_PJ_KOUMOKU', 'T_KIHON_PJ_KOUMOKU_LOGIC', 'T_KIHON_PJ_FUNC', 'T_KIHON_PJ_FUNC_LOGIC', 'T_KIHON_PJ_IPO',  'T_KIHON_PJ_KOUMOKU_CSV', 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',  'T_KIHON_PJ_KOUMOKU_RE', 'T_KIHON_PJ_KOUMOKU_RE_LOGIC', 'T_KIHON_PJ_MENU', 'T_KIHON_PJ_MESSAGE', 'T_KIHON_PJ_TAB', 'T_KIHON_PJ_ICHIRAN', 'T_KIHON_PJ_HYOUJI']
 
     # Create an ordered dictionary based on the key order
     from collections import OrderedDict

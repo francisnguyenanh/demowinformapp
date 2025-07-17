@@ -1,4 +1,3 @@
-
 import re
 import pandas as pd
 import json
@@ -778,20 +777,26 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
             excel_file, sheet_idx, seq_value, table_info_file
         )
         all_insert_statements.extend(tab_inserts)
-        
-        # Step 9: Process T_KIHON_PJ_ICHIRAN for this sheet
+
+        # Step 9: Process T_KIHON_PJ_HYOUJI for this sheet
+        hyouji_inserts = process_hyouji_data_for_single_sheet(
+            excel_file, sheet_idx, seq_value, table_info_file
+        )
+        all_insert_statements.extend(hyouji_inserts)
+
+        # Step 10: Process T_KIHON_PJ_ICHIRAN for this sheet
         ichiran_inserts = process_ichiran_data_for_single_sheet(
             excel_file, sheet_idx, seq_value, table_info_file
         )
         all_insert_statements.extend(ichiran_inserts)
         
-        # Step 10: Process T_KIHON_PJ_MENU for this sheet
+        # Step 11: Process T_KIHON_PJ_MENU for this sheet
         menu_inserts = process_menu_data_for_single_sheet(
             excel_file, sheet_idx, seq_value, table_info_file
         )
         all_insert_statements.extend(menu_inserts)
         
-        # Step 11: Process T_KIHON_PJ_IPO for this sheet
+        # Step 12: Process T_KIHON_PJ_IPO for this sheet
         ipo_inserts = process_ipo_data_for_single_sheet(
             excel_file, sheet_idx, seq_value, table_info_file
         )
@@ -1453,6 +1458,70 @@ def process_tab_data_for_single_sheet(
                         
                         seq_t_counter += 1
     
+    return insert_statements
+
+
+def process_hyouji_data_for_single_sheet(
+    excel_file, 
+    sheet_idx, 
+    sheet_seq, 
+    table_info_file,
+    stop_values=None,
+    cell_b_value='【表示位置定義】'
+):
+    """
+    Process HYOUJI data for a single sheet
+    Returns list of INSERT statements for T_KIHON_PJ_HYOUJI
+    """
+    if stop_values is None:
+        stop_values = STOP_VALUES
+
+    table_info = read_table_info_to_dict(table_info_file)
+    hyouji_columns_info = table_info.get('T_KIHON_PJ_HYOUJI', [])
+
+    wb = load_workbook(excel_file, data_only=True)
+    sheetnames = wb.sheetnames
+
+    if sheet_idx >= len(sheetnames):
+        return []
+
+    ws = wb[sheetnames[sheet_idx]]
+    insert_statements = []
+    seq_hyouji_counter = 1
+
+    print(f"  Processing HYOUJI data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
+    # Scan from top to bottom for cell_b_value
+    for row_num in range(1, ws.max_row + 1):
+        cell_b = ws[f"B{row_num}"]
+        if cell_b.value == cell_b_value:
+            # Check subsequent rows
+            for check_row in range(row_num + 1, ws.max_row + 1):
+                cell_b_check = ws[f"B{check_row}"].value
+                if cell_b_check == cell_b_value:
+                    continue
+                if cell_b_check in stop_values:
+                    break
+                # Check if B and C are merged and have value != '画面' and != '番号'
+                merged_bc = False
+                for merged_range in ws.merged_cells.ranges:
+                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
+                        merged_bc = True
+                        break
+                if merged_bc:
+                    cell_b_val = ws[f"B{check_row}"].value
+                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
+                        current_seq_hyouji = seq_hyouji_counter
+                        row_data = {}
+                        for col_info in hyouji_columns_info:
+                            col_name = col_info.get('COLUMN_NAME', '')
+                            val = process_column_value_message(col_info, ws, check_row, sheet_seq, current_seq_hyouji)
+                            row_data[col_name] = val
+                        columns_str = ", ".join(row_data.keys())
+                        values_str = ", ".join(row_data.values())
+                        sql = f"INSERT INTO T_KIHON_PJ_HYOUJI (" + columns_str + ") VALUES (" + values_str + ");"
+                        insert_statements.append(sql)
+                        print(f"    Created HYOUJI with SEQ_HYOUJI {current_seq_hyouji} at row {check_row}")
+                        seq_hyouji_counter += 1
     return insert_statements
 
 

@@ -323,7 +323,7 @@
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
-            "CELL_FIX": "B2",
+            "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
         {
@@ -994,7 +994,7 @@
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "P"
         },
         {
             "COLUMN_NAME": "KOUMOKU_SYURUI_NAME",
@@ -1446,7 +1446,7 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "T_KIHON_PJ_FUNC.SEQ_F",
+            "VALUE": "AUTO_ID",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2592,6 +2592,226 @@
             "VALUE": "",
             "CELL_FIX": "",
             "CELL_LOGIC": "E"
+        },
+        {
+            "COLUMN_NAME": "ROW_NO",
+            "DATA_TYPE": "smallint",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "YES",
+            "VALUE": "AUTO_ID",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "COLOR_GRAY_FLG",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": 0,
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        }
+    ],
+    "T_KIHON_PJ_ICHIRAN": [
+        {
+            "COLUMN_NAME": "SYSTEM_ID",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": "T_KIHON_PJ.SYSTEM_ID",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "SEQ",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "SEQ_I",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": "AUTO_ID",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "AOJI",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": 0,
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "GAMEN_NO",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 5,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "B"
+        },
+        {
+            "COLUMN_NAME": "BUHIN_CD",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 6,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": 999999,
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "BUHIN_NAME",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "D"
+        },
+        {
+            "COLUMN_NAME": "DENSHU_KBN",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "P"
+        },
+        {
+            "COLUMN_NAME": "HYOUJI_KBN",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 8,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "V"
+        },
+        {
+            "COLUMN_NAME": "HISSU",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 2,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "AD"
+        },
+        {
+            "COLUMN_NAME": "MOTO_GAMEN",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "AF"
+        },
+        {
+            "COLUMN_NAME": "MOTO_KOUMOKU",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "AQ"
+        },
+        {
+            "COLUMN_NAME": "BIKOU",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "BB"
+        },
+        {
+            "COLUMN_NAME": "ROW_NO",
+            "DATA_TYPE": "smallint",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "YES",
+            "VALUE": "AUTO_ID",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "COLOR_GRAY_FLG",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": 0,
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        }
+    ],
+    "T_KIHON_PJ_HYOUJI": [
+        {
+            "COLUMN_NAME": "SYSTEM_ID",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": "T_KIHON_PJ.SYSTEM_ID",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "SEQ",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "SEQ_H",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": "AUTO_ID",
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "AOJI",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": "",
+            "IS_NULLABLE": "NO",
+            "VALUE": 0,
+            "CELL_FIX": "",
+            "CELL_LOGIC": ""
+        },
+        {
+            "COLUMN_NAME": "TEIGI_KBN",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 8,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "B"
+        },
+        {
+            "COLUMN_NAME": "HYOUJI_JYUN",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 200,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "E"
+        },
+        {
+            "COLUMN_NAME": "SHITEI_NASHI",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 2,
+            "IS_NULLABLE": "YES",
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "BL"
         },
         {
             "COLUMN_NAME": "ROW_NO",
