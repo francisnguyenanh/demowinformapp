@@ -64,6 +64,54 @@ def get_cell_value_with_merged(ws, cell_ref):
             return ws[merged_range.start_cell.coordinate].value
     return None
 
+def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
+    """
+    Returns True if the row should stop processing for T_KIHON_PJ_KOUMOKU_RE (and similar tables):
+    1. If cell B is in stop_values (excluding cell_b_value if provided)
+    2. If the row has only B~C merged (new T_KIHON_PJ_KOUMOKU_RE row)
+    3. End of sheet is handled by the caller
+    """
+    if check_row > ws.max_row:
+        return True
+    cell_b_check = ws[f"B{check_row}"].value
+    if cell_b_value is not None:
+        if cell_b_check in stop_values and cell_b_check != cell_b_value:
+            return True
+    else:
+        if cell_b_check in stop_values:
+            return True
+    # Check merged cells
+    merged_b_to_bn = False
+    merged_bc = False
+    for merged_range in ws.merged_cells.ranges:
+        if f"B{check_row}" in merged_range:
+            start_col = merged_range.min_col
+            end_col = merged_range.max_col
+            if start_col == 2 and end_col >= 66:
+                merged_b_to_bn = True
+            if start_col == 2 and end_col == 3:
+                merged_bc = True
+    if merged_bc and not merged_b_to_bn:
+        return True
+    return False
+
+def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
+    """
+    Returns True if the row should stop processing for T_KIHON_PJ_KOUMOKU_RE (and similar tables):
+    1. If cell B is in stop_values (excluding cell_b_value if provided)
+    2. End of sheet is handled by the caller
+    """
+    # Nếu sheet đã hết nội dung (check_row > ws.max_row) thì trả về True
+    if check_row > ws.max_row:
+        return True
+    cell_b_check = ws[f"B{check_row}"].value
+    if cell_b_value is not None:
+        if cell_b_check in stop_values and cell_b_check != cell_b_value:
+            return True
+    else:
+        if cell_b_check in stop_values:
+            return True
+    return False
 
 def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
     """Process column value for T_KIHON_PJ_KOUMOKU table"""
@@ -720,88 +768,76 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
             sheet_check_value = ws["B2"].value
         except Exception:
             sheet_check_value = None
-        
+
         if sheet_check_value not in allowed_b2_values:
             continue
-        
-        # Create T_KIHON_PJ_GAMEN insert
+
+        # Always process T_KIHON_PJ_GAMEN
         row_data = {}
         seq_value = seq_per_sheet
         jyun_value = seq_value
         seq_per_sheet_dict[sheet_idx] = seq_value
-        
         for col_info in gamen_columns_info:
             col_name = col_info.get('COLUMN_NAME', '')
             val = process_column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
             row_data[col_name] = val
-        
         columns_str = ", ".join(row_data.keys())
         values_str = ", ".join(row_data.values())
-        sql = f"INSERT INTO T_KIHON_PJ_GAMEN ({columns_str}) VALUES ({values_str});"
+        sql = f"INSERT INTO T_KIHON_PJ_GAMEN ({{columns_str}}) VALUES ({{values_str}});"
         all_insert_statements.append(sql)
-        
-        print(f"Processing sheet {sheet_idx}: {sheetnames[sheet_idx]} with SEQ {seq_value}")
-        
-        # Step 3: Process T_KIHON_PJ_KOUMOKU for this sheet
-        koumoku_inserts = process_koumoku_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(koumoku_inserts)
-        
-        # Step 4: Process T_KIHON_PJ_FUNC for this sheet
-        func_inserts = process_func_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(func_inserts)
-        
-        # Step 5: Process T_KIHON_PJ_KOUMOKU_CSV for this sheet
-        csv_inserts = process_csv_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(csv_inserts)
-        
-        # Step 6: Process T_KIHON_PJ_KOUMOKU_RE for this sheet
-        re_inserts = process_re_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(re_inserts)
-        
-        # Step 7: Process T_KIHON_PJ_MESSAGE for this sheet
-        message_inserts = process_message_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(message_inserts)
-        
-        # Step 8: Process T_KIHON_PJ_TAB for this sheet
-        tab_inserts = process_tab_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(tab_inserts)
+        print(f"Processing sheet {{sheet_idx}}: {{sheetnames[sheet_idx]}} with SEQ {{seq_value}}")
 
-        # Step 9: Process T_KIHON_PJ_HYOUJI for this sheet
-        hyouji_inserts = process_hyouji_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(hyouji_inserts)
-
-        # Step 10: Process T_KIHON_PJ_ICHIRAN for this sheet
-        ichiran_inserts = process_ichiran_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(ichiran_inserts)
-        
-        # Step 11: Process T_KIHON_PJ_MENU for this sheet
-        menu_inserts = process_menu_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(menu_inserts)
-        
-        # Step 12: Process T_KIHON_PJ_IPO for this sheet
-        ipo_inserts = process_ipo_data_for_single_sheet(
-            excel_file, sheet_idx, seq_value, table_info_file
-        )
-        all_insert_statements.extend(ipo_inserts)
-        
+        # Xử lý theo từng loại sheet_check_value
+        if sheet_check_value == '項目定義書_帳票':
+            # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_KOUMOKU_RE, T_KIHON_PJ_KOUMOKU_RE_LOGIC
+            re_inserts = process_re_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(re_inserts)
+        elif sheet_check_value == '項目定義書_CSV':
+            # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_KOUMOKU_CSV, T_KIHON_PJ_KOUMOKU_CSV_LOGIC
+            csv_inserts = process_csv_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(csv_inserts)
+        elif sheet_check_value == '項目定義書_IPO図':
+            # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_IPO
+            ipo_inserts = process_ipo_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(ipo_inserts)
+        elif sheet_check_value == '項目定義書_ﾒﾆｭｰ':
+            # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_MENU
+            menu_inserts = process_menu_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(menu_inserts)
+        elif sheet_check_value == '項目定義書_画面':
+            # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_FUNC, T_KIHON_PJ_FUNC_LOGIC, T_KIHON_PJ_KOUMOKU, T_KIHON_PJ_KOUMOKU_LOGIC, T_KIHON_PJ_MESSAGE, T_KIHON_PJ_TAB, T_KIHON_PJ_ICHIRAN, T_KIHON_PJ_HYOUJI
+            func_inserts = process_func_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(func_inserts)
+            koumoku_inserts = process_koumoku_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(koumoku_inserts)
+            message_inserts = process_message_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(message_inserts)
+            tab_inserts = process_tab_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(tab_inserts)
+            ichiran_inserts = process_ichiran_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(ichiran_inserts)
+            hyouji_inserts = process_hyouji_data_for_single_sheet(
+                excel_file, sheet_idx, seq_value, table_info_file
+            )
+            all_insert_statements.extend(hyouji_inserts)
         seq_per_sheet += 1
     
     # Write all statements to file
@@ -811,6 +847,113 @@ def process_all_tables_in_sequence(excel_file, table_info_file, output_file='ins
     
     print(f"All INSERT statements written to {output_file}")
     return all_insert_statements
+
+
+def process_table_data_for_single_sheet(
+    excel_file,
+    sheet_idx,
+    sheet_seq,
+    table_info_file,
+    table_name,
+    logic_table_name=None,
+    cell_b_value='【項目定義】',
+    column_value_processor=None,
+    logic_processor=None,
+    seq_prefix='SEQ',
+    stop_values=None,
+    use_should_stop_row=False
+):
+    """
+    Generic function to process table data for a single sheet
+    Returns list of INSERT statements for main table and optional logic table
+    """
+    if stop_values is None:
+        stop_values = STOP_VALUES
+
+    table_info = read_table_info_to_dict(table_info_file)
+    columns_info = table_info.get(table_name, [])
+    logic_columns_info = table_info.get(logic_table_name, []) if logic_table_name else []
+
+    wb = load_workbook(excel_file, data_only=True)
+    sheetnames = wb.sheetnames
+
+    if sheet_idx >= len(sheetnames):
+        return []
+
+    ws = wb[sheetnames[sheet_idx]]
+    insert_statements = []
+    seq_counter = 1
+
+    print(f"  Processing {table_name} data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
+    
+    # Scan from top to bottom for cell_b_value
+    for row_num in range(1, ws.max_row + 1):
+        cell_b = ws[f"B{row_num}"]
+        if cell_b.value == cell_b_value:
+            # Check subsequent rows
+            for check_row in range(row_num + 1, ws.max_row + 1):
+                # Use helper function for stopping condition if requested
+                if use_should_stop_row and should_stop_row(ws, check_row, stop_values, cell_b_value):
+                    break
+                
+                cell_b_check = ws[f"B{check_row}"].value
+                # Skip if value is cell_b_value, break if in stop_values
+                if cell_b_check == cell_b_value:
+                    continue
+                if not use_should_stop_row and cell_b_check in stop_values:
+                    break
+                
+                # Check if B and C are merged and have value != '画面' and != '番号'
+                merged_bc = False
+                merged_b_to_bn = False
+                for merged_range in ws.merged_cells.ranges:
+                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
+                        merged_bc = True
+                    if f"B{check_row}" in merged_range:
+                        start_col = merged_range.min_col
+                        end_col = merged_range.max_col
+                        if start_col == 2 and end_col >= 66:
+                            merged_b_to_bn = True
+                
+                if merged_bc:
+                    cell_b_val = ws[f"B{check_row}"].value
+                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
+                        # Create main table insert
+                        current_seq = seq_counter
+                        
+                        row_data = {}
+                        for col_info in columns_info:
+                            col_name = col_info.get('COLUMN_NAME', '')
+                            if column_value_processor:
+                                val = column_value_processor(col_info, ws, check_row, sheet_seq, current_seq)
+                            else:
+                                val = process_column_value(col_info, ws, systemid_value, system_date_value)
+                            row_data[col_name] = val
+                        
+                        columns_str = ", ".join(row_data.keys())
+                        values_str = ", ".join(row_data.values())
+                        sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
+                        insert_statements.append(sql)
+                        
+                        print(f"    Created {table_name.split('_')[-1]} with {seq_prefix} {current_seq} at row {check_row}")
+                        
+                        # Process logic table if provided and logic processor available
+                        if logic_table_name and logic_processor:
+                            logic_inserts = logic_processor(
+                                ws, check_row, sheet_seq, current_seq, logic_columns_info
+                            )
+                            insert_statements.extend(logic_inserts)
+                        elif logic_table_name and merged_b_to_bn:
+                            # Special case for RE table logic processing
+                            if 'process_re_logic_for_seq_re' in globals():
+                                logic_inserts = process_re_logic_for_seq_re(
+                                    ws, check_row, sheet_seq, current_seq, logic_columns_info, cell_b_value
+                                )
+                                insert_statements.extend(logic_inserts)
+                        
+                        seq_counter += 1
+    
+    return insert_statements
 
 
 def process_koumoku_data_for_single_sheet(
@@ -825,74 +968,19 @@ def process_koumoku_data_for_single_sheet(
     Process KOUMOKU data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU and T_KIHON_PJ_KOUMOKU_LOGIC
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    koumoku_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU', [])
-    koumoku_logic_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU_LOGIC', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_k_counter = 1
-    current_seq_k = None
-
-    print(f"  Processing KOUMOKU data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create KOUMOKU insert
-                        current_seq_k = seq_k_counter
-                        
-                        row_data = {}
-                        for col_info in koumoku_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_koumoku(col_info, ws, check_row, sheet_seq, current_seq_k)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created KOUMOKU with SEQ_K {current_seq_k} at row {check_row}")
-                        
-                        # Step 4: Process T_KIHON_PJ_KOUMOKU_LOGIC for this SEQ_K
-                        logic_inserts = process_koumoku_logic_for_seq_k(
-                            ws, check_row, sheet_seq, current_seq_k, koumoku_logic_columns_info
-                        )
-                        insert_statements.extend(logic_inserts)
-                        
-                        seq_k_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_KOUMOKU',
+        logic_table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_koumoku,
+        logic_processor=process_koumoku_logic_for_seq_k,
+        seq_prefix='SEQ_K',
+        stop_values=stop_values
+    )
 
 
 def process_koumoku_logic_for_seq_k(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
@@ -950,74 +1038,19 @@ def process_func_data_for_single_sheet(
     Process FUNC data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_FUNC and T_KIHON_PJ_FUNC_LOGIC
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    func_columns_info = table_info.get('T_KIHON_PJ_FUNC', [])
-    func_logic_columns_info = table_info.get('T_KIHON_PJ_FUNC_LOGIC', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_f_counter = 1
-    current_seq_f = None
-
-    print(f"  Processing FUNC data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create FUNC insert
-                        current_seq_f = seq_f_counter
-                        
-                        row_data = {}
-                        for col_info in func_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_func(col_info, ws, check_row, sheet_seq, current_seq_f)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_FUNC ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created FUNC with SEQ_F {current_seq_f} at row {check_row}")
-                        
-                        # Step 5: Process T_KIHON_PJ_FUNC_LOGIC for this SEQ_F
-                        logic_inserts = process_func_logic_for_seq_f(
-                            ws, check_row, sheet_seq, current_seq_f, func_logic_columns_info
-                        )
-                        insert_statements.extend(logic_inserts)
-                        
-                        seq_f_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_FUNC',
+        logic_table_name='T_KIHON_PJ_FUNC_LOGIC',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_func,
+        logic_processor=process_func_logic_for_seq_f,
+        seq_prefix='SEQ_F',
+        stop_values=stop_values
+    )
 
 
 def process_func_logic_for_seq_f(ws, start_row, sheet_seq, seq_f_value, func_logic_columns_info):
@@ -1075,74 +1108,19 @@ def process_csv_data_for_single_sheet(
     Process CSV data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_CSV and T_KIHON_PJ_KOUMOKU_CSV_LOGIC
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    csv_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU_CSV', [])
-    csv_logic_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU_CSV_LOGIC', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_csv_counter = 1
-    current_seq_csv = None
-
-    print(f"  Processing CSV data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create CSV insert
-                        current_seq_csv = seq_csv_counter
-                        
-                        row_data = {}
-                        for col_info in csv_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_csv(col_info, ws, check_row, sheet_seq, current_seq_csv)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_CSV ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created CSV with SEQ_CSV {current_seq_csv} at row {check_row}")
-                        
-                        # Step 6: Process T_KIHON_PJ_KOUMOKU_CSV_LOGIC for this SEQ_CSV
-                        logic_inserts = process_csv_logic_for_seq_csv(
-                            ws, check_row, sheet_seq, current_seq_csv, csv_logic_columns_info
-                        )
-                        insert_statements.extend(logic_inserts)
-                        
-                        seq_csv_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_KOUMOKU_CSV',
+        logic_table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_csv,
+        logic_processor=process_csv_logic_for_seq_csv,
+        seq_prefix='SEQ_CSV',
+        stop_values=stop_values
+    )
 
 
 def process_csv_logic_for_seq_csv(ws, start_row, sheet_seq, seq_csv_value, csv_logic_columns_info):
@@ -1194,101 +1172,44 @@ def process_re_data_for_single_sheet(
     sheet_seq, 
     table_info_file,
     stop_values=None,
-    cell_b_value='【帳票データ】'
+    cell_b_value='【項目定義】'
 ):
     """
     Process RE data for a single sheet
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    re_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU_RE', [])
-    re_logic_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU_RE_LOGIC', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_re_counter = 1
-    current_seq_re = None
-
-    print(f"  Processing RE data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create RE insert
-                        current_seq_re = seq_re_counter
-                        
-                        row_data = {}
-                        for col_info in re_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_re(col_info, ws, check_row, sheet_seq, current_seq_re)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_RE ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created RE with SEQ_RE {current_seq_re} at row {check_row}")
-                        
-                        # Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for this SEQ_RE
-                        logic_inserts = process_re_logic_for_seq_re(
-                            ws, check_row, sheet_seq, current_seq_re, re_logic_columns_info
-                        )
-                        insert_statements.extend(logic_inserts)
-                        
-                        seq_re_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_KOUMOKU_RE',
+        logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
+        cell_b_value=cell_b_value,
+        column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: process_column_value_re(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
+        seq_prefix='SEQ_RE',
+        stop_values=stop_values,
+        use_should_stop_row=True
+    )
 
 
-def process_re_logic_for_seq_re(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info):
+def process_re_logic_for_seq_re(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】' ):
     """
     Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for a specific SEQ_RE
     """
     insert_statements = []
     seq_re_l_counter = 1
     
-    # Check if B~BN are merged (indicating RE_LOGIC data)
     for check_row in range(start_row, ws.max_row + 1):
+        if should_stop_logic_row(ws, check_row, STOP_VALUES, cell_b_value):
+            break
         merged_b_to_bn = False
         for merged_range in ws.merged_cells.ranges:
             if f"B{check_row}" in merged_range:
-                # Check if range extends to at least BN (column 66)
                 start_col = merged_range.min_col
                 end_col = merged_range.max_col
-                if start_col == 2 and end_col >= 66:  # B=2, BN=66
+                if start_col == 2 and end_col >= 66:
                     merged_b_to_bn = True
-                    break
-        
         if merged_b_to_bn:
             # Create RE_LOGIC insert
             row_data = {}
@@ -1296,19 +1217,12 @@ def process_re_logic_for_seq_re(ws, start_row, sheet_seq, seq_re_value, re_logic
                 col_name = col_info.get('COLUMN_NAME', '')
                 val = process_column_value_re(col_info, ws, check_row, sheet_seq, seq_re_value, seq_re_l_counter)
                 row_data[col_name] = val
-            
             columns_str = ", ".join(row_data.keys())
             values_str = ", ".join(row_data.values())
             sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_RE_LOGIC ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
-            
             print(f"      Created RE_LOGIC with SEQ_RE_L {seq_re_l_counter} at row {check_row}")
             seq_re_l_counter += 1
-        
-        # Stop if we hit a stop value or another RE section
-        cell_b_check = ws[f"B{check_row}"].value
-        if cell_b_check in STOP_VALUES or cell_b_check == '【帳票データ】':
-            break
     
     return insert_statements
 
@@ -1325,66 +1239,17 @@ def process_message_data_for_single_sheet(
     Process MESSAGE data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_MESSAGE
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    message_columns_info = table_info.get('T_KIHON_PJ_MESSAGE', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_ms_counter = 1
-
-    print(f"  Processing MESSAGE data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create MESSAGE insert
-                        current_seq_ms = seq_ms_counter
-                        
-                        row_data = {}
-                        for col_info in message_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_message(col_info, ws, check_row, sheet_seq, current_seq_ms)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_MESSAGE ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created MESSAGE with SEQ_MS {current_seq_ms} at row {check_row}")
-                        
-                        seq_ms_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_MESSAGE',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_message,
+        seq_prefix='SEQ_MS',
+        stop_values=stop_values
+    )
 
 
 def process_tab_data_for_single_sheet(
@@ -1399,66 +1264,17 @@ def process_tab_data_for_single_sheet(
     Process TAB data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_TAB
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    tab_columns_info = table_info.get('T_KIHON_PJ_TAB', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_t_counter = 1
-
-    print(f"  Processing TAB data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create TAB insert
-                        current_seq_t = seq_t_counter
-                        
-                        row_data = {}
-                        for col_info in tab_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_tab(col_info, ws, check_row, sheet_seq, current_seq_t)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_TAB ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created TAB with SEQ_T {current_seq_t} at row {check_row}")
-                        
-                        seq_t_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_TAB',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_tab,
+        seq_prefix='SEQ_T',
+        stop_values=stop_values
+    )
 
 
 def process_hyouji_data_for_single_sheet(
@@ -1473,56 +1289,17 @@ def process_hyouji_data_for_single_sheet(
     Process HYOUJI data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_HYOUJI
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    hyouji_columns_info = table_info.get('T_KIHON_PJ_HYOUJI', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_hyouji_counter = 1
-
-    print(f"  Processing HYOUJI data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        current_seq_hyouji = seq_hyouji_counter
-                        row_data = {}
-                        for col_info in hyouji_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_message(col_info, ws, check_row, sheet_seq, current_seq_hyouji)
-                            row_data[col_name] = val
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_HYOUJI (" + columns_str + ") VALUES (" + values_str + ");"
-                        insert_statements.append(sql)
-                        print(f"    Created HYOUJI with SEQ_HYOUJI {current_seq_hyouji} at row {check_row}")
-                        seq_hyouji_counter += 1
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_HYOUJI',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_message,  # Sử dụng processor message
+        seq_prefix='SEQ_HYOUJI',
+        stop_values=stop_values
+    )
 
 
 def process_ichiran_data_for_single_sheet(
@@ -1537,66 +1314,17 @@ def process_ichiran_data_for_single_sheet(
     Process ICHIRAN data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_ICHIRAN
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    ichiran_columns_info = table_info.get('T_KIHON_PJ_ICHIRAN', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_i_counter = 1
-
-    print(f"  Processing ICHIRAN data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create ICHIRAN insert
-                        current_seq_i = seq_i_counter
-                        
-                        row_data = {}
-                        for col_info in ichiran_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_ichiran(col_info, ws, check_row, sheet_seq, current_seq_i)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_ICHIRAN ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created ICHIRAN with SEQ_I {current_seq_i} at row {check_row}")
-                        
-                        seq_i_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_ICHIRAN',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_ichiran,
+        seq_prefix='SEQ_I',
+        stop_values=stop_values
+    )
 
 
 def process_menu_data_for_single_sheet(
@@ -1611,66 +1339,17 @@ def process_menu_data_for_single_sheet(
     Process MENU data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_MENU
     """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    menu_columns_info = table_info.get('T_KIHON_PJ_MENU', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_m_counter = 1
-
-    print(f"  Processing MENU data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create MENU insert
-                        current_seq_m = seq_m_counter
-                        
-                        row_data = {}
-                        for col_info in menu_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_menu(col_info, ws, check_row, sheet_seq, current_seq_m)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_MENU ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created MENU with SEQ_M {current_seq_m} at row {check_row}")
-                        
-                        seq_m_counter += 1
-    
-    return insert_statements
+    return process_table_data_for_single_sheet(
+        excel_file=excel_file,
+        sheet_idx=sheet_idx,
+        sheet_seq=sheet_seq,
+        table_info_file=table_info_file,
+        table_name='T_KIHON_PJ_MENU',
+        cell_b_value=cell_b_value,
+        column_value_processor=process_column_value_menu,
+        seq_prefix='SEQ_M',
+        stop_values=stop_values
+    )
 
 
 def process_ipo_data_for_single_sheet(
