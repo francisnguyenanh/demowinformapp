@@ -120,113 +120,6 @@ def process_column_value_koumoku(col_info, ws, row_num, sheet_seq, seq_k_value, 
     return val
 
 
-def process_koumoku_data(
-    excel_file,
-    table_info_file,
-    stop_values=None,
-    cell_b_value='【項目定義】',
-    table_key_koumoku='T_KIHON_PJ_KOUMOKU',
-    table_key_koumoku_logic='T_KIHON_PJ_KOUMOKU_LOGIC',
-):
-    """Process KOUMOKU data for sheets that have SEQ in seq_per_sheet_dict
-    Args:
-        excel_file: path to Excel file
-        table_info_file: path to table info JSON
-        stop_values: set of stop values for column B (default: STOP_VALUES global)
-        cell_b_value: value in column B to trigger processing (default: '【項目定義】')
-        table_key_koumoku: table key for KOUMOKU (default: 'T_KIHON_PJ_KOUMOKU')
-        table_key_koumoku_logic: table key for KOUMOKU_LOGIC (default: 'T_KIHON_PJ_KOUMOKU_LOGIC')
-    """
-    global seq_per_sheet_dict, seq_k_per_sheet_dict
-
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    table_info = read_table_info_to_dict(table_info_file)
-    koumoku_columns_info = table_info.get(table_key_koumoku, [])
-    koumoku_logic_columns_info = table_info.get(table_key_koumoku_logic, [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
-    insert_statements = []
-
-    for sheet_idx, sheet_seq in seq_per_sheet_dict.items():
-        if sheet_idx >= len(sheetnames):
-            continue
-
-        ws = wb[sheetnames[sheet_idx]]
-        seq_k_counter = 1
-        seq_k_per_sheet_dict[sheet_idx] = {}
-        current_seq_k = None
-
-        # Scan from top to bottom for cell_b_value
-        for row_num in range(1, ws.max_row + 1):
-            cell_b = ws[f"B{row_num}"]
-            if cell_b.value == cell_b_value:
-                # Check subsequent rows
-                for check_row in range(row_num + 1, ws.max_row + 1):
-                    cell_b_check = ws[f"B{check_row}"].value
-                    # Skip if value is cell_b_value, break if in stop_values
-                    if cell_b_check == cell_b_value:
-                        continue
-                    if cell_b_check in stop_values:
-                        break
-                    # Check if B and C are merged and have value != '画面' and != '番号'
-                    merged_bc = False
-                    for merged_range in ws.merged_cells.ranges:
-                        if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                            merged_bc = True
-                            break
-
-                    if merged_bc:
-                        cell_b_val = ws[f"B{check_row}"].value
-                        if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                            # Create KOUMOKU insert
-                            current_seq_k = seq_k_counter
-                            seq_k_per_sheet_dict[sheet_idx][check_row] = current_seq_k
-
-                            row_data = {}
-                            for col_info in koumoku_columns_info:
-                                col_name = col_info.get('COLUMN_NAME', '')
-                                val = process_column_value_koumoku(col_info, ws, check_row, sheet_seq, current_seq_k)
-                                row_data[col_name] = val
-
-                            columns_str = ", ".join(row_data.keys())
-                            values_str = ", ".join(row_data.values())
-                            sql = f"INSERT INTO {table_key_koumoku} ({columns_str}) VALUES ({values_str});"
-                            insert_statements.append(sql)
-                            seq_k_counter += 1
-
-                    # Check if B~BN are merged
-                    merged_b_to_bn = False
-                    for merged_range in ws.merged_cells.ranges:
-                        if f"B{check_row}" in merged_range:
-                            # Check if range extends to at least BN (column 66)
-                            start_col = merged_range.min_col
-                            end_col = merged_range.max_col
-                            if start_col == 2 and end_col >= 66:  # B=2, BN=66
-                                merged_b_to_bn = True
-                                break
-
-                    if merged_b_to_bn and current_seq_k is not None:
-                        # Create KOUMOKU_LOGIC insert
-                        seq_k_l_counter = 1
-
-                        row_data = {}
-                        for col_info in koumoku_logic_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = process_column_value_koumoku(col_info, ws, check_row, sheet_seq, current_seq_k, seq_k_l_counter)
-                            row_data[col_name] = val
-
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO {table_key_koumoku_logic} ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        seq_k_l_counter += 1
-
-    return insert_statements
-
-
 def process_column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
     """Process column value based on VALUE rules"""
     val_rule = col_info.get('VALUE', '')
@@ -281,59 +174,7 @@ def process_column_value(col_info, ws, systemid_value, system_date_value, seq_va
             val = f"'{val_rule}'"
     
     return val
-    """Process column value based on VALUE rules"""
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
-    
-    if val_rule == 'BLANK':
-        val = "''"
-    elif val_rule == 'NULL':
-        val = "NULL"
-    elif val_rule == 'SYSTEMID':
-        val = f"'{systemid_value}'"
-    elif val_rule == 'T_KIHON_PJ.SYSTEM_ID':
-        val = f"'{systemid_value}'"
-    elif val_rule == 'AUTO_ID' and col_name == 'SEQ':
-        val = str(seq_value) if seq_value is not None else "''"
-    elif val_rule == 'AUTO_ID' and col_name == 'JYUN':
-        val = str(jyun_value) if jyun_value is not None else "''"
-    elif val_rule in ('SYSTEM DATE', 'AUTO_TIME'):
-        val = f"'{system_date_value}'"
-    elif val_rule == 'MAPPING':
-        cell_value = ws[cell_fix].value if cell_fix else None
-        val = MAPPING_VALUE_DICT.get(cell_value, "''")
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                cell_value = get_cell_value_with_merged(ws, cell_fix)
-                if cell_value is None:
-                    val = "''"
-                elif isinstance(cell_value, str):
-                    # Add N prefix for nvarchar columns
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    else:
-                        val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    else:
-        # Other values, treat as string literal
-        # Add N prefix for nvarchar columns
-        if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-            val = f"N'{val_rule}'"
-        else:
-            val = f"'{val_rule}'"
-    
-    return val
+  
 
 
 def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_file, table_key):
@@ -426,22 +267,210 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
     return insert_statements
 
 
+def process_all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.sql'):
+    """
+    Process all tables in the correct sequence:
+    1. Create INSERT for T_KIHON_PJ
+    2. Iterate through sheets (from sheet 3) to create INSERT for T_KIHON_PJ_GAMEN
+    3. For each new SEQ, process T_KIHON_PJ_KOUMOKU
+    4. For each new SEQ_K, process T_KIHON_PJ_KOUMOKU_LOGIC
+    """
+    global seq_per_sheet_dict, seq_k_per_sheet_dict
+    
+    all_insert_statements = []
+    
+    # Step 1: Create INSERT for T_KIHON_PJ (using sheet 3)
+    print("Processing T_KIHON_PJ...")
+    pj_inserts = generate_insert_statements_from_excel(excel_file, 2, table_info_file, 'T_KIHON_PJ')
+    all_insert_statements.extend(pj_inserts)
+    
+    # Step 2: Process T_KIHON_PJ_GAMEN for sheets from index 2 onwards
+    print("Processing T_KIHON_PJ_GAMEN...")
+    table_info = read_table_info_to_dict(table_info_file)
+    gamen_columns_info = table_info.get('T_KIHON_PJ_GAMEN', [])
+    
+    wb = load_workbook(excel_file, data_only=True)
+    sheetnames = wb.sheetnames
+    seq_per_sheet = 1
+    allowed_b2_values = set(MAPPING_VALUE_DICT.keys())
+    
+    for sheet_idx in range(2, len(sheetnames)):
+        ws = wb[sheetnames[sheet_idx]]
+        try:
+            sheet_check_value = ws["B2"].value
+        except Exception:
+            sheet_check_value = None
+        
+        if sheet_check_value not in allowed_b2_values:
+            continue
+        
+        # Create T_KIHON_PJ_GAMEN insert
+        row_data = {}
+        seq_value = seq_per_sheet
+        jyun_value = seq_value
+        seq_per_sheet_dict[sheet_idx] = seq_value
+        
+        for col_info in gamen_columns_info:
+            col_name = col_info.get('COLUMN_NAME', '')
+            val = process_column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
+            row_data[col_name] = val
+        
+        columns_str = ", ".join(row_data.keys())
+        values_str = ", ".join(row_data.values())
+        sql = f"INSERT INTO T_KIHON_PJ_GAMEN ({columns_str}) VALUES ({values_str});"
+        all_insert_statements.append(sql)
+        
+        print(f"Processing sheet {sheet_idx}: {sheetnames[sheet_idx]} with SEQ {seq_value}")
+        
+        # Step 3: Process T_KIHON_PJ_KOUMOKU for this sheet
+        koumoku_inserts = process_koumoku_data_for_single_sheet(
+            excel_file, sheet_idx, seq_value, table_info_file
+        )
+        all_insert_statements.extend(koumoku_inserts)
+        
+        seq_per_sheet += 1
+    
+    # Write all statements to file
+    with open(output_file, 'w', encoding='utf-8') as f:
+        for stmt in all_insert_statements:
+            f.write(stmt + '\n')
+    
+    print(f"All INSERT statements written to {output_file}")
+    return all_insert_statements
+
+
+def process_koumoku_data_for_single_sheet(
+    excel_file, 
+    sheet_idx, 
+    sheet_seq, 
+    table_info_file,
+    stop_values=None,
+    cell_b_value='【項目定義】'
+):
+    """
+    Process KOUMOKU data for a single sheet
+    Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU and T_KIHON_PJ_KOUMOKU_LOGIC
+    """
+    global seq_k_per_sheet_dict
+    
+    if stop_values is None:
+        stop_values = STOP_VALUES
+    
+    table_info = read_table_info_to_dict(table_info_file)
+    koumoku_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU', [])
+    koumoku_logic_columns_info = table_info.get('T_KIHON_PJ_KOUMOKU_LOGIC', [])
+    
+    wb = load_workbook(excel_file, data_only=True)
+    sheetnames = wb.sheetnames
+    
+    if sheet_idx >= len(sheetnames):
+        return []
+    
+    ws = wb[sheetnames[sheet_idx]]
+    insert_statements = []
+    seq_k_counter = 1
+    seq_k_per_sheet_dict[sheet_idx] = {}
+    current_seq_k = None
+    
+    print(f"  Processing KOUMOKU data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
+    
+    # Scan from top to bottom for cell_b_value
+    for row_num in range(1, ws.max_row + 1):
+        cell_b = ws[f"B{row_num}"]
+        if cell_b.value == cell_b_value:
+            # Check subsequent rows
+            for check_row in range(row_num + 1, ws.max_row + 1):
+                cell_b_check = ws[f"B{check_row}"].value
+                # Skip if value is cell_b_value, break if in stop_values
+                if cell_b_check == cell_b_value:
+                    continue
+                if cell_b_check in stop_values:
+                    break
+                
+                # Check if B and C are merged and have value != '画面' and != '番号'
+                merged_bc = False
+                for merged_range in ws.merged_cells.ranges:
+                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
+                        merged_bc = True
+                        break
+                
+                if merged_bc:
+                    cell_b_val = ws[f"B{check_row}"].value
+                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
+                        # Create KOUMOKU insert
+                        current_seq_k = seq_k_counter
+                        seq_k_per_sheet_dict[sheet_idx][check_row] = current_seq_k
+                        
+                        row_data = {}
+                        for col_info in koumoku_columns_info:
+                            col_name = col_info.get('COLUMN_NAME', '')
+                            val = process_column_value_koumoku(col_info, ws, check_row, sheet_seq, current_seq_k)
+                            row_data[col_name] = val
+                        
+                        columns_str = ", ".join(row_data.keys())
+                        values_str = ", ".join(row_data.values())
+                        sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU ({columns_str}) VALUES ({values_str});"
+                        insert_statements.append(sql)
+                        
+                        print(f"    Created KOUMOKU with SEQ_K {current_seq_k} at row {check_row}")
+                        
+                        # Step 4: Process T_KIHON_PJ_KOUMOKU_LOGIC for this SEQ_K
+                        logic_inserts = process_koumoku_logic_for_seq_k(
+                            ws, check_row, sheet_seq, current_seq_k, koumoku_logic_columns_info
+                        )
+                        insert_statements.extend(logic_inserts)
+                        
+                        seq_k_counter += 1
+    
+    return insert_statements
+
+
+def process_koumoku_logic_for_seq_k(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
+    """
+    Process T_KIHON_PJ_KOUMOKU_LOGIC for a specific SEQ_K
+    """
+    insert_statements = []
+    seq_k_l_counter = 1
+    
+    # Check if B~BN are merged (indicating KOUMOKU_LOGIC data)
+    for check_row in range(start_row, ws.max_row + 1):
+        merged_b_to_bn = False
+        for merged_range in ws.merged_cells.ranges:
+            if f"B{check_row}" in merged_range:
+                # Check if range extends to at least BN (column 66)
+                start_col = merged_range.min_col
+                end_col = merged_range.max_col
+                if start_col == 2 and end_col >= 66:  # B=2, BN=66
+                    merged_b_to_bn = True
+                    break
+        
+        if merged_b_to_bn:
+            # Create KOUMOKU_LOGIC insert
+            row_data = {}
+            for col_info in koumoku_logic_columns_info:
+                col_name = col_info.get('COLUMN_NAME', '')
+                val = process_column_value_koumoku(col_info, ws, check_row, sheet_seq, seq_k_value, seq_k_l_counter)
+                row_data[col_name] = val
+            
+            columns_str = ", ".join(row_data.keys())
+            values_str = ", ".join(row_data.values())
+            sql = f"INSERT INTO T_KIHON_PJ_KOUMOKU_LOGIC ({columns_str}) VALUES ({values_str});"
+            insert_statements.append(sql)
+            
+            print(f"      Created KOUMOKU_LOGIC with SEQ_K_L {seq_k_l_counter} at row {check_row}")
+            seq_k_l_counter += 1
+        
+        # Stop if we hit a stop value or another KOUMOKU section
+        cell_b_check = ws[f"B{check_row}"].value
+        if cell_b_check in STOP_VALUES or cell_b_check == '【項目定義】':
+            break
+    
+    return insert_statements
+
+
 # Example usage:
-insert_stmts = generate_insert_statements_from_excel('doc.xlsx', 2, 'table_info.txt', 'T_KIHON_PJ')
-with open('insert.sql', 'w', encoding='utf-8') as f:
-    for stmt in insert_stmts:
-        f.write(stmt + '\n')
-
-# Example for T_KIHON_PJ_GAMEN (sheet_index is ignored for this table):
-# insert_stmts_gamen = generate_insert_statements_from_excel('doc.xlsx', 0, 'table_info.txt', 'T_KIHON_PJ_GAMEN')
-# with open('insert_gamen.sql', 'w', encoding='utf-8') as f:
-#     for stmt in insert_stmts_gamen:
-#         f.write(stmt + '\n')
-
-# Example for processing KOUMOKU data:
-# koumoku_inserts = process_koumoku_data('doc.xlsx', 'table_info.txt')
-# with open('insert_koumoku.sql', 'w', encoding='utf-8') as f:
-#     for stmt in koumoku_inserts:
-#         f.write(stmt + '\n')
+print("Starting processing all tables in sequence...")
+all_inserts = process_all_tables_in_sequence('doc.xlsx', 'table_info.txt', 'insert_all.sql')
+print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
