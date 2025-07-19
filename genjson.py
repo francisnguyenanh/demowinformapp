@@ -22,6 +22,23 @@ def read_excel_to_json(excel_file, output_file):
     # Replace NaN with empty string in entire dataframe
     df = df.fillna('')
 
+    # Special handling for DATA_TYPE == bit
+    if 'DATA_TYPE' in df.columns and 'VALUE' in df.columns:
+        def handle_bit(row):
+            if str(row['DATA_TYPE']).strip().lower() == 'bit':
+                v = row['VALUE']
+                if v == '' or v is None:
+                    return "NULL"
+                if v == 1 or v == '1':
+                    return "True"
+                if v == 0 or v == '0':
+                    return "False"
+            # Nếu value là None (từ các trường hợp khác), cũng chuyển thành 'NULL'
+            if row['VALUE'] == "NL":
+                return "NULL"
+            return row['VALUE']
+        df['VALUE'] = df.apply(handle_bit, axis=1)
+
     # Convert CHARACTER_MAXIMUM_LENGTH to integer if possible
     if 'CHARACTER_MAXIMUM_LENGTH' in df.columns:
         def to_int_or_none(x):

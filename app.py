@@ -5,8 +5,14 @@ import datetime
 from openpyxl import load_workbook
 
 # Global variables for system id, date, and SEQ per sheet
+# Lấy systemid_value từ input, nếu không nhập thì lấy mặc định
 now = datetime.datetime.now()
-systemid_value = f"{now.hour:02d}{now.minute:02d}{now.second:02d}"
+default_systemid_value = f"{now.hour:02d}{now.minute:02d}{now.second:02d}"
+try:
+    user_input = input(f"Nhập systemid_value (Enter để dùng mặc định {default_systemid_value}): ")
+except Exception:
+    user_input = ''
+systemid_value = user_input.strip() if user_input.strip() else default_systemid_value
 system_date_value = now.strftime('%Y-%m-%d')
 # seq_per_sheet_dict: {sheet_index: SEQ}
 seq_per_sheet_dict = {}
@@ -22,7 +28,7 @@ MAPPING_VALUE_DICT = {
 
 # Mapping for KOUMOKU types
 KOUMOKU_TYPE_MAPPING = {
-    'ラベル': '001',
+    'ラベル': '101',
     'タイトルラベル': '102',
     'テキストボックス': '103',
     'コンボボックス': '104',
@@ -154,88 +160,154 @@ def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
             return 'skip'
 
 def set_value_generic(
-    col_info, 
-    ws, 
-    row_num, 
-    sheet_seq, 
-    primary_seq_value, 
+    col_info,
+    ws,
+    row_num,
+    sheet_seq,
+    primary_seq_value,
     secondary_seq_value=None,
     seq_mappings=None,
     reference_mappings=None,
-    fallback_processor=None
+    fallback_processor=None,
+    table_name=None
 ):
     """
-    Generic function to process column values for all table types
-    
-    Args:
-        col_info: Column information dictionary
-        ws: Worksheet object
-        row_num: Current row number
-        sheet_seq: Sheet sequence value
-        primary_seq_value: Primary sequence value (SEQ_K, SEQ_F, etc.)
-        secondary_seq_value: Secondary sequence value (SEQ_K_L, SEQ_F_L, etc.)
-        seq_mappings: Dictionary mapping column names to sequence values
-        reference_mappings: Dictionary mapping VALUE rules to reference values
-        fallback_processor: Fallback processor function for unhandled cases
+    Refactored generic function to process column values for all table types.
+    This version improves readability and manageability by modularizing logic.
     """
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
-    
-    # Handle AUTO_ID cases with sequence mappings
-    if val_rule == 'AUTO_ID' and seq_mappings:
-        if col_name in seq_mappings:
+
+    def get_seq_value():
+        if seq_mappings and col_name in seq_mappings:
             seq_val = seq_mappings[col_name]
             return str(seq_val) if seq_val is not None else "''"
-    
-    # Handle specific reference mappings
-    if reference_mappings and val_rule in reference_mappings:
-        ref_val = reference_mappings[val_rule]
-        return str(ref_val) if ref_val is not None else "''"
-    
-    # Handle MAPPING case
-    if val_rule == 'MAPPING':
+        return None
+
+    def get_reference_value():
+        if reference_mappings and val_rule in reference_mappings:
+            ref_val = reference_mappings[val_rule]
+            return str(ref_val) if ref_val is not None else "''"
+        return None
+
+    def handle_mapping():
+        data_type = col_info.get('DATA_TYPE', '').lower()
+        mapped_val = ''
         if cell_fix:
-            col_letter = cell_fix
-            cell_ref = f"{col_letter}{row_num}"
+            cell_ref = f"{cell_fix}{row_num}"
             cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-            return KOUMOKU_TYPE_MAPPING.get(cell_value, "''")
         else:
-            return "''"
-    
-    # Handle empty value rule (direct cell reading)
-    if val_rule == '':
+            col_logic = col_info.get('CELL_LOGIC', '').strip()
+            cell_ref = f"{col_logic}{row_num}"
+            cell_value = get_cell_value_with_merged(ws, cell_ref)
+            if col_name == 'KOUMOKU_SYURUI_CD' and isinstance(cell_value, str):
+                if table_name == 'T_KIHON_PJ_KOUMOKU':
+                    mapped_val = KOUMOKU_TYPE_MAPPING.get(cell_value, '')
+                elif table_name == 'T_KIHON_PJ_KOUMOKU_RE':
+                    mapped_val = KOUMOKU_TYPE_MAPPING_RE.get(cell_value, '')
+        if data_type == 'int':
+            try:
+                return int(mapped_val)
+            except Exception:
+                return 0
+        return f"'{mapped_val}'" if mapped_val else "''"
+
+    def handle_empty_value():
+        cell_value = None
+        # Try CELL_FIX first
         if cell_fix:
             try:
-                col_letter = cell_fix
-                cell_ref = f"{col_letter}{row_num}"
+                cell_ref = f"{cell_fix}{row_num}"
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
-                if cell_value is None:
-                    return "''"
-                elif isinstance(cell_value, str):
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-                        return f"N'{cell_value}'"
+            except Exception:
+                cell_value = None
+        # If no value from CELL_FIX, try CELL_LOGIC
+        if (cell_value is None or cell_value == '') and col_info.get('CELL_LOGIC', '').strip():
+            try:
+                col_logic = col_info.get('CELL_LOGIC', '').strip()
+                cell_ref = f"{col_logic}{row_num}"
+                cell_value = get_cell_value_with_merged(ws, cell_ref)
+                # Special case for YOUKEN_NO pattern extraction
+                if col_name == 'YOUKEN_NO' and isinstance(cell_value, str):
+                    import re
+                    m = re.match(r'^\(要件№([\d\-]+)\)要件ﾛｼﾞｯｸ：', cell_value)
+                    if m:
+                        cell_value = m.group(1)
                     else:
-                        return f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    return str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    return f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    return f"'{str(cell_value)}'"
+                        return "''"
             except Exception:
                 return "''"
-        else:
+                
+        if cell_value is None or cell_value == '':
             return "''"
-    
+        # Additional handling for specific columns in T_KIHON_PJ_KOUMOKU
+        if (
+            table_name == 'T_KIHON_PJ_KOUMOKU' and
+            col_name in ['ZENKAKU_MOJI_SU', 'HANKAKU_MOJI_SU', 'SEISU_KETA', 'SYOUSU_KETA'] and
+            cell_value == "－"
+        ):
+            return "NULL"
+       
+        data_type = col_info.get('DATA_TYPE', '').lower()
+        # BIT type: output 0/1, no quotes
+        if data_type == 'bit':
+            return str(cell_value)
+        # Numeric types: do not quote, return as int/float
+        if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney'] and cell_value != "NULL":
+            try:
+                if isinstance(cell_value, (int, float)):
+                    return cell_value
+                cell_str = str(cell_value).replace(',', '').replace(' ', '')
+                if '.' in cell_str:
+                    return float(cell_str)
+                else:
+                    return int(cell_str)
+            except Exception:
+                return 0
+        # Date/time types: quote and format
+        elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
+            if isinstance(cell_value, datetime.datetime):
+                return f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
+            elif isinstance(cell_value, str):
+                return f"'{cell_value}'"
+            else:
+                return f"'{str(cell_value)}'"
+        # NVARCHAR: N'...'
+        elif data_type == 'nvarchar':
+            return f"N'{cell_value}'"
+        # Default: quote as string
+        else:
+            return f"'{cell_value}'"
+
+    # Main logic starts here
+    # Handle AUTO_ID cases with sequence mappings
+    if val_rule == 'AUTO_ID':
+        seq_val = get_seq_value()
+        if seq_val is not None:
+            return seq_val
+
+    # Handle specific reference mappings
+    ref_val = get_reference_value()
+    if ref_val is not None:
+        return ref_val
+
+    # Handle MAPPING case
+    if val_rule == 'MAPPING':
+        return handle_mapping()
+
+    # Handle empty value rule (direct cell reading)
+    if val_rule == '':
+        return handle_empty_value()
+
     # Handle T_KIHON_PJ_GAMEN.SEQ reference
     if val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
         return str(sheet_seq) if sheet_seq is not None else "''"
-    
+
     # Use fallback processor if provided
     if fallback_processor:
         return fallback_processor(col_info, ws, systemid_value, system_date_value)
-    
+
     # Default fallback to original process_column_value
     return column_value(col_info, ws, systemid_value, system_date_value)
 
@@ -260,7 +332,8 @@ def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_val
         secondary_seq_value=seq_k_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=column_value
+        fallback_processor=column_value,
+        table_name='T_KIHON_PJ_KOUMOKU'
     )
 
 
@@ -332,7 +405,8 @@ def re_set_value(col_info, ws, row_num, sheet_seq, seq_re_value, seq_re_l_value=
         secondary_seq_value=seq_re_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=column_value
+        fallback_processor=column_value, 
+        table_name='T_KIHON_PJ_KOUMOKU_RE'
     )
 
 
@@ -455,18 +529,35 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
                 cell_value = get_cell_value_with_merged(ws, cell_fix)
                 if cell_value is None:
                     val = "''"
-                elif isinstance(cell_value, str):
-                    # Add N prefix for nvarchar columns
-                    if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
+                else:
+                    data_type = col_info.get('DATA_TYPE', '').lower()
+                    # Numeric types: do not quote
+                    if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney']:
+                        try:
+                            if isinstance(cell_value, (int, float)):
+                                val = str(cell_value)
+                            else:
+                                cell_str = str(cell_value).replace(',', '').replace(' ', '')
+                                if '.' in cell_str:
+                                    val = str(float(cell_str))
+                                else:
+                                    val = str(int(cell_str))
+                        except Exception:
+                            val = '0'
+                    # Date/time types: quote and format
+                    elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
+                        if isinstance(cell_value, datetime.datetime):
+                            val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
+                        elif isinstance(cell_value, str):
+                            val = f"'{cell_value}'"
+                        else:
+                            val = f"'{str(cell_value)}'"
+                    # NVARCHAR: N'...'
+                    elif data_type == 'nvarchar':
                         val = f"N'{cell_value}'"
+                    # Default: quote as string
                     else:
                         val = f"'{cell_value}'"
-                elif isinstance(cell_value, (int, float)):
-                    val = str(cell_value)
-                elif isinstance(cell_value, datetime.datetime):
-                    val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                else:
-                    val = f"'{str(cell_value)}'"
             except Exception:
                 val = "''"
         else:
@@ -746,7 +837,11 @@ def gen_row_single_sheet(
                             val = column_value(col_info, ws, systemid_value, system_date_value)
                         row_data[col_name] = val
                     columns_str = ", ".join(row_data.keys())
-                    values_str = ", ".join(row_data.values())
+                    def sql_value(v):
+                        if isinstance(v, bool):
+                            return 'True' if v else 'False'
+                        return str(v)
+                    values_str = ", ".join(sql_value(v) for v in row_data.values())
                     sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
                     insert_statements.append(sql)
                     seq_counter += 1
@@ -828,12 +923,13 @@ def logic_data_generic(
                 col_name = col_info.get('COLUMN_NAME', '')
                 val = column_value_processor(col_info, ws, check_row, sheet_seq, parent_seq_value, seq_counter)
                 row_data[col_name] = val
-            
+            # Nếu row_data[YOUKEN_NO] khác rỗng và có key YOUKEN_LOGIC thì set YOUKEN_LOGIC = rỗng
+            if 'YOUKEN_NO' in row_data and row_data['YOUKEN_NO'] not in [None, '', "''"] and 'YOUKEN_LOGIC' in row_data:
+                row_data['YOUKEN_LOGIC'] = "''"
             columns_str = ", ".join(row_data.keys())
             values_str = ", ".join(row_data.values())
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
-            
             logic_type = table_name.split('_')[-1]  # Extract LOGIC type name
             print(f"      Created {logic_type} with {seq_counter_name} {seq_counter} at row {check_row}")
             seq_counter += 1

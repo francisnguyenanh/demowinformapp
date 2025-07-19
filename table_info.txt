@@ -41,7 +41,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 20,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -50,7 +50,7 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -239,7 +239,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -248,7 +248,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -284,7 +284,7 @@
             "DATA_TYPE": "bigint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -322,7 +322,7 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "MAPPING",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -367,7 +367,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 20,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -385,7 +385,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -394,7 +394,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -421,7 +421,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -430,7 +430,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -439,7 +439,7 @@
             "DATA_TYPE": "decimal",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -448,7 +448,7 @@
             "DATA_TYPE": "decimal",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -466,7 +466,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -475,7 +475,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -484,7 +484,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -493,7 +493,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -502,7 +502,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -511,7 +511,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -520,7 +520,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 4,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -529,7 +529,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -538,7 +538,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -547,7 +547,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -556,7 +556,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -565,7 +565,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -574,7 +574,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -583,7 +583,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -592,7 +592,7 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -601,7 +601,7 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -610,7 +610,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -619,7 +619,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -628,7 +628,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -637,7 +637,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -646,7 +646,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -655,7 +655,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -664,7 +664,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 6,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -673,7 +673,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -682,7 +682,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -691,7 +691,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -700,7 +700,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -709,7 +709,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -772,7 +772,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -781,7 +781,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 2000,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -790,7 +790,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 2000,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -799,7 +799,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 4,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -808,7 +808,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 200,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -817,7 +817,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -826,7 +826,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -835,7 +835,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -844,7 +844,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": 1,
+            "VALUE": "True",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -900,7 +900,7 @@
             "DATA_TYPE": "bigint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -909,7 +909,7 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -918,7 +918,7 @@
             "DATA_TYPE": "int",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -956,7 +956,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1127,7 +1127,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1136,7 +1136,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": "",
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1154,7 +1154,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1163,7 +1163,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1210,7 +1210,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1219,7 +1219,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1255,7 +1255,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 170,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1264,7 +1264,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1273,7 +1273,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1311,7 +1311,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1437,7 +1437,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1455,7 +1455,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1502,7 +1502,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1511,7 +1511,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1547,7 +1547,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 170,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1556,7 +1556,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1565,7 +1565,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1603,7 +1603,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "A1",
             "CELL_LOGIC": ""
         },
@@ -1612,7 +1612,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1702,7 +1702,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1711,7 +1711,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1749,7 +1749,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1821,7 +1821,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1839,7 +1839,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1848,7 +1848,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1895,7 +1895,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1904,7 +1904,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1940,7 +1940,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 170,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1949,7 +1949,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -1958,7 +1958,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -1996,7 +1996,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2158,7 +2158,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": -1,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2176,7 +2176,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2185,7 +2185,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -2232,7 +2232,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2241,7 +2241,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2277,7 +2277,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 170,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2286,7 +2286,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2295,7 +2295,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -2333,7 +2333,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2423,7 +2423,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2432,7 +2432,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -2470,7 +2470,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2506,7 +2506,7 @@
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 10,
             "IS_NULLABLE": "YES",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2533,7 +2533,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -2571,7 +2571,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2607,7 +2607,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -2645,7 +2645,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2744,7 +2744,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
@@ -2782,7 +2782,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         },
@@ -2827,7 +2827,7 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": 0,
+            "VALUE": "False",
             "CELL_FIX": "",
             "CELL_LOGIC": ""
         }
