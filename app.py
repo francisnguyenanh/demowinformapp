@@ -74,6 +74,25 @@ STOP_VALUES = {
     '【表示位置定義】'
 }
 
+# Constants for column ranges in merged cell checks
+MERGED_CELL_RANGES = {
+    'B_TO_BN': (2, 66),
+    'B_TO_C': (2, 3),
+    'E_TO_AZ': (5, 52),
+    'B_TO_D': (2, 4),
+    'E_TO_BN': (5, 66),
+    'E_TO_BK': (5, 63),
+    'D_TO_O': (4, 15)
+}
+
+# Constants for specific cell values that should be skipped
+SKIP_CELL_VALUES = {
+    'SCREEN_NUMBER': ['画面', '番号'],
+    'MESSAGE_CODE': ['ﾒｯｾｰｼﾞ', 'ｺｰﾄﾞ'],
+    'DEFINITION_LOCATION': ['定義場所'],
+    'DEFINITION_CATEGORY': ['定義区分']
+}
+
 def initialize_workbook(excel_file):
     """
     Initialize global workbook and sheetnames from Excel file.
@@ -116,14 +135,13 @@ def get_cell_value_with_merged(ws, cell_ref):
     return None
 
 def is_merged_from_to(ws, row, col_start, col_end):
-    for merged_range in ws.merged_cells.ranges:
-        if (
-            merged_range.min_col == col_start
-            and merged_range.max_col == col_end
-            and merged_range.min_row <= row <= merged_range.max_row
-        ):
-            return True
-    return False
+    """Check if cells in a row are merged from col_start to col_end"""
+    return any(
+        merged_range.min_col == col_start
+        and merged_range.max_col == col_end
+        and merged_range.min_row <= row <= merged_range.max_row
+        for merged_range in ws.merged_cells.ranges
+    )
 
 
 def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
@@ -152,100 +170,200 @@ def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
             return 'continue'
 
 
+def _handle_item_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for 【項目定義】 and 【ファンクション定義】"""
+    merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
+    merged_bc = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_C'])
+    
+    if merged_bc:
+        if cell_b_check in SKIP_CELL_VALUES['SCREEN_NUMBER']:
+            return 'skip'
+        elif not merged_b_to_bn:
+            return 'continue'
+    else:
+        if merged_b_to_bn:
+            return 'create_logic'
+        else:
+            return 'skip'
+    return 'skip'
+
+def _handle_message_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for 【メッセージ定義】"""
+    merged_e_to_az = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['E_TO_AZ'])
+    merged_bd = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_D'])
+
+    if merged_bd:
+        if cell_b_check in SKIP_CELL_VALUES['MESSAGE_CODE']:
+            return 'skip'
+        return 'continue' if merged_e_to_az else 'skip'
+    return 'skip'
+
+def _handle_tab_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for 【タブインデックス定義】"""
+    merged_e_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['E_TO_BN'])
+    merged_bd = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_D'])
+
+    if merged_bd:
+        if cell_b_check in SKIP_CELL_VALUES['DEFINITION_LOCATION']:
+            return 'skip'
+        return 'continue' if merged_e_to_bn else 'skip'
+    return 'skip'
+
+def _handle_position_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for 【表示位置定義】"""
+    merged_e_to_bk = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['E_TO_BK'])
+    merged_bd = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_D'])
+
+    if merged_bd:
+        if cell_b_check in SKIP_CELL_VALUES['DEFINITION_CATEGORY']:
+            return 'skip'
+        return 'continue' if merged_e_to_bk else 'skip'
+    return 'skip'
+
+def _handle_list_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for 【一覧定義】"""
+    merged_d_to_o = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['D_TO_O'])
+    merged_bc = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_C'])
+
+    if merged_bc:
+        if cell_b_check in SKIP_CELL_VALUES['SCREEN_NUMBER']:
+            return 'skip'
+        return 'continue' if merged_d_to_o else 'skip'
+    return 'skip'
+
 def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
     """
-    Returns True if the row should stop processing for T_KIHON_PJ_KOUMOKU_RE (and similar tables):
+    Returns action for row processing for T_KIHON_PJ_KOUMOKU_RE (and similar tables):
     1. If cell B is in stop_values (excluding cell_b_value if provided)
     2. End of sheet is handled by the caller
     """
     if check_row > ws.max_row:
         return 'stop'
+    
     cell_b_check = ws[f"B{check_row}"].value
+    
+    # Check stop conditions
     if cell_b_value is not None:
         if cell_b_check in stop_values and cell_b_check != cell_b_value:
             return 'stop'
     else:
         if cell_b_check in stop_values:
             return 'stop'
-    # Check merged cells
-    if cell_b_value is not None:
-        if cell_b_value == '【項目定義】' or cell_b_value == '【ファンクション定義】':
-            merged_b_to_bn = is_merged_from_to(ws, check_row, 2, 66)
-            merged_bc = is_merged_from_to(ws, check_row, 2, 3)
-            if merged_bc:
-                if cell_b_check== '画面' or cell_b_check == '番号':
-                    return 'skip'
-                elif not merged_b_to_bn:
-                    return 'continue'
-            else:
-                if merged_b_to_bn:
-                    return 'create_logic'
-                else:
-                    return 'skip'
-        elif cell_b_value == '【メッセージ定義】':
-            merged_e_to_az = is_merged_from_to(ws, check_row, 5, 52)
-            merged_bd = is_merged_from_to(ws, check_row, 2, 4)
-
-            if merged_bd:
-                if cell_b_check== 'ﾒｯｾｰｼﾞ' or cell_b_check == 'ｺｰﾄﾞ':
-                    return 'skip'
-                if not merged_e_to_az:
-                    return 'skip'
-                else:
-                    return 'continue'
-            else:
-                return 'skip'
-        elif cell_b_value == '【タブインデックス定義】':
-            merged_e_to_bn = is_merged_from_to(ws, check_row, 5, 66)
-            merged_bd = is_merged_from_to(ws, check_row, 2, 4)
-
-            if merged_bd:
-                if cell_b_check== '定義場所':
-                    return 'skip'
-                if not merged_e_to_bn:
-                    return 'skip'
-                else:
-                    return 'continue'
-            else:
-                return 'skip'
-        elif cell_b_value == '【備考】':
-            return 'stop'
-        elif cell_b_value == '【帳票データ】':
-            return 'stop'
-        elif cell_b_value == '【CSVデータ】':
-            return 'stop'
-        elif cell_b_value == '【運用上の注意点】':
-            return 'stop'
-        elif cell_b_value == '【表示位置定義】':
-            merged_e_to_bk = is_merged_from_to(ws, check_row, 5, 63)
-            merged_bd = is_merged_from_to(ws, check_row, 2, 4)
-
-            if merged_bd:
-                if cell_b_check== '定義区分':
-                    return 'skip'
-                if not merged_e_to_bk:
-                    return 'skip'
-                else:
-                    return 'continue'
-            else:
-                return 'skip'
-        elif cell_b_value == '【一覧定義】':
-            merged_d_to_o = is_merged_from_to(ws, check_row, 4, 15)
-            merged_bc = is_merged_from_to(ws, check_row, 2, 3)
-
-            if merged_bc:
-                if cell_b_check== '画面' or cell_b_check == '番号':
-                    return 'skip'
-                if not merged_d_to_o:
-                    return 'skip'
-                else:
-                    return 'continue'
-            else:
-                return 'skip'
-        elif cell_b_value == '【メニュー定義】':
-            return 'stop'
-    else:
+    
+    # Handle specific cell_b_value cases
+    if cell_b_value is None:
         return 'skip'
+    
+    # Simple stop cases
+    simple_stop_values = ['【備考】', '【帳票データ】', '【CSVデータ】', '【運用上の注意点】', '【メニュー定義】']
+    if cell_b_value in simple_stop_values:
+        return 'stop'
+    
+    # Complex logic cases
+    handlers = {
+        '【項目定義】': _handle_item_definition_check,
+        '【ファンクション定義】': _handle_item_definition_check,
+        '【メッセージ定義】': _handle_message_definition_check,
+        '【タブインデックス定義】': _handle_tab_definition_check,
+        '【表示位置定義】': _handle_position_definition_check,
+        '【一覧定義】': _handle_list_definition_check,
+    }
+    
+    handler = handlers.get(cell_b_value)
+    if handler:
+        return handler(ws, check_row, cell_b_check)
+    
+    return 'skip'
+
+def set_value_generic(
+    col_info,
+    ws,
+    row_num,
+    sheet_seq,
+    primary_seq_value,
+    secondary_seq_value=None,
+    seq_mappings=None,
+    reference_mappings=None,
+    fallback_processor=None,
+    table_name=None
+):
+    """
+    Refactored generic function to process column values for all table types.
+    This version improves readability and manageability by modularizing logic.
+    """
+    val_rule = col_info.get('VALUE', '')
+    cell_fix = col_info.get('CELL_FIX', '').strip()
+    col_logic = col_info.get('CELL_LOGIC', '').strip()
+    col_name = col_info.get('COLUMN_NAME', '')
+    data_type = col_info.get('DATA_TYPE', '').lower()
+
+    def get_seq_value():
+        if seq_mappings and col_name in seq_mappings:
+            seq_val = seq_mappings[col_name]
+            return str(seq_val) if seq_val is not None else "''"
+        return None
+
+    def get_seq_reference_value():
+        if reference_mappings and val_rule in reference_mappings:
+            ref_val = reference_mappings[val_rule]
+            return str(ref_val) if ref_val is not None else "''"
+        return None
+
+    def handle_mapping():
+        mapped_val = ''
+        if cell_fix:
+            cell_ref = f"{cell_fix}{row_num}"
+            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
+        else:
+            cell_ref = f"{col_logic}{row_num}"
+            cell_value = get_cell_value_with_merged(ws, cell_ref)
+            if col_name == 'KOUMOKU_SYURUI_CD' and isinstance(cell_value, str):
+                if table_name == 'T_KIHON_PJ_KOUMOKU':
+                    mapped_val = KOUMOKU_TYPE_MAPPING.get(cell_value, '')
+                elif table_name == 'T_KIHON_PJ_KOUMOKU_RE':
+                    mapped_val = KOUMOKU_TYPE_MAPPING_RE.get(cell_value, '')
+
+        return f"'{mapped_val}'" if mapped_val else "''"
+
+def _format_cell_value_by_type(cell_value, data_type, col_name=None, table_name=None):
+    """Format cell value based on data type"""
+    if cell_value is None or cell_value == '':
+        return "''"
+    
+    # Additional handling for specific columns in T_KIHON_PJ_KOUMOKU
+    if (
+        table_name == 'T_KIHON_PJ_KOUMOKU' and
+        col_name in ['ZENKAKU_MOJI_SU', 'HANKAKU_MOJI_SU', 'SEISU_KETA', 'SYOUSU_KETA'] and
+        cell_value == "－"
+    ):
+        return "NULL"
+   
+    # Numeric types: do not quote, return as int/float
+    if data_type in ['int'] and cell_value != "NULL":
+        return int(cell_value)
+
+    # Date/time types: quote and format
+    elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
+        if isinstance(cell_value, datetime.datetime):
+            return f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
+        elif isinstance(cell_value, str):
+            return f"'{cell_value}'"
+        else:
+            return f"'{str(cell_value)}'"
+    # NVARCHAR: N'...'
+    elif data_type == 'nvarchar':
+        return f"N'{cell_value}'"
+    # Default: quote as string
+    else:
+        return f"'{cell_value}'"
+
+def _extract_youken_no(cell_value):
+    """Extract YOUKEN_NO pattern from cell value"""
+    if isinstance(cell_value, str):
+        m = re.match(r'^\(要件№([\d\-]+)\)要件ﾛｼﾞｯｸ：', cell_value)
+        if m:
+            return m.group(1)
+    return None
 
 def set_value_generic(
     col_info,
@@ -312,43 +430,16 @@ def set_value_generic(
                 cell_ref = f"{col_logic}{row_num}"
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
                 # Special case for YOUKEN_NO pattern extraction
-                if col_name == 'YOUKEN_NO' and isinstance(cell_value, str):
-                    m = re.match(r'^\(要件№([\d\-]+)\)要件ﾛｼﾞｯｸ：', cell_value)
-                    if m:
-                        cell_value = m.group(1)
+                if col_name == 'YOUKEN_NO':
+                    extracted_value = _extract_youken_no(cell_value)
+                    if extracted_value:
+                        cell_value = extracted_value
                     else:
                         return "''"
             except Exception:
                 return "''"
                 
-        if cell_value is None or cell_value == '':
-            return "''"
-        # Additional handling for specific columns in T_KIHON_PJ_KOUMOKU
-        if (
-            table_name == 'T_KIHON_PJ_KOUMOKU' and
-            col_name in ['ZENKAKU_MOJI_SU', 'HANKAKU_MOJI_SU', 'SEISU_KETA', 'SYOUSU_KETA'] and
-            cell_value == "－"
-        ):
-            return "NULL"
-       
-        # Numeric types: do not quote, return as int/float
-        if data_type in ['int'] and cell_value != "NULL":
-            return int(cell_value)
-
-        # Date/time types: quote and format
-        elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
-            if isinstance(cell_value, datetime.datetime):
-                return f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-            elif isinstance(cell_value, str):
-                return f"'{cell_value}'"
-            else:
-                return f"'{str(cell_value)}'"
-        # NVARCHAR: N'...'
-        elif data_type == 'nvarchar':
-            return f"N'{cell_value}'"
-        # Default: quote as string
-        else:
-            return f"'{cell_value}'"
+        return _format_cell_value_by_type(cell_value, data_type, col_name, table_name)
 
     # Main logic starts here
     # Handle AUTO_ID cases with sequence mappings
@@ -581,6 +672,65 @@ def ipo_set_value(col_info, ws, row_num, sheet_seq, seq_ipo_value):
     )
 
 
+def _handle_username_id(cell_value):
+    """Handle USER_NAME ID generation from usernameID.txt file"""
+    try:
+        with open('usernameID.txt', 'r', encoding='utf-8') as f:
+            current_id = f.read().strip()
+            if not current_id.isdigit():
+                current_id = '1'
+        
+        # Use current_id, then decrease by 1
+        next_id = int(current_id) - 1
+        if next_id < 1:
+            next_id = 1
+        new_id = str(next_id).zfill(len(current_id))
+        
+        # Overwrite file with new value
+        with open('usernameID.txt', 'w', encoding='utf-8') as f:
+            f.write(new_id)
+        
+        return str(cell_value) + current_id
+    except Exception:
+        return str(cell_value)
+
+def _format_value_by_data_type(cell_value, data_type, col_name):
+    """Format value based on data type"""
+    # Numeric types: do not quote
+    if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney']:
+        try:
+            if isinstance(cell_value, (int, float)):
+                return str(cell_value)
+            else:
+                cell_str = str(cell_value).replace(',', '').replace(' ', '')
+                if '.' in cell_str:
+                    return str(float(cell_str))
+                else:
+                    return str(int(cell_str))
+        except Exception:
+            return '0'
+    
+    # Date/time types: quote and format
+    elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
+        if isinstance(cell_value, datetime.datetime):
+            return f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
+        elif isinstance(cell_value, str):
+            return f"'{cell_value}'"
+        else:
+            return f"'{str(cell_value)}'"
+    
+    # NVARCHAR: N'...'
+    elif data_type == 'nvarchar':
+        if col_name == 'USER_NAME':
+            username_with_id = _handle_username_id(cell_value)
+            return f"N'{username_with_id}'"
+        else:
+            return f"N'{cell_value}'"
+    
+    # Default: quote as string
+    else:
+        return f"'{cell_value}'"
+
 def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
     """Process column value based on VALUE rules"""
     val_rule = col_info.get('VALUE', '')
@@ -612,53 +762,7 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
                     val = "''"
                 else:
                     data_type = col_info.get('DATA_TYPE', '').lower()
-                    # Numeric types: do not quote
-                    if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney']:
-                        try:
-                            if isinstance(cell_value, (int, float)):
-                                val = str(cell_value)
-                            else:
-                                cell_str = str(cell_value).replace(',', '').replace(' ', '')
-                                if '.' in cell_str:
-                                    val = str(float(cell_str))
-                                else:
-                                    val = str(int(cell_str))
-                        except Exception:
-                            val = '0'
-                    # Date/time types: quote and format
-                    elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
-                        if isinstance(cell_value, datetime.datetime):
-                            val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                        elif isinstance(cell_value, str):
-                            val = f"'{cell_value}'"
-                        else:
-                            val = f"'{str(cell_value)}'"
-                    # NVARCHAR: N'...'
-                    elif data_type == 'nvarchar':
-                        if col_name == 'USER_NAME':
-                            # Đọc số từ usernameID.txt, cộng vào cell_value, sau đó giảm số trong file đi 1 và ghi lại
-                            try:
-                                with open('usernameID.txt', 'r', encoding='utf-8') as f:
-                                    current_id = f.read().strip()
-                                    if not current_id.isdigit():
-                                        current_id = '1'
-                                # Sử dụng current_id, sau đó giảm đi 1
-                                next_id = int(current_id) - 1
-                                if next_id < 1:
-                                    next_id = 1
-                                new_id = str(next_id).zfill(len(current_id))
-                                # Ghi đè hoàn toàn file với giá trị mới
-                                with open('usernameID.txt', 'w', encoding='utf-8') as f:
-                                    f.write(new_id)
-                                val = str(cell_value) + current_id
-                                val = f"N'{val}'"
-                            except Exception as e:
-                                val = f"N'{cell_value}'"
-                        else:
-                            val = f"N'{cell_value}'"
-                    # Default: quote as string
-                    else:
-                        val = f"'{cell_value}'"
+                    val = _format_value_by_data_type(cell_value, data_type, col_name)
             except Exception:
                 val = "''"
         else:
