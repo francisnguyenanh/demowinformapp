@@ -16,6 +16,13 @@ system_date_value = now.strftime('%Y-%m-%d')
 # seq_per_sheet_dict: {sheet_index: SEQ}
 seq_per_sheet_dict = {}
 
+# Global workbook and sheetnames - will be initialized once
+wb = None
+sheetnames = None
+
+# Global table_info - will be initialized once
+table_info = None
+
 # Mapping for MAPPING value (Excel cell value -> mapped number)
 MAPPING_VALUE_DICT = {
     '項目定義書_帳票': '2',
@@ -66,6 +73,27 @@ STOP_VALUES = {
     '【一覧定義】',
     '【表示位置定義】'
 }
+
+def initialize_workbook(excel_file):
+    """
+    Initialize global workbook and sheetnames from Excel file.
+    Should be called once at the beginning of processing.
+    """
+    global wb, sheetnames
+    wb = load_workbook(excel_file, data_only=True)
+    sheetnames = wb.sheetnames
+    print(f"Initialized workbook with {len(sheetnames)} sheets")
+
+
+def initialize_table_info(table_info_file):
+    """
+    Initialize global table_info from JSON file.
+    Should be called once at the beginning of processing.
+    """
+    global table_info
+    table_info = read_table_info(table_info_file)
+    print(f"Initialized table_info with {len(table_info)} tables")
+
 
 def read_table_info(filename):
     """
@@ -647,26 +675,23 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
   
 
 
-def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_file, table_key):
+def generate_insert_statements_from_excel(sheet_index, table_key):
     """
     Unified function to generate INSERT statements for all table types
+    Uses global wb, sheetnames, and table_info instead of loading files each time
     """
-    # Read table info JSON
-    table_info = read_table_info(table_info_file)
+    # Use global table_info instead of reading file
+    global table_info, wb, sheetnames, systemid_value, system_date_value
+    
     if table_key not in table_info:
         raise ValueError(f"Table key '{table_key}' not found in table info.")
     
     columns_info = table_info[table_key]
     insert_statements = []
     
-    # Use global systemid_value and system_date_value
-    global systemid_value, system_date_value
-    
     if table_key == 'T_KIHON_PJ_GAMEN':
         # Special handling for T_KIHON_PJ_GAMEN: process multiple sheets
         global seq_per_sheet_dict
-        wb = load_workbook(excel_file, data_only=True)
-        sheetnames = wb.sheetnames
         seq_per_sheet = 1
         allowed_b2_values = set(MAPPING_VALUE_DICT.keys())
         for sheet_idx in range(2, len(sheetnames)):
@@ -693,8 +718,6 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
     
     elif table_key == 'T_KIHON_PJ':
         # Special handling for T_KIHON_PJ: single insert statement
-        wb = load_workbook(excel_file, data_only=True)
-        sheetnames = wb.sheetnames
         if sheet_index >= len(sheetnames):
             raise ValueError(f"Sheet index {sheet_index} out of range.")
         ws = wb[sheetnames[sheet_index]]
@@ -714,9 +737,7 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
     
     else:
         # Default handling for other tables: process each row in the sheet
-        df = pd.read_excel(excel_file, sheet_name=sheet_index, engine='openpyxl')
-        wb = load_workbook(excel_file, data_only=True)
-        sheetnames = wb.sheetnames
+        df = pd.read_excel(wb, sheet_name=sheet_index, engine='openpyxl')
         if sheet_index >= len(sheetnames):
             raise ValueError(f"Sheet index {sheet_index} out of range.")
         ws = wb[sheetnames[sheet_index]]
@@ -740,27 +761,29 @@ def generate_insert_statements_from_excel(excel_file, sheet_index, table_info_fi
 def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.sql'):
     """
     Process all tables in the correct sequence:
-    1. Create INSERT for T_KIHON_PJ
-    2. Iterate through sheets (from sheet 3) to create INSERT for T_KIHON_PJ_GAMEN
-    3. For each new SEQ, process T_KIHON_PJ_KOUMOKU
-    4. For each new SEQ_K, process T_KIHON_PJ_KOUMOKU_LOGIC
+    1. Initialize workbook and table_info once
+    2. Create INSERT for T_KIHON_PJ
+    3. Iterate through sheets (from sheet 3) to create INSERT for T_KIHON_PJ_GAMEN
+    4. For each new SEQ, process T_KIHON_PJ_KOUMOKU
+    5. For each new SEQ_K, process T_KIHON_PJ_KOUMOKU_LOGIC
     """
-    global seq_per_sheet_dict
+    global seq_per_sheet_dict, wb, sheetnames, table_info
+    
+    # Initialize workbook and table_info once at the beginning
+    initialize_workbook(excel_file)
+    initialize_table_info(table_info_file)
     
     all_insert_statements = []
     
     # Step 1: Create INSERT for T_KIHON_PJ (using sheet 3)
     print("Processing T_KIHON_PJ...")
-    pj_inserts = generate_insert_statements_from_excel(excel_file, 2, table_info_file, 'T_KIHON_PJ')
+    pj_inserts = generate_insert_statements_from_excel(2, 'T_KIHON_PJ')
     all_insert_statements.extend(pj_inserts)
     
     # Step 2: Process T_KIHON_PJ_GAMEN for sheets from index 2 onwards
     print("Processing T_KIHON_PJ_GAMEN...")
-    table_info = read_table_info(table_info_file)
     gamen_columns_info = table_info.get('T_KIHON_PJ_GAMEN', [])
     
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
     seq_per_sheet = 1
     allowed_b2_values = set(MAPPING_VALUE_DICT.keys())
     
@@ -793,51 +816,51 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
         if sheet_check_value == '項目定義書_帳票':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_KOUMOKU_RE, T_KIHON_PJ_KOUMOKU_RE_LOGIC
             re_inserts = re_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(re_inserts)
         elif sheet_check_value == '項目定義書_CSV':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_KOUMOKU_CSV, T_KIHON_PJ_KOUMOKU_CSV_LOGIC
             csv_inserts = csv_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(csv_inserts)
         elif sheet_check_value == '項目定義書_IPO図':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_IPO
             ipo_inserts = ipo_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(ipo_inserts)
         elif sheet_check_value == '項目定義書_ﾒﾆｭｰ':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_MENU
             menu_inserts = menu_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(menu_inserts)
         elif sheet_check_value == '項目定義書_画面':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_FUNC, T_KIHON_PJ_FUNC_LOGIC, T_KIHON_PJ_KOUMOKU, T_KIHON_PJ_KOUMOKU_LOGIC, T_KIHON_PJ_MESSAGE, T_KIHON_PJ_TAB, T_KIHON_PJ_ICHIRAN, T_KIHON_PJ_HYOUJI
             func_inserts = func_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(func_inserts)
             koumoku_inserts = koumoku_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(koumoku_inserts)
             message_inserts = message_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(message_inserts)
             tab_inserts = tab_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(tab_inserts)
             ichiran_inserts = ichiran_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(ichiran_inserts)
             hyouji_inserts = hyouji_row(
-                excel_file, sheet_idx, seq_value, table_info_file
+                sheet_idx, seq_value
             )
             all_insert_statements.extend(hyouji_inserts)
         seq_per_sheet += 1
@@ -859,10 +882,8 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
 
 
 def gen_row_single_sheet(
-    excel_file,
     sheet_idx,
     sheet_seq,
-    table_info_file,
     table_name,
     logic_table_name=None,
     cell_b_value='【項目定義】',
@@ -874,16 +895,14 @@ def gen_row_single_sheet(
     """
     Generic function to process table data for a single sheet
     Returns list of INSERT statements for main table and optional logic table
+    Uses global wb, sheetnames, and table_info instead of loading files
     """
     if stop_values is None:
         stop_values = STOP_VALUES
 
-    table_info = read_table_info(table_info_file)
+    global wb, sheetnames, table_info
     columns_info = table_info.get(table_name, [])
     logic_columns_info = table_info.get(logic_table_name, []) if logic_table_name else []
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
 
     if sheet_idx >= len(sheetnames):
         return []
@@ -942,10 +961,8 @@ def gen_row_single_sheet(
 
 
 def koumoku_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【項目定義】'
 ):
@@ -954,10 +971,8 @@ def koumoku_row(
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU and T_KIHON_PJ_KOUMOKU_LOGIC
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_KOUMOKU',
         logic_table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
         cell_b_value=cell_b_value,
@@ -1033,10 +1048,8 @@ def koumoku_logic(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_i
 
 
 def func_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【ファンクション定義】'
 ):
@@ -1045,10 +1058,8 @@ def func_row(
     Returns list of INSERT statements for both T_KIHON_PJ_FUNC and T_KIHON_PJ_FUNC_LOGIC
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_FUNC',
         logic_table_name='T_KIHON_PJ_FUNC_LOGIC',
         cell_b_value=cell_b_value,
@@ -1077,10 +1088,8 @@ def func_logic(ws, start_row, sheet_seq, seq_f_value, func_logic_columns_info):
 
 
 def csv_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【CSVデータ】'
 ):
@@ -1089,10 +1098,8 @@ def csv_row(
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_CSV and T_KIHON_PJ_KOUMOKU_CSV_LOGIC
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_KOUMOKU_CSV',
         logic_table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
         cell_b_value=cell_b_value,
@@ -1121,10 +1128,8 @@ def csv_logic(ws, start_row, sheet_seq, seq_csv_value, csv_logic_columns_info):
 
 
 def re_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【項目定義】'
 ):
@@ -1133,10 +1138,8 @@ def re_row(
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_KOUMOKU_RE',
         logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
         cell_b_value=cell_b_value,
@@ -1164,10 +1167,8 @@ def re_logic(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell
 
 
 def message_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【メッセージ定義】'
 ):
@@ -1176,10 +1177,8 @@ def message_row(
     Returns list of INSERT statements for T_KIHON_PJ_MESSAGE
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_MESSAGE',
         cell_b_value=cell_b_value,
         column_value_processor=message_set_value,
@@ -1189,10 +1188,8 @@ def message_row(
 
 
 def tab_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【タブインデックス定義】'
 ):
@@ -1201,10 +1198,8 @@ def tab_row(
     Returns list of INSERT statements for T_KIHON_PJ_TAB
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_TAB',
         cell_b_value=cell_b_value,
         column_value_processor=tab_set_value,
@@ -1214,10 +1209,8 @@ def tab_row(
 
 
 def hyouji_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【表示位置定義】'
 ):
@@ -1226,10 +1219,8 @@ def hyouji_row(
     Returns list of INSERT statements for T_KIHON_PJ_HYOUJI
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_HYOUJI',
         cell_b_value=cell_b_value,
         column_value_processor=message_set_value,  # Sử dụng processor message
@@ -1239,10 +1230,8 @@ def hyouji_row(
 
 
 def ichiran_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【一覧定義】'
 ):
@@ -1251,10 +1240,8 @@ def ichiran_row(
     Returns list of INSERT statements for T_KIHON_PJ_ICHIRAN
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_ICHIRAN',
         cell_b_value=cell_b_value,
         column_value_processor=ichiran_set_value,
@@ -1264,10 +1251,8 @@ def ichiran_row(
 
 
 def menu_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【メニュー定義】'
 ):
@@ -1276,10 +1261,8 @@ def menu_row(
     Returns list of INSERT statements for T_KIHON_PJ_MENU
     """
     return gen_row_single_sheet(
-        excel_file=excel_file,
         sheet_idx=sheet_idx,
         sheet_seq=sheet_seq,
-        table_info_file=table_info_file,
         table_name='T_KIHON_PJ_MENU',
         cell_b_value=cell_b_value,
         column_value_processor=menu_set_value,
@@ -1289,25 +1272,21 @@ def menu_row(
 
 
 def ipo_row(
-    excel_file, 
     sheet_idx, 
     sheet_seq, 
-    table_info_file,
     stop_values=None,
     cell_b_value='【IPO定義】'
 ):
     """
     Process IPO data for a single sheet
     Returns list of INSERT statements for T_KIHON_PJ_IPO
+    Uses global wb, sheetnames, and table_info instead of loading files
     """
     if stop_values is None:
         stop_values = STOP_VALUES
 
-    table_info = read_table_info(table_info_file)
+    global wb, sheetnames, table_info
     ipo_columns_info = table_info.get('T_KIHON_PJ_IPO', [])
-
-    wb = load_workbook(excel_file, data_only=True)
-    sheetnames = wb.sheetnames
 
     if sheet_idx >= len(sheetnames):
         return []
