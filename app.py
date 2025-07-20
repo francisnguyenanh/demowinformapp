@@ -93,6 +93,86 @@ SKIP_CELL_VALUES = {
     'DEFINITION_CATEGORY': ['定義区分']
 }
 
+# Configuration for different row processors
+ROW_PROCESSOR_CONFIG = {
+    'koumoku': {
+        'table_name': 'T_KIHON_PJ_KOUMOKU',
+        'logic_table_name': 'T_KIHON_PJ_KOUMOKU_LOGIC',
+        'cell_b_value': '【項目定義】',
+        'column_value_processor': 'koumoku_set_value',
+        'logic_processor': 'koumoku_logic',
+        'seq_prefix': 'SEQ_K'
+    },
+    'func': {
+        'table_name': 'T_KIHON_PJ_FUNC',
+        'logic_table_name': 'T_KIHON_PJ_FUNC_LOGIC',
+        'cell_b_value': '【ファンクション定義】',
+        'column_value_processor': 'func_set_value',
+        'logic_processor': 'func_logic',
+        'seq_prefix': 'SEQ_F'
+    },
+    'csv': {
+        'table_name': 'T_KIHON_PJ_KOUMOKU_CSV',
+        'logic_table_name': 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
+        'cell_b_value': '【CSVデータ】',
+        'column_value_processor': 'csv_set_value',
+        'logic_processor': 'csv_logic',
+        'seq_prefix': 'SEQ_CSV'
+    },
+    'message': {
+        'table_name': 'T_KIHON_PJ_MESSAGE',
+        'cell_b_value': '【メッセージ定義】',
+        'column_value_processor': 'message_set_value',
+        'seq_prefix': 'SEQ_MS'
+    },
+    'tab': {
+        'table_name': 'T_KIHON_PJ_TAB',
+        'cell_b_value': '【タブインデックス定義】',
+        'column_value_processor': 'tab_set_value',
+        'seq_prefix': 'SEQ_T'
+    },
+    'hyouji': {
+        'table_name': 'T_KIHON_PJ_HYOUJI',
+        'cell_b_value': '【表示位置定義】',
+        'column_value_processor': 'message_set_value',
+        'seq_prefix': 'SEQ_HYOUJI'
+    },
+    'ichiran': {
+        'table_name': 'T_KIHON_PJ_ICHIRAN',
+        'cell_b_value': '【一覧定義】',
+        'column_value_processor': 'ichiran_set_value',
+        'seq_prefix': 'SEQ_I'
+    },
+    'menu': {
+        'table_name': 'T_KIHON_PJ_MENU',
+        'cell_b_value': '【メニュー定義】',
+        'column_value_processor': 'menu_set_value',
+        'seq_prefix': 'SEQ_M'
+    }
+}
+
+# Configuration for logic processors
+LOGIC_PROCESSOR_CONFIG = {
+    'koumoku_logic': {
+        'table_name': 'T_KIHON_PJ_KOUMOKU_LOGIC',
+        'column_value_processor': 'koumoku_set_value',
+        'seq_counter_name': 'SEQ_K_L',
+        'cell_b_value': '【項目定義】'
+    },
+    'func_logic': {
+        'table_name': 'T_KIHON_PJ_FUNC_LOGIC',
+        'column_value_processor': 'func_set_value',
+        'seq_counter_name': 'SEQ_F_L',
+        'cell_b_value': '【ファンクション定義】'
+    },
+    'csv_logic': {
+        'table_name': 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
+        'column_value_processor': 'csv_set_value',
+        'seq_counter_name': 'SEQ_CSV_L',
+        'cell_b_value': '【CSVデータ】'
+    }
+}
+
 def initialize_workbook(excel_file):
     """
     Initialize global workbook and sheetnames from Excel file.
@@ -145,9 +225,13 @@ def is_merged_from_to(ws, row, col_start, col_end):
 
 
 def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
+    """Determine action for logic row processing"""
     if check_row > ws.max_row:
         return 'stop'
+    
     cell_b_check = ws[f"B{check_row}"].value
+    
+    # Check stop conditions
     if cell_b_value is not None:
         if cell_b_check in stop_values and cell_b_check != cell_b_value:
             return 'stop'
@@ -155,11 +239,11 @@ def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
         if cell_b_check in stop_values:
             return 'stop'
 
-    merged_b_to_bn = is_merged_from_to(ws, check_row, 2, 66)
-    merged_bc = is_merged_from_to(ws, check_row, 2, 3)
+    merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
+    merged_bc = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_C'])
     
     if merged_bc:
-        if cell_b_value== '画面' or cell_b_value == '番号':
+        if cell_b_check in SKIP_CELL_VALUES['SCREEN_NUMBER']:
             return 'skip'
         if not merged_b_to_bn:
             return 'stop'
@@ -1064,27 +1148,94 @@ def gen_row_single_sheet(
     return insert_statements
 
 
-def koumoku_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【項目定義】'
-):
-    """
-    Process KOUMOKU data for a single sheet
-    Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU and T_KIHON_PJ_KOUMOKU_LOGIC
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_KOUMOKU',
-        logic_table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
-        cell_b_value=cell_b_value,
-        column_value_processor=koumoku_set_value,
-        logic_processor=koumoku_logic,
-        seq_prefix='SEQ_K',
-        stop_values=stop_values
-    )
+def _get_processor_function(processor_name):
+    """Get processor function by name"""
+    processor_map = {
+        'koumoku_set_value': koumoku_set_value,
+        'func_set_value': func_set_value,
+        'csv_set_value': csv_set_value,
+        'message_set_value': message_set_value,
+        'tab_set_value': tab_set_value,
+        'ichiran_set_value': ichiran_set_value,
+        'menu_set_value': menu_set_value,
+        'koumoku_logic': koumoku_logic,
+        'func_logic': func_logic,
+        'csv_logic': csv_logic,
+        're_set_value': re_set_value,
+        're_logic': re_logic
+    }
+    return processor_map.get(processor_name)
+
+def create_row_processor(processor_type):
+    """Factory function to create row processors"""
+    if processor_type not in ROW_PROCESSOR_CONFIG:
+        raise ValueError(f"Unknown processor type: {processor_type}")
+    
+    config = ROW_PROCESSOR_CONFIG[processor_type]
+    
+    def row_processor(sheet_idx, sheet_seq, stop_values=None, cell_b_value=None):
+        """Generic row processor function"""
+        actual_cell_b_value = cell_b_value or config['cell_b_value']
+        column_processor = _get_processor_function(config['column_value_processor'])
+        logic_processor = None
+        
+        if 'logic_processor' in config:
+            logic_processor = _get_processor_function(config['logic_processor'])
+        
+        return gen_row_single_sheet(
+            sheet_idx=sheet_idx,
+            sheet_seq=sheet_seq,
+            table_name=config['table_name'],
+            logic_table_name=config.get('logic_table_name'),
+            cell_b_value=actual_cell_b_value,
+            column_value_processor=column_processor,
+            logic_processor=logic_processor,
+            seq_prefix=config['seq_prefix'],
+            stop_values=stop_values
+        )
+    
+    return row_processor
+
+def create_logic_processor(processor_type):
+    """Factory function to create logic processors"""
+    if processor_type not in LOGIC_PROCESSOR_CONFIG:
+        raise ValueError(f"Unknown logic processor type: {processor_type}")
+    
+    config = LOGIC_PROCESSOR_CONFIG[processor_type]
+    
+    def logic_processor(ws, start_row, sheet_seq, parent_seq_value, logic_columns_info, cell_b_value=None):
+        """Generic logic processor function"""
+        actual_cell_b_value = cell_b_value or config['cell_b_value']
+        column_processor = _get_processor_function(config['column_value_processor'])
+        
+        return logic_data_generic(
+            ws=ws,
+            start_row=start_row,
+            sheet_seq=sheet_seq,
+            parent_seq_value=parent_seq_value,
+            logic_columns_info=logic_columns_info,
+            table_name=config['table_name'],
+            column_value_processor=column_processor,
+            seq_counter_name=config['seq_counter_name'],
+            cell_b_value=actual_cell_b_value
+        )
+    
+    return logic_processor
+
+# Create all row processors
+koumoku_row = create_row_processor('koumoku')
+func_row = create_row_processor('func')
+csv_row = create_row_processor('csv')
+message_row = create_row_processor('message')
+tab_row = create_row_processor('tab')
+hyouji_row = create_row_processor('hyouji')
+ichiran_row = create_row_processor('ichiran')
+menu_row = create_row_processor('menu')
+
+# Create all logic processors
+koumoku_logic = create_logic_processor('koumoku_logic')
+func_logic = create_logic_processor('func_logic')
+csv_logic = create_logic_processor('csv_logic')
 
 
 def logic_data_generic(
@@ -1133,102 +1284,7 @@ def logic_data_generic(
             print(f"      Created {logic_type} with {seq_counter_name} {seq_counter} at row {check_row}")
             seq_counter += 1
     
-
-def koumoku_logic(ws, start_row, sheet_seq, seq_k_value, koumoku_logic_columns_info):
-    """
-    Process T_KIHON_PJ_KOUMOKU_LOGIC for a specific SEQ_K
-    """
-    return logic_data_generic(
-        ws=ws,
-        start_row=start_row,
-        sheet_seq=sheet_seq,
-        parent_seq_value=seq_k_value,
-        logic_columns_info=koumoku_logic_columns_info,
-        table_name='T_KIHON_PJ_KOUMOKU_LOGIC',
-        column_value_processor=koumoku_set_value,
-        seq_counter_name='SEQ_K_L',
-        cell_b_value='【項目定義】'
-    )
-
-
-def func_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【ファンクション定義】'
-):
-    """
-    Process FUNC data for a single sheet
-    Returns list of INSERT statements for both T_KIHON_PJ_FUNC and T_KIHON_PJ_FUNC_LOGIC
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_FUNC',
-        logic_table_name='T_KIHON_PJ_FUNC_LOGIC',
-        cell_b_value=cell_b_value,
-        column_value_processor=func_set_value,
-        logic_processor=func_logic,
-        seq_prefix='SEQ_F',
-        stop_values=stop_values
-    )
-
-
-def func_logic(ws, start_row, sheet_seq, seq_f_value, func_logic_columns_info):
-    """
-    Process T_KIHON_PJ_FUNC_LOGIC for a specific SEQ_F
-    """
-    return logic_data_generic(
-        ws=ws,
-        start_row=start_row,
-        sheet_seq=sheet_seq,
-        parent_seq_value=seq_f_value,
-        logic_columns_info=func_logic_columns_info,
-        table_name='T_KIHON_PJ_FUNC_LOGIC',
-        column_value_processor=func_set_value,
-        seq_counter_name='SEQ_F_L',
-        cell_b_value='【ファンクション定義】'
-    )
-
-
-def csv_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【CSVデータ】'
-):
-    """
-    Process CSV data for a single sheet
-    Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_CSV and T_KIHON_PJ_KOUMOKU_CSV_LOGIC
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_KOUMOKU_CSV',
-        logic_table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
-        cell_b_value=cell_b_value,
-        column_value_processor=csv_set_value,
-        logic_processor=csv_logic,
-        seq_prefix='SEQ_CSV',
-        stop_values=stop_values
-    )
-
-
-def csv_logic(ws, start_row, sheet_seq, seq_csv_value, csv_logic_columns_info):
-    """
-    Process T_KIHON_PJ_KOUMOKU_CSV_LOGIC for a specific SEQ_CSV
-    """
-    return logic_data_generic(
-        ws=ws,
-        start_row=start_row,
-        sheet_seq=sheet_seq,
-        parent_seq_value=seq_csv_value,
-        logic_columns_info=csv_logic_columns_info,
-        table_name='T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
-        column_value_processor=csv_set_value,
-        seq_counter_name='SEQ_CSV_L',
-        cell_b_value='【CSVデータ】'
-    )
+    return insert_statements, start_row
 
 
 def re_row(
@@ -1238,7 +1294,7 @@ def re_row(
     cell_b_value='【項目定義】'
 ):
     """
-    Process RE data for a single sheet
+    Process RE data for a single sheet - special case with lambda processor
     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
     """
     return gen_row_single_sheet(
@@ -1248,6 +1304,7 @@ def re_row(
         logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
         cell_b_value=cell_b_value,
         column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: re_set_value(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
+        logic_processor=lambda ws, start_row, sheet_seq, seq_re_value, logic_columns_info: re_logic(ws, start_row, sheet_seq, seq_re_value, logic_columns_info, cell_b_value),
         seq_prefix='SEQ_RE',
         stop_values=stop_values
     )
@@ -1270,111 +1327,6 @@ def re_logic(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell
     )
 
 
-def message_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【メッセージ定義】'
-):
-    """
-    Process MESSAGE data for a single sheet
-    Returns list of INSERT statements for T_KIHON_PJ_MESSAGE
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_MESSAGE',
-        cell_b_value=cell_b_value,
-        column_value_processor=message_set_value,
-        seq_prefix='SEQ_MS',
-        stop_values=stop_values
-    )
-
-
-def tab_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【タブインデックス定義】'
-):
-    """
-    Process TAB data for a single sheet
-    Returns list of INSERT statements for T_KIHON_PJ_TAB
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_TAB',
-        cell_b_value=cell_b_value,
-        column_value_processor=tab_set_value,
-        seq_prefix='SEQ_T',
-        stop_values=stop_values
-    )
-
-
-def hyouji_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【表示位置定義】'
-):
-    """
-    Process HYOUJI data for a single sheet
-    Returns list of INSERT statements for T_KIHON_PJ_HYOUJI
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_HYOUJI',
-        cell_b_value=cell_b_value,
-        column_value_processor=message_set_value,  # Sử dụng processor message
-        seq_prefix='SEQ_HYOUJI',
-        stop_values=stop_values
-    )
-
-
-def ichiran_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【一覧定義】'
-):
-    """
-    Process ICHIRAN data for a single sheet
-    Returns list of INSERT statements for T_KIHON_PJ_ICHIRAN
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_ICHIRAN',
-        cell_b_value=cell_b_value,
-        column_value_processor=ichiran_set_value,
-        seq_prefix='SEQ_I',
-        stop_values=stop_values
-    )
-
-
-def menu_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【メニュー定義】'
-):
-    """
-    Process MENU data for a single sheet
-    Returns list of INSERT statements for T_KIHON_PJ_MENU
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_MENU',
-        cell_b_value=cell_b_value,
-        column_value_processor=menu_set_value,
-        seq_prefix='SEQ_M',
-        stop_values=stop_values
-    )
-
-
 def ipo_row(
     sheet_idx, 
     sheet_seq, 
@@ -1382,7 +1334,7 @@ def ipo_row(
     cell_b_value='【IPO定義】'
 ):
     """
-    Process IPO data for a single sheet
+    Process IPO data for a single sheet - special case with custom logic
     Returns list of INSERT statements for T_KIHON_PJ_IPO
     Uses global wb, sheetnames, and table_info instead of loading files
     """
