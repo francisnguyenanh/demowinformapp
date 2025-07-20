@@ -23,6 +23,57 @@ sheetnames = None
 # Global table_info - will be initialized once
 table_info = None
 
+# Performance optimization caches
+_merged_cell_cache = {}  # Cache for merged cell checks: {(sheet_name, row, col_start, col_end): bool}
+_cell_value_cache = {}  # Cache for cell values: {(sheet_name, cell_ref): value}
+_regex_pattern_cache = {}  # Cache for compiled regex patterns
+_sheet_b2_values_cache = {}  # Cache for B2 values: {sheet_name: b2_value}
+_username_id_counter = None  # Cache for username ID counter
+
+def clear_performance_caches():
+    """Clear all performance caches to free memory"""
+    global _merged_cell_cache, _cell_value_cache, _regex_pattern_cache, _sheet_b2_values_cache, _username_id_counter
+    _merged_cell_cache.clear()
+    _cell_value_cache.clear()
+    _regex_pattern_cache.clear()
+    _sheet_b2_values_cache.clear()
+    _username_id_counter = None
+
+def create_insert_statement_batch(table_name, columns, values_list):
+    """Create INSERT statements in batch for better performance"""
+    if not values_list:
+        return []
+    
+    columns_str = ", ".join(columns)
+    insert_statements = []
+    
+    for values in values_list:
+        values_str = ", ".join(str(v) for v in values)
+        sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
+        insert_statements.append(sql)
+    
+    return insert_statements
+
+def preload_sheet_cell_values(ws, start_row, end_row, columns):
+    """Pre-load cell values for a range to improve performance"""
+    for row in range(start_row, min(end_row + 1, ws.max_row + 1)):
+        # Pre-load B column values (commonly used)
+        cache_key = (ws.title, f"B{row}")
+        if cache_key not in _cell_value_cache:
+            try:
+                _cell_value_cache[cache_key] = ws[f"B{row}"].value
+            except:
+                _cell_value_cache[cache_key] = None
+        
+        # Pre-load other commonly used cell references
+        for col in ['C', 'D', 'E']:
+            cache_key = (ws.title, f"{col}{row}")
+            if cache_key not in _cell_value_cache:
+                try:
+                    _cell_value_cache[cache_key] = get_cell_value_with_merged(ws, f"{col}{row}")
+                except:
+                    _cell_value_cache[cache_key] = None
+
 # Mapping for MAPPING value (Excel cell value -> mapped number)
 MAPPING_VALUE_DICT = {
     '項目定義書_帳票': '2',
@@ -203,10 +254,26 @@ def initialize_workbook(excel_file):
     Initialize global workbook and sheetnames from Excel file.
     Should be called once at the beginning of processing.
     """
-    global wb, sheetnames
+    global wb, sheetnames, _merged_cell_cache, _cell_value_cache, _sheet_b2_values_cache
     wb = load_workbook(excel_file, data_only=True)
     sheetnames = wb.sheetnames
-    print(f"Initialized workbook with {len(sheetnames)} sheets")
+    
+    # Clear caches
+    _merged_cell_cache.clear()
+    _cell_value_cache.clear()
+    _sheet_b2_values_cache.clear()
+    
+    # Pre-cache B2 values for all sheets
+    for sheet_name in sheetnames:
+        if sheet_name not in EXCLUDED_SHEETNAMES:
+            try:
+                ws = wb[sheet_name]
+                b2_value = ws["B2"].value
+                _sheet_b2_values_cache[sheet_name] = b2_value
+            except Exception:
+                _sheet_b2_values_cache[sheet_name] = None
+    
+    print(f"Initialized workbook with {len(sheetnames)} sheets and cached B2 values")
 
 
 def initialize_table_info(table_info_file):
@@ -229,24 +296,45 @@ def read_table_info(filename):
 
 
 def get_cell_value_with_merged(ws, cell_ref):
-    """Helper function to get cell value considering merged cells"""
+    """Helper function to get cell value considering merged cells with caching"""
+    cache_key = (ws.title, cell_ref)
+    
+    # Check cache first
+    if cache_key in _cell_value_cache:
+        return _cell_value_cache[cache_key]
+    
     cell = ws[cell_ref]
     if cell.value is not None:
+        _cell_value_cache[cache_key] = cell.value
         return cell.value
+    
     # If cell is empty, check merged cells
     for merged_range in ws.merged_cells.ranges:
         if cell.coordinate in merged_range:
-            return ws[merged_range.start_cell.coordinate].value
+            value = ws[merged_range.start_cell.coordinate].value
+            _cell_value_cache[cache_key] = value
+            return value
+    
+    _cell_value_cache[cache_key] = None
     return None
 
 def is_merged_from_to(ws, row, col_start, col_end):
-    """Check if cells in a row are merged from col_start to col_end"""
-    return any(
+    """Check if cells in a row are merged from col_start to col_end with caching"""
+    cache_key = (ws.title, row, col_start, col_end)
+    
+    # Check cache first
+    if cache_key in _merged_cell_cache:
+        return _merged_cell_cache[cache_key]
+    
+    result = any(
         merged_range.min_col == col_start
         and merged_range.max_col == col_end
         and merged_range.min_row <= row <= merged_range.max_row
         for merged_range in ws.merged_cells.ranges
     )
+    
+    _merged_cell_cache[cache_key] = result
+    return result
 
 
 def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
@@ -488,9 +576,15 @@ def _format_cell_value_by_type(cell_value, data_type, col_name=None, table_name=
         return f"'{cell_value}'"
 
 def _extract_youken_no(cell_value):
-    """Extract YOUKEN_NO pattern from cell value"""
+    """Extract YOUKEN_NO pattern from cell value with caching"""
     if isinstance(cell_value, str):
-        m = re.match(r'^\(要件№([\d\-]+)\)要件ﾛｼﾞｯｸ：', cell_value)
+        # Use cached regex pattern
+        pattern_key = 'youken_pattern'
+        if pattern_key not in _regex_pattern_cache:
+            _regex_pattern_cache[pattern_key] = re.compile(r'^\(要件№([\d\-]+)\)要件ﾛｼﾞｯｸ：')
+        
+        pattern = _regex_pattern_cache[pattern_key]
+        m = pattern.match(cell_value)
         if m:
             return m.group(1)
     return None
@@ -807,34 +901,48 @@ def ipo_set_value(col_info, ws, row_num, sheet_seq, seq_ipo_value):
 
 
 def _handle_username_id(cell_value):
-    """Handle USER_NAME ID generation from usernameID.txt file"""
+    """Handle USER_NAME ID generation from usernameID.txt file with caching"""
+    global _username_id_counter
+    
+    # Initialize counter if not cached
+    if _username_id_counter is None:
+        try:
+            with open('usernameID.txt', 'r', encoding='utf-8') as f:
+                current_id = f.read().strip()
+                if not current_id.isdigit():
+                    current_id = '1'
+                _username_id_counter = int(current_id)
+        except Exception:
+            _username_id_counter = 1
+    
+    # Use current counter, then decrease by 1
+    current_id = _username_id_counter
+    _username_id_counter -= 1
+    if _username_id_counter < 1:
+        _username_id_counter = 1
+    
+    # Write new value to file only when changed
     try:
-        with open('usernameID.txt', 'r', encoding='utf-8') as f:
-            current_id = f.read().strip()
-            if not current_id.isdigit():
-                current_id = '1'
-        
-        # Use current_id, then decrease by 1
-        next_id = int(current_id) - 1
-        if next_id < 1:
-            next_id = 1
-        new_id = str(next_id).zfill(len(current_id))
-        
-        # Overwrite file with new value
+        new_id = str(_username_id_counter).zfill(len(str(current_id)))
         with open('usernameID.txt', 'w', encoding='utf-8') as f:
             f.write(new_id)
-        
-        return str(cell_value) + current_id
     except Exception:
-        return str(cell_value)
+        pass
+    
+    return str(cell_value) + str(current_id)
 
 def _parse_ref_pattern(ref_value):
-    """Parse REF pattern like 'G2' into column letter and row number"""
+    """Parse REF pattern like 'G2' into column letter and row number with caching"""
     if not ref_value or not isinstance(ref_value, str):
         return None, None
     
-    import re
-    match = re.match(r'^([A-Z]+)(\d+)$', ref_value.strip().upper())
+    # Use cached regex pattern
+    pattern_key = 'ref_pattern'
+    if pattern_key not in _regex_pattern_cache:
+        _regex_pattern_cache[pattern_key] = re.compile(r'^([A-Z]+)(\d+)$')
+    
+    pattern = _regex_pattern_cache[pattern_key]
+    match = pattern.match(ref_value.strip().upper())
     if match:
         return match.group(1), int(match.group(2))
     return None, None
@@ -1133,11 +1241,9 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
     for sheet_idx, sheet_name in enumerate(sheetnames):
         if sheet_name in EXCLUDED_SHEETNAMES:
             continue
-        ws = wb[sheet_name]
-        try:
-            sheet_check_value = ws["B2"].value
-        except Exception:
-            sheet_check_value = None
+        
+        # Use cached B2 value instead of reading from sheet
+        sheet_check_value = _sheet_b2_values_cache.get(sheet_name)
 
         if sheet_check_value not in allowed_b2_values:
             continue
@@ -1149,8 +1255,8 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
             all_insert_statements.extend(pj_inserts)
             pj_inserted = True
 
-        print("Processing T_KIHON_PJ_GAMEN...")
         # Always process T_KIHON_PJ_GAMEN
+        ws = wb[sheet_name]  # Get worksheet reference
         row_data = {}
         seq_value = seq_per_sheet
         jyun_value = seq_value
@@ -1218,10 +1324,15 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
             all_insert_statements.extend(hyouji_inserts)
         seq_per_sheet += 1
     
-    # Write all statements to file
+    # Write all statements to file in batches for better I/O performance
+    batch_size = 1000
     with open(output_file, 'w', encoding='utf-8') as f:
-        for stmt in all_insert_statements:
-            f.write(stmt + '\n')
+        for i in range(0, len(all_insert_statements), batch_size):
+            batch = all_insert_statements[i:i + batch_size]
+            f.write('\n'.join(batch) + '\n')
+    
+    # Clear caches after processing to free memory
+    clear_performance_caches()
             
     try:
         connect_string = read_connect_string('connect_string.txt')
@@ -1266,6 +1377,13 @@ def gen_row_single_sheet(
 
     print(f"  Processing {table_name} data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
     
+    # Pre-calculate column names for better performance
+    column_names = [col_info.get('COLUMN_NAME', '') for col_info in columns_info]
+    columns_str = ", ".join(column_names)
+    
+    # Batch data collection
+    batch_data = []
+    
     # Scan from top to bottom for cell_b_value
     for row_num in range(1, ws.max_row + 1):
         cell_b = ws[f"B{row_num}"]
@@ -1274,33 +1392,43 @@ def gen_row_single_sheet(
             while check_row <= ws.max_row:
                 should_stop = should_stop_row(ws, check_row, stop_values, cell_b_value)
                 if should_stop == 'stop':
+                    # Create INSERT statements from batch
+                    if batch_data:
+                        for values in batch_data:
+                            values_str = ", ".join(str(v) for v in values)
+                            sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
+                            insert_statements.append(sql)
                     return insert_statements
                 elif should_stop == 'skip':
                     check_row += 1
                     continue
                 elif should_stop == 'continue':
                     current_seq = seq_counter
-                    row_data = {}
+                    row_values = []
+                    
                     for col_info in columns_info:
-                        col_name = col_info.get('COLUMN_NAME', '')
                         if column_value_processor:
                             val = column_value_processor(col_info, ws, check_row, sheet_seq, current_seq)
                         else:
                             val = column_value(col_info, ws, systemid_value, system_date_value)
-                        row_data[col_name] = val
-                    # Nếu MIDASHI == 'True', set các cột liên quan = 'NULL'
-                    if row_data.get('MIDASHI') == "'True'":
-                        for col in ['IN_GAMEN_ID', 'IN_GAMEN_NAME', 'IN_BUHIN_CD', 'IN_BUHIN_NAME', 'OUT_BUHIN_CD', 'OUT_BUHIN_NAME', 'BIKOU']:
-                            if col in row_data:
-                                row_data[col] = 'NULL'
-                    columns_str = ", ".join(row_data.keys())
-                    def sql_value(v):
-                        if isinstance(v, bool):
-                            return 'True' if v else 'False'
-                        return str(v)
-                    values_str = ", ".join(sql_value(v) for v in row_data.values())
-                    sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
-                    insert_statements.append(sql)
+                        row_values.append(val)
+                    
+                    # Handle MIDASHI special case
+                    if len(row_values) > 0:
+                        # Find MIDASHI column index
+                        midashi_idx = None
+                        special_cols_indices = []
+                        for i, col_name in enumerate(column_names):
+                            if col_name == 'MIDASHI':
+                                midashi_idx = i
+                            elif col_name in ['IN_GAMEN_ID', 'IN_GAMEN_NAME', 'IN_BUHIN_CD', 'IN_BUHIN_NAME', 'OUT_BUHIN_CD', 'OUT_BUHIN_NAME', 'BIKOU']:
+                                special_cols_indices.append(i)
+                        
+                        if midashi_idx is not None and row_values[midashi_idx] == "'True'":
+                            for idx in special_cols_indices:
+                                row_values[idx] = 'NULL'
+                    
+                    batch_data.append(row_values)
                     seq_counter += 1
                     print(f"    Created {table_name.split('_')[-1]} with Sheet SEQ {sheet_seq} {seq_prefix} {current_seq} at row {check_row}")
                     check_row += 1
@@ -1315,6 +1443,14 @@ def gen_row_single_sheet(
                     continue
                 else:
                     check_row += 1
+    
+    # Create INSERT statements from remaining batch data
+    if batch_data:
+        for values in batch_data:
+            values_str = ", ".join(str(v) for v in values)
+            sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
+            insert_statements.append(sql)
+    
     return insert_statements
 
 
@@ -1426,7 +1562,7 @@ def logic_data_generic(
     cell_b_value=None
 ):
     """
-    Generic function to process logic table data
+    Generic function to process logic table data with performance optimizations
     """
     if stop_values is None:
         stop_values = STOP_VALUES
@@ -1434,77 +1570,68 @@ def logic_data_generic(
     insert_statements = []
     seq_counter = 1
     
+    # Pre-calculate column names and table type for better performance
+    column_names = [col_info.get('COLUMN_NAME', '') for col_info in logic_columns_info]
+    columns_str = ", ".join(column_names)
+    logic_type = table_name.split('_')[-1]  # Extract LOGIC type name
+    
+    # Pre-load cell values for the range
+    preload_sheet_cell_values(ws, start_row, min(start_row + 100, ws.max_row), ['B', 'C', 'D', 'E'])
+    
+    # Batch data collection
+    batch_data = []
+    
     for check_row in range(start_row, ws.max_row + 1):
         # Use appropriate stopping condition
         should_stop = should_stop_logic_row(ws, check_row, stop_values, cell_b_value)
         if should_stop == 'stop':
+            # Process remaining batch
+            if batch_data:
+                for values in batch_data:
+                    values_str = ", ".join(str(v) for v in values)
+                    sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
+                    insert_statements.append(sql)
             return insert_statements, check_row
         elif should_stop == 'skip':
             continue
         elif should_stop == 'continue':
-            # Create LOGIC insert
-            row_data = {}
+            # Collect row data
+            row_values = []
             for col_info in logic_columns_info:
-                col_name = col_info.get('COLUMN_NAME', '')
                 val = column_value_processor(col_info, ws, check_row, sheet_seq, parent_seq_value, seq_counter)
-                row_data[col_name] = val
-            # Nếu row_data[YOUKEN_NO] khác rỗng và có key YOUKEN_LOGIC thì set YOUKEN_LOGIC = rỗng
-            if 'YOUKEN_NO' in row_data and row_data['YOUKEN_NO'] not in [None, '', "''"] and 'YOUKEN_LOGIC' in row_data:
-                row_data['YOUKEN_LOGIC'] = "''"
-            columns_str = ", ".join(row_data.keys())
-            values_str = ", ".join(row_data.values())
-            sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
-            insert_statements.append(sql)
-            logic_type = table_name.split('_')[-1]  # Extract LOGIC type name
+                row_values.append(val)
+            
+            # Handle YOUKEN_NO special case
+            if len(row_values) > 0:
+                youken_no_idx = None
+                youken_logic_idx = None
+                for i, col_name in enumerate(column_names):
+                    if col_name == 'YOUKEN_NO':
+                        youken_no_idx = i
+                    elif col_name == 'YOUKEN_LOGIC':
+                        youken_logic_idx = i
+                
+                if (youken_no_idx is not None and youken_logic_idx is not None and 
+                    row_values[youken_no_idx] not in [None, '', "''"]):
+                    row_values[youken_logic_idx] = "''"
+            
+            batch_data.append(row_values)
             print(f"      Created {logic_type} with Sheet SEQ {sheet_seq} Parent SEQ {parent_seq_value} {seq_counter_name} {seq_counter} at row {check_row}")
             seq_counter += 1
+    
+    # Process remaining batch
+    if batch_data:
+        for values in batch_data:
+            values_str = ", ".join(str(v) for v in values)
+            sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
+            insert_statements.append(sql)
     
     return insert_statements, start_row
 
 
-# def re_row(
-#     sheet_idx, 
-#     sheet_seq, 
-#     stop_values=None,
-#     cell_b_value='【項目定義】'
-# ):
-#     """
-#     Process RE data for a single sheet - special case with lambda processor
-#     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
-#     """
-#     return gen_row_single_sheet(
-#         sheet_idx=sheet_idx,
-#         sheet_seq=sheet_seq,
-#         table_name='T_KIHON_PJ_KOUMOKU_RE',
-#         logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
-#         cell_b_value=cell_b_value,
-#         column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: re_set_value(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
-#         logic_processor=lambda ws, start_row, sheet_seq, seq_re_value, logic_columns_info: re_logic(ws, start_row, sheet_seq, seq_re_value, logic_columns_info, cell_b_value),
-#         seq_prefix='SEQ_RE',
-#         stop_values=stop_values
-#     )
-
-
-# def re_logic(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】'):
-#     """
-#     Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for a specific SEQ_RE
-#     """
-#     return logic_data_generic(
-#         ws=ws,
-#         start_row=start_row,
-#         sheet_seq=sheet_seq,
-#         parent_seq_value=seq_re_value,
-#         logic_columns_info=re_logic_columns_info,
-#         table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
-#         column_value_processor=re_set_value,
-#         seq_counter_name='SEQ_RE_L',
-#         cell_b_value=cell_b_value
-#     )
-
-
 if __name__ == "__main__":
     print("Starting processing all tables in sequence...")
-    all_inserts = all_tables_in_sequence('doc_mix.xlsx', 'table_info.txt', 'insert_all.sql')
+    all_inserts = all_tables_in_sequence('doc_X.xlsx', 'table_info.txt', 'insert_all.sql')
     print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
