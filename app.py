@@ -88,6 +88,17 @@ def get_cell_value_with_merged(ws, cell_ref):
             return ws[merged_range.start_cell.coordinate].value
     return None
 
+def is_merged_from_to(ws, row, col_start, col_end):
+    for merged_range in ws.merged_cells.ranges:
+        if (
+            merged_range.min_col == col_start
+            and merged_range.max_col == col_end
+            and merged_range.min_row <= row <= merged_range.max_row
+        ):
+            return True
+    return False
+
+
 def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
     if check_row > ws.max_row:
         return 'stop'
@@ -98,17 +109,9 @@ def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
     else:
         if cell_b_check in stop_values:
             return 'stop'
-    # Check merged cells
-    merged_b_to_bn = False
-    merged_bc = False
-    for merged_range in ws.merged_cells.ranges:
-        if f"B{check_row}" in merged_range:
-            start_col = merged_range.min_col
-            end_col = merged_range.max_col
-            if start_col == 2 and end_col >= 66:
-                merged_b_to_bn = True
-            if start_col == 2 and end_col == 3:
-                merged_bc = True
+
+    merged_b_to_bn = is_merged_from_to(ws, check_row, 2, 66)
+    merged_bc = is_merged_from_to(ws, check_row, 2, 3)
     
     if merged_bc:
         if cell_b_value== '画面' or cell_b_value == '番号':
@@ -138,26 +141,84 @@ def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
         if cell_b_check in stop_values:
             return 'stop'
     # Check merged cells
-    merged_b_to_bn = False
-    merged_bc = False
-    for merged_range in ws.merged_cells.ranges:
-        if f"B{check_row}" in merged_range:
-            start_col = merged_range.min_col
-            end_col = merged_range.max_col
-            if start_col == 2 and end_col >= 66:
-                merged_b_to_bn = True
-            if start_col == 2 and end_col == 3:
-                merged_bc = True
-    if merged_bc:
-        if cell_b_check== '画面' or cell_b_check == '番号':
-            return 'skip'
-        elif not merged_b_to_bn:
-            return 'continue'
+    if cell_b_value is not None:
+        if cell_b_value == '【項目定義】' or cell_b_value == '【ファンクション定義】':
+            merged_b_to_bn = is_merged_from_to(ws, check_row, 2, 66)
+            merged_bc = is_merged_from_to(ws, check_row, 2, 3)
+            if merged_bc:
+                if cell_b_check== '画面' or cell_b_check == '番号':
+                    return 'skip'
+                elif not merged_b_to_bn:
+                    return 'continue'
+            else:
+                if merged_b_to_bn:
+                    return 'create_logic'
+                else:
+                    return 'skip'
+        elif cell_b_value == '【メッセージ定義】':
+            merged_e_to_az = is_merged_from_to(ws, check_row, 5, 52)
+            merged_bd = is_merged_from_to(ws, check_row, 2, 4)
+
+            if merged_bd:
+                if cell_b_check== 'ﾒｯｾｰｼﾞ' or cell_b_check == 'ｺｰﾄﾞ':
+                    return 'skip'
+                if not merged_e_to_az:
+                    return 'skip'
+                else:
+                    return 'continue'
+            else:
+                return 'skip'
+        elif cell_b_value == '【タブインデックス定義】':
+            merged_e_to_bn = is_merged_from_to(ws, check_row, 5, 66)
+            merged_bd = is_merged_from_to(ws, check_row, 2, 4)
+
+            if merged_bd:
+                if cell_b_check== '定義場所':
+                    return 'skip'
+                if not merged_e_to_bn:
+                    return 'skip'
+                else:
+                    return 'continue'
+            else:
+                return 'skip'
+        elif cell_b_value == '【備考】':
+            return 'stop'
+        elif cell_b_value == '【帳票データ】':
+            return 'stop'
+        elif cell_b_value == '【CSVデータ】':
+            return 'stop'
+        elif cell_b_value == '【運用上の注意点】':
+            return 'stop'
+        elif cell_b_value == '【表示位置定義】':
+            merged_e_to_bk = is_merged_from_to(ws, check_row, 5, 63)
+            merged_bd = is_merged_from_to(ws, check_row, 2, 4)
+
+            if merged_bd:
+                if cell_b_check== '定義区分':
+                    return 'skip'
+                if not merged_e_to_bk:
+                    return 'skip'
+                else:
+                    return 'continue'
+            else:
+                return 'skip'
+        elif cell_b_value == '【一覧定義】':
+            merged_d_to_o = is_merged_from_to(ws, check_row, 4, 15)
+            merged_bc = is_merged_from_to(ws, check_row, 2, 3)
+
+            if merged_bc:
+                if cell_b_check== '画面' or cell_b_check == '番号':
+                    return 'skip'
+                if not merged_d_to_o:
+                    return 'skip'
+                else:
+                    return 'continue'
+            else:
+                return 'skip'
+        elif cell_b_value == '【メニュー定義】':
+            return 'stop'
     else:
-        if merged_b_to_bn:
-            return 'create_logic'
-        else:
-            return 'skip'
+        return 'skip'
 
 def set_value_generic(
     col_info,
@@ -177,7 +238,9 @@ def set_value_generic(
     """
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
+    col_logic = col_info.get('CELL_LOGIC', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
+    data_type = col_info.get('DATA_TYPE', '').lower()
 
     def get_seq_value():
         if seq_mappings and col_name in seq_mappings:
@@ -185,20 +248,18 @@ def set_value_generic(
             return str(seq_val) if seq_val is not None else "''"
         return None
 
-    def get_reference_value():
+    def get_seq_reference_value():
         if reference_mappings and val_rule in reference_mappings:
             ref_val = reference_mappings[val_rule]
             return str(ref_val) if ref_val is not None else "''"
         return None
 
     def handle_mapping():
-        data_type = col_info.get('DATA_TYPE', '').lower()
         mapped_val = ''
         if cell_fix:
             cell_ref = f"{cell_fix}{row_num}"
             cell_value = ws[cell_ref].value if ws[cell_ref].value else None
         else:
-            col_logic = col_info.get('CELL_LOGIC', '').strip()
             cell_ref = f"{col_logic}{row_num}"
             cell_value = get_cell_value_with_merged(ws, cell_ref)
             if col_name == 'KOUMOKU_SYURUI_CD' and isinstance(cell_value, str):
@@ -206,11 +267,7 @@ def set_value_generic(
                     mapped_val = KOUMOKU_TYPE_MAPPING.get(cell_value, '')
                 elif table_name == 'T_KIHON_PJ_KOUMOKU_RE':
                     mapped_val = KOUMOKU_TYPE_MAPPING_RE.get(cell_value, '')
-        if data_type == 'int':
-            try:
-                return int(mapped_val)
-            except Exception:
-                return 0
+
         return f"'{mapped_val}'" if mapped_val else "''"
 
     def handle_empty_value():
@@ -221,16 +278,14 @@ def set_value_generic(
                 cell_ref = f"{cell_fix}{row_num}"
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
             except Exception:
-                cell_value = None
+                return "''"
         # If no value from CELL_FIX, try CELL_LOGIC
-        if (cell_value is None or cell_value == '') and col_info.get('CELL_LOGIC', '').strip():
+        if (cell_value is None or cell_value == '') and col_logic:
             try:
-                col_logic = col_info.get('CELL_LOGIC', '').strip()
                 cell_ref = f"{col_logic}{row_num}"
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
                 # Special case for YOUKEN_NO pattern extraction
                 if col_name == 'YOUKEN_NO' and isinstance(cell_value, str):
-                    import re
                     m = re.match(r'^\(要件№([\d\-]+)\)要件ﾛｼﾞｯｸ：', cell_value)
                     if m:
                         cell_value = m.group(1)
@@ -249,22 +304,10 @@ def set_value_generic(
         ):
             return "NULL"
        
-        data_type = col_info.get('DATA_TYPE', '').lower()
-        # BIT type: output 0/1, no quotes
-        if data_type == 'bit':
-            return str(cell_value)
         # Numeric types: do not quote, return as int/float
-        if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney'] and cell_value != "NULL":
-            try:
-                if isinstance(cell_value, (int, float)):
-                    return cell_value
-                cell_str = str(cell_value).replace(',', '').replace(' ', '')
-                if '.' in cell_str:
-                    return float(cell_str)
-                else:
-                    return int(cell_str)
-            except Exception:
-                return 0
+        if data_type in ['int'] and cell_value != "NULL":
+            return int(cell_value)
+
         # Date/time types: quote and format
         elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
             if isinstance(cell_value, datetime.datetime):
@@ -288,7 +331,7 @@ def set_value_generic(
             return seq_val
 
     # Handle specific reference mappings
-    ref_val = get_reference_value()
+    ref_val = get_seq_reference_value()
     if ref_val is not None:
         return ref_val
 
@@ -305,11 +348,22 @@ def set_value_generic(
         return str(sheet_seq) if sheet_seq is not None else "''"
 
     # Use fallback processor if provided
-    if fallback_processor:
-        return fallback_processor(col_info, ws, systemid_value, system_date_value)
-
+    #if fallback_processor:
+    #    return fallback_processor(col_info, ws, systemid_value, system_date_value)
     # Default fallback to original process_column_value
-    return column_value(col_info, ws, systemid_value, system_date_value)
+    val = "''"
+    
+    if val_rule == 'BLANK':
+        val = "''"
+    elif val_rule == 'NULL':
+        val = "NULL"
+    elif val_rule == 'SYSTEMID':
+        val = f"'{systemid_value}'"
+    elif val_rule == 'T_KIHON_PJ.SYSTEM_ID':
+        val = f"'{systemid_value}'"
+        
+    return val if val else "''"
+    #return column_value(col_info, ws, systemid_value, system_date_value)
 
 
 def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
@@ -503,9 +557,9 @@ def ipo_set_value(col_info, ws, row_num, sheet_seq, seq_ipo_value):
 def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
     """Process column value based on VALUE rules"""
     val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
     
+    val = "''"  # Default value if no rule matches
     if val_rule == 'BLANK':
         val = "''"
     elif val_rule == 'NULL':
@@ -518,58 +572,7 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
         val = str(seq_value) if seq_value is not None else "''"
     elif val_rule == 'AUTO_ID' and col_name == 'JYUN':
         val = str(jyun_value) if jyun_value is not None else "''"
-    elif val_rule in ('SYSTEM DATE', 'AUTO_TIME'):
-        val = f"'{system_date_value}'"
-    elif val_rule == 'MAPPING':
-        cell_value = ws[cell_fix].value if cell_fix else None
-        val = MAPPING_VALUE_DICT.get(cell_value, "''")
-    elif val_rule == '':
-        if cell_fix:
-            try:
-                cell_value = get_cell_value_with_merged(ws, cell_fix)
-                if cell_value is None:
-                    val = "''"
-                else:
-                    data_type = col_info.get('DATA_TYPE', '').lower()
-                    # Numeric types: do not quote
-                    if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney']:
-                        try:
-                            if isinstance(cell_value, (int, float)):
-                                val = str(cell_value)
-                            else:
-                                cell_str = str(cell_value).replace(',', '').replace(' ', '')
-                                if '.' in cell_str:
-                                    val = str(float(cell_str))
-                                else:
-                                    val = str(int(cell_str))
-                        except Exception:
-                            val = '0'
-                    # Date/time types: quote and format
-                    elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
-                        if isinstance(cell_value, datetime.datetime):
-                            val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
-                        elif isinstance(cell_value, str):
-                            val = f"'{cell_value}'"
-                        else:
-                            val = f"'{str(cell_value)}'"
-                    # NVARCHAR: N'...'
-                    elif data_type == 'nvarchar':
-                        val = f"N'{cell_value}'"
-                    # Default: quote as string
-                    else:
-                        val = f"'{cell_value}'"
-            except Exception:
-                val = "''"
-        else:
-            val = "''"
-    else:
-        # Other values, treat as string literal
-        # Add N prefix for nvarchar columns
-        if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
-            val = f"N'{val_rule}'"
-        else:
-            val = f"'{val_rule}'"
-    
+
     return val
   
 
