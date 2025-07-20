@@ -674,9 +674,9 @@
             "CELL_FIX": "",
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
-            "SCREEN": "G1",
-            "REPORT": "G1",
-            "CSV": "I3"
+            "SCREEN": "G0",
+            "REPORT": "G0",
+            "CSV": "I2"
         },
         {
             "COLUMN_NAME": "OUTPUT_PAGE",
@@ -688,7 +688,7 @@
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
             "SCREEN": "",
-            "REPORT": "G2",
+            "REPORT": "G1",
             "CSV": ""
         },
         {
@@ -701,7 +701,7 @@
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
             "SCREEN": "",
-            "REPORT": "G3",
+            "REPORT": "G2",
             "CSV": ""
         },
         {
@@ -714,7 +714,7 @@
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
             "SCREEN": "",
-            "REPORT": "G4",
+            "REPORT": "G3",
             "CSV": ""
         },
         {
@@ -726,9 +726,9 @@
             "CELL_FIX": "",
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
-            "SCREEN": "G2",
-            "REPORT": "G5",
-            "CSV": "I4"
+            "SCREEN": "G1",
+            "REPORT": "G4",
+            "CSV": "I3"
         },
         {
             "COLUMN_NAME": "OUTPUT_KENSAKU",
@@ -739,7 +739,7 @@
             "CELL_FIX": "",
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
-            "SCREEN": "G3",
+            "SCREEN": "G2",
             "REPORT": "",
             "CSV": ""
         },
@@ -753,7 +753,7 @@
             "CELL_LOGIC": "",
             "Unnamed: 8": "",
             "SCREEN": "",
-            "REPORT": "G3BJ",
+            "REPORT": "BJ2",
             "CSV": ""
         },
         {
@@ -923,7 +923,7 @@
             "Unnamed: 8": "",
             "SCREEN": "",
             "REPORT": "",
-            "CSV": "I1"
+            "CSV": "I0"
         },
         {
             "COLUMN_NAME": "HEADER_CSV",
@@ -936,7 +936,7 @@
             "Unnamed: 8": "",
             "SCREEN": "",
             "REPORT": "",
-            "CSV": "I2"
+            "CSV": "I1"
         },
         {
             "COLUMN_NAME": "MOJI_CD_CSV",
@@ -949,7 +949,7 @@
             "Unnamed: 8": "",
             "SCREEN": "",
             "REPORT": "",
-            "CSV": "I5"
+            "CSV": "I4"
         },
         {
             "COLUMN_NAME": "KUGIRI_MOJI_KB_CSV",
@@ -962,7 +962,7 @@
             "Unnamed: 8": "",
             "SCREEN": "",
             "REPORT": "",
-            "CSV": "I6"
+            "CSV": "I5"
         },
         {
             "COLUMN_NAME": "KUGIRI_MOJI_CSV",
@@ -975,7 +975,7 @@
             "Unnamed: 8": "",
             "SCREEN": "",
             "REPORT": "",
-            "CSV": "I6"
+            "CSV": "I5"
         },
         {
             "COLUMN_NAME": "OUTPUT_FILE_CSV_AOJI",

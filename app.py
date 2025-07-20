@@ -828,6 +828,71 @@ def _handle_username_id(cell_value):
     except Exception:
         return str(cell_value)
 
+def _parse_ref_pattern(ref_value):
+    """Parse REF pattern like 'G2' into column letter and row number"""
+    if not ref_value or not isinstance(ref_value, str):
+        return None, None
+    
+    import re
+    match = re.match(r'^([A-Z]+)(\d+)$', ref_value.strip().upper())
+    if match:
+        return match.group(1), int(match.group(2))
+    return None, None
+
+def _find_ref_data_row(ws, target_value, stop_values=None):
+    """Find row where column B contains target_value, stop at stop_values"""
+    if stop_values is None:
+        stop_values = ['【備考】', '【運用上の注意点】']
+    
+    for row_num in range(1, ws.max_row + 1):
+        cell_b_value = ws[f"B{row_num}"].value
+        if cell_b_value == target_value:
+            return row_num
+        if cell_b_value in stop_values:
+            break
+    return None
+
+def _get_ref_cell_value(ws, sheet_check_value, ref_value, col_name):
+    """Get cell value based on REF pattern and sheet type"""
+    # Parse REF pattern
+    col_letter, row_offset = _parse_ref_pattern(ref_value)
+    if not col_letter or row_offset is None:
+        return 'NULL'
+    
+    # Determine target value to search for based on sheet type
+    target_mapping = {
+        '項目定義書_画面': '【抽出データ定義】',
+        '項目定義書_帳票': '【帳票データ】', 
+        '項目定義書_CSV': '【CSVデータ】'
+    }
+    
+    target_value = target_mapping.get(sheet_check_value)
+    if not target_value:
+        return 'NULL'
+    
+    # Find the target row
+    target_row = _find_ref_data_row(ws, target_value)
+    if not target_row:
+        return 'NULL'
+    
+    # Calculate final cell position: [X][target_row + 1 + Y*2]
+    final_row = target_row + 1 + (row_offset * 2)
+    cell_ref = f"{col_letter}{final_row}"
+    
+    try:
+        cell_value = get_cell_value_with_merged(ws, cell_ref)
+        if col_name == 'KUGIRI_MOJI_KB_CSV' and cell_value is not None:
+            if cell_value == 'カンマ':
+                return 'カンマ'
+            elif cell_value == 'タブ':
+                return 'タブ'
+            else:
+                return'その他'
+            
+        return cell_value if cell_value is not None else 'NULL'
+    except Exception:
+        return 'NULL'
+
 def _format_value_by_data_type(cell_value, data_type, col_name):
     """Format value based on data type"""
     # Numeric types: do not quote
@@ -888,6 +953,35 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
     elif val_rule == 'MAPPING':
         cell_value = ws[cell_fix].value if cell_fix else None
         val = MAPPING_VALUE_DICT.get(cell_value, "''")
+    elif val_rule == 'REF':
+        # Handle REF case based on sheet_check_value
+        if sheet_check_value in ['項目定義書_画面', '項目定義書_帳票', '項目定義書_CSV']:
+            # Determine which column to check based on sheet type
+            ref_column_mapping = {
+                '項目定義書_画面': 'SCREEN',
+                '項目定義書_帳票': 'REPORT', 
+                '項目定義書_CSV': 'CSV'
+            }
+            ref_column = ref_column_mapping.get(sheet_check_value)
+            
+            if ref_column:
+                cell_ref = col_info.get(ref_column, '').strip()
+                try:
+                    if cell_ref:
+                        cell_value = _get_ref_cell_value(ws, sheet_check_value, cell_ref, col_name)
+                        if cell_value == 'NULL':
+                            val = "NULL"
+                        else:
+                            data_type = col_info.get('DATA_TYPE', '').lower()
+                            val = _format_value_by_data_type(cell_value, data_type, col_name)
+                    else:
+                        val = "NULL"
+                except Exception:
+                    val = "NULL"
+            else:
+                val = "NULL"
+        else:
+            val = "NULL"
     elif val_rule == '':
         if cell_fix:
             try:
@@ -1410,7 +1504,7 @@ def logic_data_generic(
 
 if __name__ == "__main__":
     print("Starting processing all tables in sequence...")
-    all_inserts = all_tables_in_sequence('doc_CSV.xlsx', 'table_info.txt', 'insert_all.sql')
+    all_inserts = all_tables_in_sequence('doc_mix.xlsx', 'table_info.txt', 'insert_all.sql')
     print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
