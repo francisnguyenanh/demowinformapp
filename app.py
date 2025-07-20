@@ -337,35 +337,37 @@ def is_merged_from_to(ws, row, col_start, col_end):
     return result
 
 
-def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
-    """Determine action for logic row processing"""
+def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=''):
+    """Determine action for logic row processing - Simplified and more permissive"""
     if check_row > ws.max_row:
         return 'stop'
-    
-    cell_b_check = ws[f"B{check_row}"].value
-    
-    # Check stop conditions
-    if cell_b_value is not None:
-        if cell_b_check in stop_values and cell_b_check != cell_b_value:
-            return 'stop'
     else:
-        if cell_b_check in stop_values:
-            return 'stop'
-
-    merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
-    merged_bc = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_C'])
-    
-    if merged_bc:
-        if cell_b_check in SKIP_CELL_VALUES['SCREEN_NUMBER']:
-            return 'skip'
-        if not merged_b_to_bn:
-            return 'stop'
-    else:
-        if not merged_b_to_bn:
-            return 'skip'
+        cell_b_check = ws[f"B{check_row}"].value
+        if cell_b_check is None:
+            cell_b_check = ''
+        merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
+        merged_bc = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_C'])
+        
+        if merged_bc:
+            # Check for specific skip values
+            if cell_b_check in SKIP_CELL_VALUES['SCREEN_NUMBER']:
+                return 'skip'
+            else:
+                return 'stop'
         else:
-            return 'continue'
-
+            if merged_b_to_bn:
+                return 'continue'
+            else:
+                # Check stop conditions first
+                if cell_b_check in stop_values:
+                    if cell_b_check != cell_b_value:
+                        return 'stop'
+                    else:
+                        return 'skip'
+                else:
+                    # If not merged and not in stop values, continue processing
+                    return 'skip'
+   
 def _handle_item_definition_check(ws, check_row, cell_b_check):
     """Handle logic for 【項目定義】 and 【ファンクション定義】"""
     merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
@@ -1299,14 +1301,16 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
             all_insert_statements.extend(menu_inserts)
         elif sheet_check_value == '項目定義書_画面':
             # Chỉ xử lý T_KIHON_PJ_GAMEN, T_KIHON_PJ_FUNC, T_KIHON_PJ_FUNC_LOGIC, T_KIHON_PJ_KOUMOKU, T_KIHON_PJ_KOUMOKU_LOGIC, T_KIHON_PJ_MESSAGE, T_KIHON_PJ_TAB, T_KIHON_PJ_ICHIRAN, T_KIHON_PJ_HYOUJI
-            func_inserts = func_row(
-                sheet_idx, seq_value
-            )
-            all_insert_statements.extend(func_inserts)
             koumoku_inserts = koumoku_row(
                 sheet_idx, seq_value
             )
             all_insert_statements.extend(koumoku_inserts)
+            
+            func_inserts = func_row(
+                sheet_idx, seq_value
+            )
+            all_insert_statements.extend(func_inserts)
+            
             message_inserts = message_row(
                 sheet_idx, seq_value
             )
@@ -1392,8 +1396,9 @@ def gen_row_single_sheet(
         cell_b = ws[f"B{row_num}"]
         if cell_b.value == cell_b_value:
             check_row = row_num + 1
-            logic_processed = False  # Reset for new main entry
+            
             while check_row <= ws.max_row:
+                logic_processed = False  # Reset for new main entry
                 should_stop = should_stop_row(ws, check_row, stop_values, cell_b_value)
                 if should_stop == 'stop':
                     # Create INSERT statements from batch
@@ -1644,7 +1649,7 @@ def logic_data_generic(
 
 if __name__ == "__main__":
     print("Starting processing all tables in sequence...")
-    all_inserts = all_tables_in_sequence('doc.xlsx', 'table_info.txt', 'insert_all.sql')
+    all_inserts = all_tables_in_sequence('docX.xlsx', 'table_info.txt', 'insert_all.sql')
     print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
