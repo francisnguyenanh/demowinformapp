@@ -557,9 +557,9 @@ def ipo_set_value(col_info, ws, row_num, sheet_seq, seq_ipo_value):
 def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
     """Process column value based on VALUE rules"""
     val_rule = col_info.get('VALUE', '')
+    cell_fix = col_info.get('CELL_FIX', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
     
-    val = "''"  # Default value if no rule matches
     if val_rule == 'BLANK':
         val = "''"
     elif val_rule == 'NULL':
@@ -572,7 +572,58 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
         val = str(seq_value) if seq_value is not None else "''"
     elif val_rule == 'AUTO_ID' and col_name == 'JYUN':
         val = str(jyun_value) if jyun_value is not None else "''"
-
+    elif val_rule in ('SYSTEM DATE', 'AUTO_TIME'):
+        val = f"'{system_date_value}'"
+    elif val_rule == 'MAPPING':
+        cell_value = ws[cell_fix].value if cell_fix else None
+        val = MAPPING_VALUE_DICT.get(cell_value, "''")
+    elif val_rule == '':
+        if cell_fix:
+            try:
+                cell_value = get_cell_value_with_merged(ws, cell_fix)
+                if cell_value is None:
+                    val = "''"
+                else:
+                    data_type = col_info.get('DATA_TYPE', '').lower()
+                    # Numeric types: do not quote
+                    if data_type in ['int', 'bigint', 'smallint', 'tinyint', 'decimal', 'numeric', 'float', 'real', 'money', 'smallmoney']:
+                        try:
+                            if isinstance(cell_value, (int, float)):
+                                val = str(cell_value)
+                            else:
+                                cell_str = str(cell_value).replace(',', '').replace(' ', '')
+                                if '.' in cell_str:
+                                    val = str(float(cell_str))
+                                else:
+                                    val = str(int(cell_str))
+                        except Exception:
+                            val = '0'
+                    # Date/time types: quote and format
+                    elif data_type in ['date', 'datetime', 'smalldatetime', 'datetime2', 'datetimeoffset', 'time']:
+                        if isinstance(cell_value, datetime.datetime):
+                            val = f"'{cell_value.strftime('%Y-%m-%d %H:%M:%S')}'"
+                        elif isinstance(cell_value, str):
+                            val = f"'{cell_value}'"
+                        else:
+                            val = f"'{str(cell_value)}'"
+                    # NVARCHAR: N'...'
+                    elif data_type == 'nvarchar':
+                        val = f"N'{cell_value}'"
+                    # Default: quote as string
+                    else:
+                        val = f"'{cell_value}'"
+            except Exception:
+                val = "''"
+        else:
+            val = "''"
+    else:
+        # Other values, treat as string literal
+        # Add N prefix for nvarchar columns
+        if col_info.get('DATA_TYPE', '').lower() == 'nvarchar':
+            val = f"N'{val_rule}'"
+        else:
+            val = f"'{val_rule}'"
+    
     return val
   
 
