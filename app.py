@@ -127,7 +127,7 @@ ROW_PROCESSOR_CONFIG = {
     'csv': {
         'table_name': 'T_KIHON_PJ_KOUMOKU_CSV',
         'logic_table_name': 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
-        'cell_b_value': '【CSVデータ】',
+        'cell_b_value': '【項目定義】',
         'column_value_processor': 'csv_set_value',
         'logic_processor': 'csv_logic',
         'seq_prefix': 'SEQ_CSV'
@@ -194,7 +194,7 @@ LOGIC_PROCESSOR_CONFIG = {
         'table_name': 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
         'column_value_processor': 'csv_set_value',
         'seq_counter_name': 'SEQ_CSV_L',
-        'cell_b_value': '【CSVデータ】'
+        'cell_b_value': '【項目定義】'
     }
 }
 
@@ -865,7 +865,7 @@ def _format_value_by_data_type(cell_value, data_type, col_name):
     else:
         return f"'{cell_value}'"
 
-def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None):
+def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None, jyun_value=None, sheet_check_value=None):
     """Process column value based on VALUE rules"""
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
@@ -1063,7 +1063,7 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
         seq_per_sheet_dict[sheet_idx] = seq_value
         for col_info in gamen_columns_info:
             col_name = col_info.get('COLUMN_NAME', '')
-            val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
+            val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value, sheet_check_value)
             row_data[col_name] = val
         columns_str = ", ".join(row_data.keys())
         values_str = ", ".join(row_data.values())
@@ -1410,7 +1410,7 @@ def logic_data_generic(
 
 if __name__ == "__main__":
     print("Starting processing all tables in sequence...")
-    all_inserts = all_tables_in_sequence('doc_re.xlsx', 'table_info.txt', 'insert_all.sql')
+    all_inserts = all_tables_in_sequence('doc_CSV.xlsx', 'table_info.txt', 'insert_all.sql')
     print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 

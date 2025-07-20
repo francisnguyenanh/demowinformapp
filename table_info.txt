@@ -7,7 +7,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "SYSTEMID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "PJ_NO",
@@ -16,7 +20,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "S3",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "USER_CD",
@@ -25,7 +33,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "USER_NAME",
@@ -34,7 +46,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "W3",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SYSTEM_NAME",
@@ -43,7 +59,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SERISE_CD",
@@ -52,7 +72,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SERISE_NAME",
@@ -61,7 +85,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BASE_VERSION",
@@ -70,7 +98,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "F9",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CUSTOM_VERSION",
@@ -79,7 +111,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEKKEI_VERSION",
@@ -88,7 +124,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 1,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_FILE_PATH",
@@ -97,7 +137,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEKKEI_FILE_PATH",
@@ -106,7 +150,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "PJ_FILE_PATH",
@@ -115,7 +163,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "EIGYOU_TANTOUSHA_CD",
@@ -124,7 +176,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "0000",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "EIGYOU_TANTOUSHA_NAME",
@@ -133,7 +189,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "管理者",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SE_TANTOUSHA_CD",
@@ -142,7 +202,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "9996",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SE_TANTOUSHA_NAME",
@@ -151,7 +215,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "未定",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KAIHATSU_TANTOUSHA_CD",
@@ -160,7 +228,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KAIHATSU_TANTOUSHA_NAME",
@@ -169,7 +241,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU",
@@ -178,7 +254,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "自動反映設計書",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_USER",
@@ -187,7 +267,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_DATE",
@@ -196,7 +280,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "SYSTEM DATE",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_PC",
@@ -205,7 +293,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc_PC",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UPDATE_USER",
@@ -214,7 +306,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UPDATE_DATE",
@@ -223,7 +319,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "SYSTEM DATE",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UPDATE_PC",
@@ -232,7 +332,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc_PC",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "DELETE_FLG",
@@ -241,7 +345,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KOUSHIN_FUKA_FLG",
@@ -250,7 +358,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KOUSHIN_TANTOUSHA_CD",
@@ -259,7 +371,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "0168",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CRUD_KBN",
@@ -268,7 +384,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 1,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COPY_PJ_NO",
@@ -277,7 +397,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COPY_SYSTEM_ID",
@@ -286,7 +410,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_GAMEN": [
@@ -297,7 +425,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -306,7 +438,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "JYUN",
@@ -315,7 +451,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_KBN",
@@ -324,7 +464,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
             "CELL_FIX": "B2",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_ID",
@@ -333,7 +477,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "B7",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NAME",
@@ -342,7 +490,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "F7",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SHEET_NAME",
@@ -351,7 +503,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "F7",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUNRUI",
@@ -360,7 +516,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_SYURUI",
@@ -369,7 +529,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_VERSION",
@@ -378,7 +542,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "F9",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_GAIYOU",
@@ -387,7 +555,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SENI_JYUN",
@@ -396,7 +568,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU",
@@ -405,7 +581,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UNYOU_CYUUI",
@@ -414,7 +594,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU_AOJI",
@@ -423,7 +607,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UNYOU_CYUUI_AOJI",
@@ -432,7 +620,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "PG_KOUSUU",
@@ -441,7 +633,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TEST_KOUSUU",
@@ -450,7 +646,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_FILE_PATH",
@@ -459,70 +659,102 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_JYUN",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "G1",
+            "REPORT": "G1",
+            "CSV": "I3"
         },
         {
             "COLUMN_NAME": "OUTPUT_PAGE",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "G2",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_SIZE",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "G3",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_GAMEN",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "G4",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_DATA",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "G2",
+            "REPORT": "G5",
+            "CSV": "I4"
         },
         {
             "COLUMN_NAME": "OUTPUT_KENSAKU",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "G3",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_PRINT",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 4,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "G3BJ",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_JYUN_AOJI",
@@ -531,7 +763,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_PAGE_AOJI",
@@ -540,7 +776,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_SIZE_AOJI",
@@ -549,7 +789,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_GAMEN_AOJI",
@@ -558,7 +802,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_DATA_AOJI",
@@ -567,7 +815,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_KENSAKU_AOJI",
@@ -576,7 +828,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_PRINT_AOJI",
@@ -585,7 +841,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IPO_DENSHU_KBN_CD",
@@ -594,7 +854,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IPO_MANI_KBN",
@@ -603,7 +867,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "FUYOU_FLG",
@@ -612,7 +880,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KEYWORD",
@@ -621,7 +893,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "EIKYOU_FLG",
@@ -630,52 +906,76 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUTPUT_FILE_CSV",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": "I1"
         },
         {
             "COLUMN_NAME": "HEADER_CSV",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": "I2"
         },
         {
             "COLUMN_NAME": "MOJI_CD_CSV",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": "I5"
         },
         {
             "COLUMN_NAME": "KUGIRI_MOJI_KB_CSV",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 6,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": "I6"
         },
         {
             "COLUMN_NAME": "KUGIRI_MOJI_CSV",
             "DATA_TYPE": "nvarchar",
             "CHARACTER_MAXIMUM_LENGTH": 100,
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
+            "VALUE": "REF",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": "I6"
         },
         {
             "COLUMN_NAME": "OUTPUT_FILE_CSV_AOJI",
@@ -684,7 +984,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HEADER_CSV_AOJI",
@@ -693,7 +997,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOJI_CD_CSV_AOJI",
@@ -702,7 +1010,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KUGIRI_MOJI_CSV_AOJI",
@@ -711,7 +1023,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_USER",
@@ -720,7 +1036,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_DATE",
@@ -729,7 +1049,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "SYSTEM DATE",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_PC",
@@ -738,7 +1062,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc_PC",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UPDATE_USER",
@@ -747,7 +1075,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UPDATE_DATE",
@@ -756,7 +1088,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "SYSTEM DATE",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UPDATE_PC",
@@ -765,7 +1101,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "Loc_PC",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HANTEI_RANKU",
@@ -774,7 +1114,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HANTEI_RIYOU",
@@ -783,7 +1127,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "RANKU_BIKOU",
@@ -792,7 +1140,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "LOGIN_ID",
@@ -801,7 +1153,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "LOGIN_USER_NAME",
@@ -810,7 +1166,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU_TRANSLATE",
@@ -819,7 +1179,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "UNYOU_CYUUI_TRANSLATE",
@@ -828,7 +1192,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SAISHIN_SEKKEISGO_FLG",
@@ -837,7 +1205,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SAISHIN_SEKKEISHO_FLG",
@@ -846,7 +1218,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "True",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_GAMEN_YOUKEN": [
@@ -857,7 +1233,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -866,7 +1246,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_Y",
@@ -875,7 +1259,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_NO",
@@ -884,7 +1272,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "S7",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_GAIYOU",
@@ -893,7 +1285,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "S7",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_SYSTEM_ID",
@@ -902,7 +1298,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_KBN",
@@ -911,7 +1311,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_SEQ",
@@ -920,7 +1324,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_KOUMOKU": [
@@ -931,7 +1339,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -940,7 +1352,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_K",
@@ -949,7 +1365,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -958,7 +1378,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NO",
@@ -967,7 +1391,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_CD",
@@ -976,7 +1404,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_NAME",
@@ -985,7 +1417,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "D"
+            "CELL_LOGIC": "D",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KOUMOKU_SYURUI_CD",
@@ -994,7 +1430,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KOUMOKU_SYURUI_NAME",
@@ -1003,7 +1443,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOJI_SYU",
@@ -1012,7 +1456,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "W"
+            "CELL_LOGIC": "W",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IME",
@@ -1021,7 +1469,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "Z"
+            "CELL_LOGIC": "Z",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ZENKAKU_MOJI_SU",
@@ -1030,7 +1482,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AD"
+            "CELL_LOGIC": "AD",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HANKAKU_MOJI_SU",
@@ -1039,7 +1495,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AF"
+            "CELL_LOGIC": "AF",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEISU_KETA",
@@ -1048,7 +1508,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AH"
+            "CELL_LOGIC": "AH",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SYOUSU_KETA",
@@ -1057,7 +1521,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AJ"
+            "CELL_LOGIC": "AJ",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HENSYUU",
@@ -1066,7 +1534,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "U"
+            "CELL_LOGIC": "U",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "JYUUFUKU",
@@ -1075,7 +1547,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AL"
+            "CELL_LOGIC": "AL",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "DEFAULT_DISP",
@@ -1084,7 +1560,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AN"
+            "CELL_LOGIC": "AN",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "FORMAT",
@@ -1093,7 +1573,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AT"
+            "CELL_LOGIC": "AT",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HENKOU_KBN",
@@ -1102,7 +1586,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BA"
+            "CELL_LOGIC": "BA",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SANSYOU_SAKI",
@@ -1111,7 +1599,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BC"
+            "CELL_LOGIC": "BC",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HINT_TEXT",
@@ -1120,7 +1612,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BP"
+            "CELL_LOGIC": "BP",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -1129,7 +1625,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "EIKYOU_SAKI",
@@ -1138,7 +1638,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1147,7 +1651,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1156,7 +1664,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_YOUKEN_FLG",
@@ -1165,7 +1677,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_KOUMOKU_LOGIC": [
@@ -1176,7 +1692,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1185,7 +1705,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_K",
@@ -1194,7 +1718,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_KOUMOKU.SEQ_K",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_K_L",
@@ -1203,7 +1731,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1212,7 +1744,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TORIKESHI",
@@ -1221,7 +1757,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -1230,7 +1770,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_NO",
@@ -1239,7 +1783,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1248,7 +1796,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC_TRANSLATE",
@@ -1257,7 +1809,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_RED_FLG",
@@ -1266,7 +1822,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1275,7 +1835,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_FUNC": [
@@ -1286,7 +1850,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1295,7 +1863,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_F",
@@ -1304,7 +1876,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1313,7 +1889,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NO",
@@ -1322,7 +1902,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_CD",
@@ -1331,7 +1915,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_NAME",
@@ -1340,7 +1928,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "D"
+            "CELL_LOGIC": "D",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KASSEI_ADD",
@@ -1349,7 +1941,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KASSEI_UPD",
@@ -1358,7 +1954,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "R"
+            "CELL_LOGIC": "R",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KASSEI_DEL",
@@ -1367,7 +1967,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "T"
+            "CELL_LOGIC": "T",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KASSEI_SAN",
@@ -1376,7 +1980,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "V"
+            "CELL_LOGIC": "V",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KASSEI_ALL",
@@ -1385,7 +1993,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "X"
+            "CELL_LOGIC": "X",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KASSEI_SONOTA",
@@ -1394,7 +2006,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "Z"
+            "CELL_LOGIC": "Z",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HISSU_CHK",
@@ -1403,7 +2019,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AN"
+            "CELL_LOGIC": "AN",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HENKOU_KBN",
@@ -1412,7 +2032,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BA"
+            "CELL_LOGIC": "BA",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SENI_SAKI",
@@ -1421,7 +2045,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BC"
+            "CELL_LOGIC": "BC",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HINT_TEXT",
@@ -1430,7 +2058,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BP"
+            "CELL_LOGIC": "BP",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -1439,7 +2071,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1448,7 +2084,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1457,7 +2097,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_FUNC_LOGIC": [
@@ -1468,7 +2112,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1477,7 +2125,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_F",
@@ -1486,7 +2138,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_FUNC.SEQ_F",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_F_L",
@@ -1495,7 +2151,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1504,7 +2164,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TORIKESHI",
@@ -1513,7 +2177,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -1522,7 +2190,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_NO",
@@ -1531,7 +2203,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1540,7 +2216,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC_TRANSLATE",
@@ -1549,7 +2229,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_RED_FLG",
@@ -1558,7 +2242,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1567,7 +2255,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_IPO": [
@@ -1578,7 +2270,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1587,7 +2283,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_IPO",
@@ -1596,16 +2296,24 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MIDASHI",
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": "",
+            "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1614,7 +2322,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IN_GAMEN_ID",
@@ -1623,7 +2335,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IN_GAMEN_NAME",
@@ -1632,7 +2348,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IN_BUHIN_CD",
@@ -1641,7 +2361,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "IN_BUHIN_NAME",
@@ -1650,7 +2374,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "L"
+            "CELL_LOGIC": "L",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "PROCESS",
@@ -1659,7 +2387,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "V"
+            "CELL_LOGIC": "V",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUT_BUHIN_CD",
@@ -1668,7 +2400,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "OUT_BUHIN_NAME",
@@ -1677,7 +2413,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BE"
+            "CELL_LOGIC": "BE",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU",
@@ -1686,7 +2426,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1695,7 +2439,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1704,7 +2452,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_YOUKEN_FLG",
@@ -1713,7 +2465,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_KOUMOKU_CSV": [
@@ -1724,7 +2480,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1733,7 +2493,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_CSV",
@@ -1742,7 +2506,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1751,7 +2519,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NO",
@@ -1760,7 +2532,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_CD",
@@ -1769,7 +2545,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_NAME",
@@ -1778,7 +2558,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "D"
+            "CELL_LOGIC": "D",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOJI_SYU",
@@ -1787,7 +2571,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HENKOU_KBN",
@@ -1796,7 +2584,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "X"
+            "CELL_LOGIC": "X",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOTO_GAMEN",
@@ -1805,7 +2597,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "Z"
+            "CELL_LOGIC": "Z",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOTO_KOUMOKU",
@@ -1814,7 +2610,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AU"
+            "CELL_LOGIC": "AU",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -1823,7 +2623,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1832,7 +2636,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1841,7 +2649,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_YOUKEN_FLG",
@@ -1850,7 +2662,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_KOUMOKU_CSV_LOGIC": [
@@ -1861,7 +2677,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1870,7 +2690,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_CSV",
@@ -1879,7 +2703,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_KOUMOKU_CSV.SEQ_CSV",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_CSV_L",
@@ -1888,7 +2716,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1897,7 +2729,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TORIKESHI",
@@ -1906,7 +2742,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -1915,7 +2755,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_NO",
@@ -1924,7 +2768,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -1933,7 +2781,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC_TRANSLATE",
@@ -1942,7 +2794,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_RED_FLG",
@@ -1951,7 +2807,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -1960,7 +2820,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_KOUMOKU_RE": [
@@ -1971,7 +2835,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -1980,7 +2848,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_RE",
@@ -1989,7 +2861,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -1998,7 +2874,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NO",
@@ -2007,7 +2887,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_CD",
@@ -2016,7 +2900,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_NAME",
@@ -2025,7 +2913,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "D"
+            "CELL_LOGIC": "D",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KOUMOKU_SYURUI_CD",
@@ -2034,7 +2926,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KOUMOKU_SYURUI_NAME",
@@ -2043,7 +2939,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOJI_SYU",
@@ -2052,7 +2952,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "U"
+            "CELL_LOGIC": "U",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ZENKAKU_MOJI_SU",
@@ -2061,7 +2965,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "X"
+            "CELL_LOGIC": "X",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HANKAKU_MOJI_SU",
@@ -2070,7 +2978,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "Z"
+            "CELL_LOGIC": "Z",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEISU_KETA",
@@ -2079,7 +2991,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AB"
+            "CELL_LOGIC": "AB",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SYOUSU_KETA",
@@ -2088,7 +3004,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AD"
+            "CELL_LOGIC": "AD",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "FONT_SIZE",
@@ -2097,7 +3017,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AF"
+            "CELL_LOGIC": "AF",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "FONT_BOLD",
@@ -2106,7 +3030,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AH"
+            "CELL_LOGIC": "AH",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "FONT_UNDER",
@@ -2115,7 +3043,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AJ"
+            "CELL_LOGIC": "AJ",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "FORMAT",
@@ -2124,7 +3056,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AL"
+            "CELL_LOGIC": "AL",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HENKOU_KBN",
@@ -2133,7 +3069,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AS"
+            "CELL_LOGIC": "AS",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOTO_GAMEN",
@@ -2142,7 +3082,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AU"
+            "CELL_LOGIC": "AU",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOTO_KOUMOKU",
@@ -2151,7 +3095,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BE"
+            "CELL_LOGIC": "BE",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -2160,7 +3108,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2169,7 +3121,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2178,7 +3134,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_YOUKEN_FLG",
@@ -2187,7 +3147,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_KOUMOKU_RE_LOGIC": [
@@ -2198,7 +3162,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -2207,7 +3175,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_RE",
@@ -2216,7 +3188,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_KOUMOKU_RE.SEQ_RE",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_RE_L",
@@ -2225,7 +3201,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2234,7 +3214,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TORIKESHI",
@@ -2243,7 +3227,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC",
@@ -2252,7 +3240,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_NO",
@@ -2261,7 +3253,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2270,7 +3266,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "YOUKEN_LOGIC_TRANSLATE",
@@ -2279,7 +3279,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_RED_FLG",
@@ -2288,7 +3292,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2297,7 +3305,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_MENU": [
@@ -2308,7 +3320,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -2317,7 +3333,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_M",
@@ -2326,7 +3346,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2335,7 +3359,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NO",
@@ -2344,7 +3372,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ICON_NAME",
@@ -2353,7 +3385,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "D"
+            "CELL_LOGIC": "D",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "KENGEN_TYPE",
@@ -2362,7 +3398,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "O"
+            "CELL_LOGIC": "O",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "RIBBON_NAME",
@@ -2371,7 +3411,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "R"
+            "CELL_LOGIC": "R",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_SENI_SAKI",
@@ -2380,7 +3424,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AC"
+            "CELL_LOGIC": "AC",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "DAI_BUNRUI",
@@ -2389,7 +3437,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AN"
+            "CELL_LOGIC": "AN",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CYU_BUNRUI",
@@ -2398,7 +3450,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AW"
+            "CELL_LOGIC": "AW",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GROUP_NAME",
@@ -2407,7 +3463,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BF"
+            "CELL_LOGIC": "BF",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2416,7 +3476,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2425,7 +3489,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "CREATE_YOUKEN_FLG",
@@ -2434,7 +3502,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_MESSAGE": [
@@ -2445,7 +3517,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -2454,7 +3530,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_MS",
@@ -2463,7 +3543,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2472,7 +3556,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MESSAGE_CD",
@@ -2481,7 +3569,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ALERT_MESSAGE",
@@ -2490,7 +3582,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "E"
+            "CELL_LOGIC": "E",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ALERT_SYU",
@@ -2499,7 +3595,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BA"
+            "CELL_LOGIC": "BA",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ALERT_DEFAULT",
@@ -2508,7 +3608,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "NULL",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU",
@@ -2517,7 +3621,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BF"
+            "CELL_LOGIC": "BF",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2526,7 +3634,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2535,7 +3647,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_TAB": [
@@ -2546,7 +3662,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -2555,7 +3675,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_T",
@@ -2564,7 +3688,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2573,7 +3701,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TEIGI_BASYO",
@@ -2582,7 +3714,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SENI_JYUN",
@@ -2591,7 +3727,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "E"
+            "CELL_LOGIC": "E",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2600,7 +3740,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2609,7 +3753,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_ICHIRAN": [
@@ -2620,7 +3768,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -2629,7 +3781,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_I",
@@ -2638,7 +3794,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2647,7 +3807,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "GAMEN_NO",
@@ -2656,7 +3820,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_CD",
@@ -2665,7 +3833,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": 999999,
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BUHIN_NAME",
@@ -2674,7 +3846,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "D"
+            "CELL_LOGIC": "D",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "DENSHU_KBN",
@@ -2683,7 +3859,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "P"
+            "CELL_LOGIC": "P",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HYOUJI_KBN",
@@ -2692,7 +3872,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "V"
+            "CELL_LOGIC": "V",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HISSU",
@@ -2701,7 +3885,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AD"
+            "CELL_LOGIC": "AD",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOTO_GAMEN",
@@ -2710,7 +3898,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AF"
+            "CELL_LOGIC": "AF",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "MOTO_KOUMOKU",
@@ -2719,7 +3911,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "AQ"
+            "CELL_LOGIC": "AQ",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "BIKOU",
@@ -2728,7 +3924,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BB"
+            "CELL_LOGIC": "BB",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2737,7 +3937,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2746,7 +3950,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ],
     "T_KIHON_PJ_HYOUJI": [
@@ -2757,7 +3965,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ.SYSTEM_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ",
@@ -2766,7 +3978,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "T_KIHON_PJ_GAMEN.SEQ",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SEQ_H",
@@ -2775,7 +3991,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2784,7 +4004,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "TEIGI_KBN",
@@ -2793,7 +4017,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "B"
+            "CELL_LOGIC": "B",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "HYOUJI_JYUN",
@@ -2802,7 +4030,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "E"
+            "CELL_LOGIC": "E",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "SHITEI_NASHI",
@@ -2811,7 +4043,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "BL"
+            "CELL_LOGIC": "BL",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "ROW_NO",
@@ -2820,7 +4056,11 @@
             "IS_NULLABLE": "YES",
             "VALUE": "AUTO_ID",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         },
         {
             "COLUMN_NAME": "COLOR_GRAY_FLG",
@@ -2829,7 +4069,11 @@
             "IS_NULLABLE": "NO",
             "VALUE": "False",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "",
+            "Unnamed: 8": "",
+            "SCREEN": "",
+            "REPORT": "",
+            "CSV": ""
         }
     ]
 }
