@@ -1396,9 +1396,8 @@ def gen_row_single_sheet(
         cell_b = ws[f"B{row_num}"]
         if cell_b.value == cell_b_value:
             check_row = row_num + 1
-            
+            logic_processed = False
             while check_row <= ws.max_row:
-                logic_processed = False  # Reset for new main entry
                 should_stop = should_stop_row(ws, check_row, stop_values, cell_b_value)
                 if should_stop == 'stop':
                     # Create INSERT statements from batch
@@ -1436,7 +1435,7 @@ def gen_row_single_sheet(
                         if midashi_idx is not None and row_values[midashi_idx] == "'True'":
                             for idx in special_cols_indices:
                                 row_values[idx] = 'NULL'
-                    
+                    logic_processed = False
                     batch_data.append(row_values)
                     seq_counter += 1
                     print(f"    Created {table_name.split('_')[-1]} with Sheet SEQ {sheet_seq} {seq_prefix} {current_seq} at row {check_row}")
