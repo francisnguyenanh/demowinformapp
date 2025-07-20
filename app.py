@@ -3,17 +3,16 @@ import pandas as pd
 import json
 import datetime
 from openpyxl import load_workbook
+from run_insert_sql import read_connect_string, run_sql_file
+
 
 # Global variables for system id, date, and SEQ per sheet
 # Lấy systemid_value từ input, nếu không nhập thì lấy mặc định
 now = datetime.datetime.now()
 default_systemid_value = f"{now.hour:02d}{now.minute:02d}{now.second:02d}"
-try:
-    user_input = input(f"Nhập systemid_value (Enter để dùng mặc định {default_systemid_value}): ")
-except Exception:
-    user_input = ''
-systemid_value = user_input.strip() if user_input.strip() else default_systemid_value
+systemid_value = default_systemid_value
 system_date_value = now.strftime('%Y-%m-%d')
+
 # seq_per_sheet_dict: {sheet_index: SEQ}
 seq_per_sheet_dict = {}
 
@@ -608,7 +607,27 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
                             val = f"'{str(cell_value)}'"
                     # NVARCHAR: N'...'
                     elif data_type == 'nvarchar':
-                        val = f"N'{cell_value}'"
+                        if col_name == 'USER_NAME':
+                            # Đọc số từ usernameID.txt, cộng vào cell_value, sau đó giảm số trong file đi 1 và ghi lại
+                            try:
+                                with open('usernameID.txt', 'r', encoding='utf-8') as f:
+                                    current_id = f.read().strip()
+                                    if not current_id.isdigit():
+                                        current_id = '1'
+                                # Sử dụng current_id, sau đó giảm đi 1
+                                next_id = int(current_id) - 1
+                                if next_id < 1:
+                                    next_id = 1
+                                new_id = str(next_id).zfill(len(current_id))
+                                # Ghi đè hoàn toàn file với giá trị mới
+                                with open('usernameID.txt', 'w', encoding='utf-8') as f:
+                                    f.write(new_id)
+                                val = str(cell_value) + current_id
+                                val = f"N'{val}'"
+                            except Exception as e:
+                                val = f"N'{cell_value}'"
+                        else:
+                            val = f"N'{cell_value}'"
                     # Default: quote as string
                     else:
                         val = f"'{cell_value}'"
@@ -827,6 +846,13 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
     with open(output_file, 'w', encoding='utf-8') as f:
         for stmt in all_insert_statements:
             f.write(stmt + '\n')
+            
+    try:
+        connect_string = read_connect_string('connect_string.txt')
+        run_sql_file(connect_string, 'insert_all.sql')
+        print(f"SQL file executed successfully. {systemid_value}")
+    except Exception as e:
+        print(f"Error running SQL file: {e}")
     
     print(f"All INSERT statements written to {output_file}")
     return all_insert_statements
