@@ -378,6 +378,7 @@ def _handle_item_definition_check(ws, check_row, cell_b_check):
             return 'continue'
     else:
         if merged_b_to_bn:
+            # Only create logic on the first logic row encountered
             return 'create_logic'
         else:
             return 'skip'
@@ -1385,10 +1386,13 @@ def gen_row_single_sheet(
     batch_data = []
     
     # Scan from top to bottom for cell_b_value
+    logic_processed = False  # Flag to track if logic has been processed for current main entry
+    
     for row_num in range(1, ws.max_row + 1):
         cell_b = ws[f"B{row_num}"]
         if cell_b.value == cell_b_value:
             check_row = row_num + 1
+            logic_processed = False  # Reset for new main entry
             while check_row <= ws.max_row:
                 should_stop = should_stop_row(ws, check_row, stop_values, cell_b_value)
                 if should_stop == 'stop':
@@ -1433,13 +1437,20 @@ def gen_row_single_sheet(
                     print(f"    Created {table_name.split('_')[-1]} with Sheet SEQ {sheet_seq} {seq_prefix} {current_seq} at row {check_row}")
                     check_row += 1
                     continue
-                elif should_stop == 'create_logic' and logic_table_name and logic_processor:
+                elif should_stop == 'create_logic' and logic_table_name and logic_processor and not logic_processed:
                     # Process logic table if provided and logic processor available
-                    logic_inserts, check_row_update = logic_processor(
-                        ws, check_row, sheet_seq, current_seq, logic_columns_info
+                    # Only process logic once per main entry
+                    logic_inserts, logic_end_row = logic_processor(
+                        ws, check_row, sheet_seq, seq_counter - 1, logic_columns_info
                     )
-                    check_row = check_row_update if check_row_update > check_row else check_row + 1
                     insert_statements.extend(logic_inserts)
+                    logic_processed = True  # Mark logic as processed
+                    # Skip to end of logic section to avoid reprocessing
+                    check_row = logic_end_row if logic_end_row > check_row else check_row + 1
+                    continue
+                elif should_stop == 'create_logic' and logic_processed:
+                    # Logic already processed, just skip this row
+                    check_row += 1
                     continue
                 else:
                     check_row += 1
@@ -1569,6 +1580,7 @@ def logic_data_generic(
         
     insert_statements = []
     seq_counter = 1
+    last_processed_row = start_row
     
     # Pre-calculate column names and table type for better performance
     column_names = [col_info.get('COLUMN_NAME', '') for col_info in logic_columns_info]
@@ -1618,6 +1630,7 @@ def logic_data_generic(
             batch_data.append(row_values)
             print(f"      Created {logic_type} with Sheet SEQ {sheet_seq} Parent SEQ {parent_seq_value} {seq_counter_name} {seq_counter} at row {check_row}")
             seq_counter += 1
+            last_processed_row = check_row
     
     # Process remaining batch
     if batch_data:
@@ -1626,12 +1639,12 @@ def logic_data_generic(
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
-    return insert_statements, start_row
+    return insert_statements, last_processed_row
 
 
 if __name__ == "__main__":
     print("Starting processing all tables in sequence...")
-    all_inserts = all_tables_in_sequence('doc_X.xlsx', 'table_info.txt', 'insert_all.sql')
+    all_inserts = all_tables_in_sequence('doc.xlsx', 'table_info.txt', 'insert_all.sql')
     print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
