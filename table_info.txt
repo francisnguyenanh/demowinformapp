@@ -322,8 +322,8 @@
             "DATA_TYPE": "smallint",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "YES",
-            "VALUE": "NULL",
-            "CELL_FIX": "",
+            "VALUE": "MAPPING",
+            "CELL_FIX": "B2",
             "CELL_LOGIC": ""
         },
         {
@@ -1394,7 +1394,7 @@
             "IS_NULLABLE": "YES",
             "VALUE": "",
             "CELL_FIX": "",
-            "CELL_LOGIC": "X"
+            "CELL_LOGIC": "Z"
         },
         {
             "COLUMN_NAME": "HISSU_CHK",
@@ -1603,9 +1603,9 @@
             "DATA_TYPE": "bit",
             "CHARACTER_MAXIMUM_LENGTH": "",
             "IS_NULLABLE": "NO",
-            "VALUE": "NULL",
-            "CELL_FIX": "A1",
-            "CELL_LOGIC": ""
+            "VALUE": "",
+            "CELL_FIX": "",
+            "CELL_LOGIC": "B"
         },
         {
             "COLUMN_NAME": "AOJI",
@@ -2034,7 +2034,7 @@
             "IS_NULLABLE": "YES",
             "VALUE": "MAPPING",
             "CELL_FIX": "",
-            "CELL_LOGIC": ""
+            "CELL_LOGIC": "P"
         },
         {
             "COLUMN_NAME": "KOUMOKU_SYURUI_NAME",

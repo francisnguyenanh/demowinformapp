@@ -52,11 +52,10 @@ KOUMOKU_TYPE_MAPPING_RE = {
     'ラベル': '101',
     'タイトルラベル': '102',
     'テキストボックス': '103',
-    'コンボボックス': '106',
-    'ラジオボタン': '107',
-    'チェックボックス': '108',
-    'チェックリスト': '114',
-    'ボタン': '115',
+    'チェックボックス': '106',
+    'データグリッド': '107',
+    '処理': '114',
+    'レイアウト': '115',
     '画像': '116'
 }
 
@@ -74,15 +73,20 @@ STOP_VALUES = {
     '【表示位置定義】'
 }
 
+# Global excluded sheet names
+EXCLUDED_SHEETNAMES = {'カスタマイズ設計書(鑑)', 'カスタマイズ設計書', 'はじめに', '変更履歴'}
+
 # Constants for column ranges in merged cell checks
 MERGED_CELL_RANGES = {
     'B_TO_BN': (2, 66),
     'B_TO_C': (2, 3),
     'E_TO_AZ': (5, 52),
     'B_TO_D': (2, 4),
+    'B_TO_K': (2, 11),
     'E_TO_BN': (5, 66),
     'E_TO_BK': (5, 63),
-    'D_TO_O': (4, 15)
+    'D_TO_O': (4, 15),
+    'D_TO_N': (4, 14)
 }
 
 # Constants for specific cell values that should be skipped
@@ -90,7 +94,8 @@ SKIP_CELL_VALUES = {
     'SCREEN_NUMBER': ['画面', '番号'],
     'MESSAGE_CODE': ['ﾒｯｾｰｼﾞ', 'ｺｰﾄﾞ'],
     'DEFINITION_LOCATION': ['定義場所'],
-    'DEFINITION_CATEGORY': ['定義区分']
+    'DEFINITION_CATEGORY': ['定義区分'],
+    'IPO_HEADER': ['入力画面']
 }
 
 # Configuration for different row processors
@@ -110,6 +115,14 @@ ROW_PROCESSOR_CONFIG = {
         'column_value_processor': 'func_set_value',
         'logic_processor': 'func_logic',
         'seq_prefix': 'SEQ_F'
+    },
+    're': {
+        'table_name': 'T_KIHON_PJ_KOUMOKU_RE',
+        'logic_table_name': 'T_KIHON_PJ_KOUMOKU_RE_LOGIC',
+        'cell_b_value': '【項目定義】',
+        'column_value_processor': 're_set_value',
+        'logic_processor': 're_logic',
+        'seq_prefix': 'SEQ_RE'
     },
     'csv': {
         'table_name': 'T_KIHON_PJ_KOUMOKU_CSV',
@@ -134,8 +147,8 @@ ROW_PROCESSOR_CONFIG = {
     'hyouji': {
         'table_name': 'T_KIHON_PJ_HYOUJI',
         'cell_b_value': '【表示位置定義】',
-        'column_value_processor': 'message_set_value',
-        'seq_prefix': 'SEQ_HYOUJI'
+        'column_value_processor': 'hyouji_set_value',
+        'seq_prefix': 'SEQ_H'
     },
     'ichiran': {
         'table_name': 'T_KIHON_PJ_ICHIRAN',
@@ -148,6 +161,12 @@ ROW_PROCESSOR_CONFIG = {
         'cell_b_value': '【メニュー定義】',
         'column_value_processor': 'menu_set_value',
         'seq_prefix': 'SEQ_M'
+    },
+    'ipo': {
+        'table_name': 'T_KIHON_PJ_IPO',
+        'cell_b_value': '入力画面',
+        'column_value_processor': 'ipo_set_value',
+        'seq_prefix': 'SEQ_IPO'
     }
 }
 
@@ -164,6 +183,12 @@ LOGIC_PROCESSOR_CONFIG = {
         'column_value_processor': 'func_set_value',
         'seq_counter_name': 'SEQ_F_L',
         'cell_b_value': '【ファンクション定義】'
+    },
+    're_logic': {
+        'table_name': 'T_KIHON_PJ_KOUMOKU_RE_LOGIC',
+        'column_value_processor': 're_set_value',
+        'seq_counter_name': 'SEQ_RE_L',
+        'cell_b_value': '【項目定義】'
     },
     'csv_logic': {
         'table_name': 'T_KIHON_PJ_KOUMOKU_CSV_LOGIC',
@@ -253,7 +278,6 @@ def should_stop_logic_row(ws, check_row, stop_values, cell_b_value=None):
         else:
             return 'continue'
 
-
 def _handle_item_definition_check(ws, check_row, cell_b_check):
     """Handle logic for 【項目定義】 and 【ファンクション定義】"""
     merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
@@ -315,6 +339,28 @@ def _handle_list_definition_check(ws, check_row, cell_b_check):
         return 'continue' if merged_d_to_o else 'skip'
     return 'skip'
 
+def _handle_menu_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for 【メニュー定義】"""
+    merged_d_to_n = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['D_TO_N'])
+    merged_bc = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_C'])
+
+    if merged_bc:
+        if cell_b_check in SKIP_CELL_VALUES['SCREEN_NUMBER']:
+            return 'skip'
+        return 'continue' if merged_d_to_n else 'skip'
+    return 'skip'
+
+def _handle_ipo_definition_check(ws, check_row, cell_b_check):
+    """Handle logic for IPO"""
+    merged_b_to_bn = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_BN'])
+    merged_b_to_k = is_merged_from_to(ws, check_row, *MERGED_CELL_RANGES['B_TO_K'])
+    
+    if merged_b_to_k or merged_b_to_bn:
+        if '入力画面' in SKIP_CELL_VALUES['SCREEN_NUMBER']:
+            return 'skip'
+        return 'continue'
+    return 'skip'
+
 def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
     """
     Returns action for row processing for T_KIHON_PJ_KOUMOKU_RE (and similar tables):
@@ -339,7 +385,7 @@ def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
         return 'skip'
     
     # Simple stop cases
-    simple_stop_values = ['【備考】', '【帳票データ】', '【CSVデータ】', '【運用上の注意点】', '【メニュー定義】']
+    simple_stop_values = ['【備考】','【運用上の注意点】']
     if cell_b_value in simple_stop_values:
         return 'stop'
     
@@ -348,9 +394,11 @@ def should_stop_row(ws, check_row, stop_values, cell_b_value=None):
         '【項目定義】': _handle_item_definition_check,
         '【ファンクション定義】': _handle_item_definition_check,
         '【メッセージ定義】': _handle_message_definition_check,
-        '【タブインデックス定義】': _handle_tab_definition_check,
+        '【タブインデックス定義】': _handle_tab_definition_check,   
         '【表示位置定義】': _handle_position_definition_check,
         '【一覧定義】': _handle_list_definition_check,
+        '【メニュー定義】': _handle_menu_definition_check,
+        '入力画面': _handle_ipo_definition_check
     }
     
     handler = handlers.get(cell_b_value)
@@ -368,7 +416,6 @@ def set_value_generic(
     secondary_seq_value=None,
     seq_mappings=None,
     reference_mappings=None,
-    fallback_processor=None,
     table_name=None
 ):
     """
@@ -416,7 +463,6 @@ def _format_cell_value_by_type(cell_value, data_type, col_name=None, table_name=
     
     # Additional handling for specific columns in T_KIHON_PJ_KOUMOKU
     if (
-        table_name == 'T_KIHON_PJ_KOUMOKU' and
         col_name in ['ZENKAKU_MOJI_SU', 'HANKAKU_MOJI_SU', 'SEISU_KETA', 'SYOUSU_KETA'] and
         cell_value == "－"
     ):
@@ -520,9 +566,14 @@ def set_value_generic(
                         cell_value = extracted_value
                     else:
                         return "''"
+                # Special case for MIDASHI: if B~BN is merged at this row, set cell_value = 'True'
+                if col_name == 'MIDASHI':
+                    if is_merged_from_to(ws, row_num, 2, 66):  # B=2, BN=66
+                        cell_value = 'True'
+                    else:
+                        cell_value = 'False'
             except Exception:
                 return "''"
-                
         return _format_cell_value_by_type(cell_value, data_type, col_name, table_name)
 
     # Main logic starts here
@@ -549,12 +600,7 @@ def set_value_generic(
     if val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
         return str(sheet_seq) if sheet_seq is not None else "''"
 
-    # Use fallback processor if provided
-    #if fallback_processor:
-    #    return fallback_processor(col_info, ws, systemid_value, system_date_value)
-    # Default fallback to original process_column_value
     val = "''"
-    
     if val_rule == 'BLANK':
         val = "''"
     elif val_rule == 'NULL':
@@ -563,9 +609,7 @@ def set_value_generic(
         val = f"'{systemid_value}'"
     elif val_rule == 'T_KIHON_PJ.SYSTEM_ID':
         val = f"'{systemid_value}'"
-        
     return val if val else "''"
-    #return column_value(col_info, ws, systemid_value, system_date_value)
 
 
 def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
@@ -588,7 +632,6 @@ def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_val
         secondary_seq_value=seq_k_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=column_value,
         table_name='T_KIHON_PJ_KOUMOKU'
     )
 
@@ -612,8 +655,7 @@ def func_set_value(col_info, ws, row_num, sheet_seq, seq_f_value, seq_f_l_value=
         primary_seq_value=seq_f_value,
         secondary_seq_value=seq_f_l_value,
         seq_mappings=seq_mappings,
-        reference_mappings=reference_mappings,
-        fallback_processor=column_value
+        reference_mappings=reference_mappings
     )
 
 
@@ -636,8 +678,7 @@ def csv_set_value(col_info, ws, row_num, sheet_seq, seq_csv_value, seq_csv_l_val
         primary_seq_value=seq_csv_value,
         secondary_seq_value=seq_csv_l_value,
         seq_mappings=seq_mappings,
-        reference_mappings=reference_mappings,
-        fallback_processor=column_value
+        reference_mappings=reference_mappings
     )
 
 
@@ -661,7 +702,6 @@ def re_set_value(col_info, ws, row_num, sheet_seq, seq_re_value, seq_re_l_value=
         secondary_seq_value=seq_re_l_value,
         seq_mappings=seq_mappings,
         reference_mappings=reference_mappings,
-        fallback_processor=column_value, 
         table_name='T_KIHON_PJ_KOUMOKU_RE'
     )
 
@@ -679,11 +719,25 @@ def message_set_value(col_info, ws, row_num, sheet_seq, seq_ms_value):
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_ms_value,
-        seq_mappings=seq_mappings,
-        fallback_processor=column_value
+        seq_mappings=seq_mappings
     )
 
-
+def hyouji_set_value(col_info, ws, row_num, sheet_seq, seq_hj_value):
+    """Process column value for T_KIHON_PJ_HYOUJI table"""
+    seq_mappings = {
+        'SEQ_H': seq_hj_value,
+        'ROW_NO': seq_hj_value
+    }
+    
+    return set_value_generic(
+        col_info=col_info,
+        ws=ws,
+        row_num=row_num,
+        sheet_seq=sheet_seq,
+        primary_seq_value=seq_hj_value,
+        seq_mappings=seq_mappings
+    )
+    
 def tab_set_value(col_info, ws, row_num, sheet_seq, seq_t_value):
     """Process column value for T_KIHON_PJ_TAB table"""
     seq_mappings = {
@@ -697,8 +751,7 @@ def tab_set_value(col_info, ws, row_num, sheet_seq, seq_t_value):
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_t_value,
-        seq_mappings=seq_mappings,
-        fallback_processor=column_value
+        seq_mappings=seq_mappings
     )
 
 
@@ -715,8 +768,7 @@ def ichiran_set_value(col_info, ws, row_num, sheet_seq, seq_i_value):
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_i_value,
-        seq_mappings=seq_mappings,
-        fallback_processor=column_value
+        seq_mappings=seq_mappings
     )
 
 
@@ -733,8 +785,7 @@ def menu_set_value(col_info, ws, row_num, sheet_seq, seq_m_value):
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_m_value,
-        seq_mappings=seq_mappings,
-        fallback_processor=column_value
+        seq_mappings=seq_mappings
     )
 
 
@@ -751,8 +802,7 @@ def ipo_set_value(col_info, ws, row_num, sheet_seq, seq_ipo_value):
         row_num=row_num,
         sheet_seq=sheet_seq,
         primary_seq_value=seq_ipo_value,
-        seq_mappings=seq_mappings,
-        fallback_processor=column_value
+        seq_mappings=seq_mappings
     )
 
 
@@ -841,7 +891,21 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
     elif val_rule == '':
         if cell_fix:
             try:
-                cell_value = get_cell_value_with_merged(ws, cell_fix)
+                # Add logic for SHEET_NAME
+                if col_name == 'SHEET_NAME':
+                    # Try to get sheet_idx from ws
+                    global sheetnames
+                    sheet_idx = None
+                    for idx, name in enumerate(sheetnames):
+                        if ws.title == name:
+                            sheet_idx = idx
+                            break
+                    if sheet_idx is not None:
+                        cell_value = sheetnames[sheet_idx]
+                    else:
+                        cell_value = ws.title
+                else:
+                    cell_value = get_cell_value_with_merged(ws, cell_fix)
                 if cell_value is None:
                     val = "''"
                 else:
@@ -882,8 +946,10 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
         global seq_per_sheet_dict
         seq_per_sheet = 1
         allowed_b2_values = set(MAPPING_VALUE_DICT.keys())
-        for sheet_idx in range(2, len(sheetnames)):
-            ws = wb[sheetnames[sheet_idx]]
+        for sheet_idx, sheet_name in enumerate(sheetnames):
+            if sheet_name in EXCLUDED_SHEETNAMES:
+                continue
+            ws = wb[sheet_name]
             try:
                 sheet_check_value = ws["B2"].value
             except Exception:
@@ -963,20 +1029,17 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
     
     all_insert_statements = []
     
-    # Step 1: Create INSERT for T_KIHON_PJ (using sheet 3)
-    print("Processing T_KIHON_PJ...")
-    pj_inserts = generate_insert_statements_from_excel(2, 'T_KIHON_PJ')
-    all_insert_statements.extend(pj_inserts)
+    pj_inserted = False
     
-    # Step 2: Process T_KIHON_PJ_GAMEN for sheets from index 2 onwards
-    print("Processing T_KIHON_PJ_GAMEN...")
     gamen_columns_info = table_info.get('T_KIHON_PJ_GAMEN', [])
     
     seq_per_sheet = 1
     allowed_b2_values = set(MAPPING_VALUE_DICT.keys())
     
-    for sheet_idx in range(2, len(sheetnames)):
-        ws = wb[sheetnames[sheet_idx]]
+    for sheet_idx, sheet_name in enumerate(sheetnames):
+        if sheet_name in EXCLUDED_SHEETNAMES:
+            continue
+        ws = wb[sheet_name]
         try:
             sheet_check_value = ws["B2"].value
         except Exception:
@@ -985,6 +1048,14 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
         if sheet_check_value not in allowed_b2_values:
             continue
 
+        # Lồng logic tạo INSERT cho T_KIHON_PJ, chỉ thực hiện 1 lần cho sheet hợp lệ đầu tiên
+        if not pj_inserted:
+            print("Processing T_KIHON_PJ...")
+            pj_inserts = generate_insert_statements_from_excel(sheet_idx, 'T_KIHON_PJ')
+            all_insert_statements.extend(pj_inserts)
+            pj_inserted = True
+
+        print("Processing T_KIHON_PJ_GAMEN...")
         # Always process T_KIHON_PJ_GAMEN
         row_data = {}
         seq_value = seq_per_sheet
@@ -998,7 +1069,7 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
         values_str = ", ".join(row_data.values())
         sql = f"INSERT INTO T_KIHON_PJ_GAMEN ({columns_str}) VALUES ({values_str});"
         all_insert_statements.append(sql)
-        print(f"Processing sheet {sheet_idx}: {sheetnames[sheet_idx]} with SEQ {seq_value}")
+        print(f"Processing sheet {sheet_idx}: {sheet_name} with SEQ {seq_value}")
 
         # Xử lý theo từng loại sheet_check_value
         if sheet_check_value == '項目定義書_帳票':
@@ -1123,6 +1194,11 @@ def gen_row_single_sheet(
                         else:
                             val = column_value(col_info, ws, systemid_value, system_date_value)
                         row_data[col_name] = val
+                    # Nếu MIDASHI == 'True', set các cột liên quan = 'NULL'
+                    if row_data.get('MIDASHI') == "'True'":
+                        for col in ['IN_GAMEN_ID', 'IN_GAMEN_NAME', 'IN_BUHIN_CD', 'IN_BUHIN_NAME', 'OUT_BUHIN_CD', 'OUT_BUHIN_NAME', 'BIKOU']:
+                            if col in row_data:
+                                row_data[col] = 'NULL'
                     columns_str = ", ".join(row_data.keys())
                     def sql_value(v):
                         if isinstance(v, bool):
@@ -1132,7 +1208,7 @@ def gen_row_single_sheet(
                     sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
                     insert_statements.append(sql)
                     seq_counter += 1
-                    print(f"    Created {table_name.split('_')[-1]} with {seq_prefix} {current_seq} at row {check_row}")
+                    print(f"    Created {table_name.split('_')[-1]} with Sheet SEQ {sheet_seq} {seq_prefix} {current_seq} at row {check_row}")
                     check_row += 1
                     continue
                 elif should_stop == 'create_logic' and logic_table_name and logic_processor:
@@ -1155,9 +1231,11 @@ def _get_processor_function(processor_name):
         'func_set_value': func_set_value,
         'csv_set_value': csv_set_value,
         'message_set_value': message_set_value,
+        'hyouji_set_value': hyouji_set_value,
         'tab_set_value': tab_set_value,
         'ichiran_set_value': ichiran_set_value,
         'menu_set_value': menu_set_value,
+        'ipo_set_value': ipo_set_value,
         'koumoku_logic': koumoku_logic,
         'func_logic': func_logic,
         'csv_logic': csv_logic,
@@ -1225,16 +1303,19 @@ def create_logic_processor(processor_type):
 # Create all row processors
 koumoku_row = create_row_processor('koumoku')
 func_row = create_row_processor('func')
+re_row = create_row_processor('re')
 csv_row = create_row_processor('csv')
 message_row = create_row_processor('message')
 tab_row = create_row_processor('tab')
 hyouji_row = create_row_processor('hyouji')
 ichiran_row = create_row_processor('ichiran')
 menu_row = create_row_processor('menu')
+ipo_row = create_row_processor('ipo')
 
 # Create all logic processors
 koumoku_logic = create_logic_processor('koumoku_logic')
 func_logic = create_logic_processor('func_logic')
+re_logic = create_logic_processor('re_logic')
 csv_logic = create_logic_processor('csv_logic')
 
 
@@ -1281,126 +1362,55 @@ def logic_data_generic(
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
             logic_type = table_name.split('_')[-1]  # Extract LOGIC type name
-            print(f"      Created {logic_type} with {seq_counter_name} {seq_counter} at row {check_row}")
+            print(f"      Created {logic_type} with Sheet SEQ {sheet_seq} Parent SEQ {parent_seq_value} {seq_counter_name} {seq_counter} at row {check_row}")
             seq_counter += 1
     
     return insert_statements, start_row
 
 
-def re_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【項目定義】'
-):
-    """
-    Process RE data for a single sheet - special case with lambda processor
-    Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
-    """
-    return gen_row_single_sheet(
-        sheet_idx=sheet_idx,
-        sheet_seq=sheet_seq,
-        table_name='T_KIHON_PJ_KOUMOKU_RE',
-        logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
-        cell_b_value=cell_b_value,
-        column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: re_set_value(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
-        logic_processor=lambda ws, start_row, sheet_seq, seq_re_value, logic_columns_info: re_logic(ws, start_row, sheet_seq, seq_re_value, logic_columns_info, cell_b_value),
-        seq_prefix='SEQ_RE',
-        stop_values=stop_values
-    )
+# def re_row(
+#     sheet_idx, 
+#     sheet_seq, 
+#     stop_values=None,
+#     cell_b_value='【項目定義】'
+# ):
+#     """
+#     Process RE data for a single sheet - special case with lambda processor
+#     Returns list of INSERT statements for both T_KIHON_PJ_KOUMOKU_RE and T_KIHON_PJ_KOUMOKU_RE_LOGIC
+#     """
+#     return gen_row_single_sheet(
+#         sheet_idx=sheet_idx,
+#         sheet_seq=sheet_seq,
+#         table_name='T_KIHON_PJ_KOUMOKU_RE',
+#         logic_table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
+#         cell_b_value=cell_b_value,
+#         column_value_processor=lambda col_info, ws, check_row, sheet_seq, current_seq: re_set_value(col_info, ws, check_row, sheet_seq, current_seq, cell_b_value),
+#         logic_processor=lambda ws, start_row, sheet_seq, seq_re_value, logic_columns_info: re_logic(ws, start_row, sheet_seq, seq_re_value, logic_columns_info, cell_b_value),
+#         seq_prefix='SEQ_RE',
+#         stop_values=stop_values
+#     )
 
 
-def re_logic(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】'):
-    """
-    Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for a specific SEQ_RE
-    """
-    return logic_data_generic(
-        ws=ws,
-        start_row=start_row,
-        sheet_seq=sheet_seq,
-        parent_seq_value=seq_re_value,
-        logic_columns_info=re_logic_columns_info,
-        table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
-        column_value_processor=re_set_value,
-        seq_counter_name='SEQ_RE_L',
-        cell_b_value=cell_b_value
-    )
+# def re_logic(ws, start_row, sheet_seq, seq_re_value, re_logic_columns_info, cell_b_value='【項目定義】'):
+#     """
+#     Process T_KIHON_PJ_KOUMOKU_RE_LOGIC for a specific SEQ_RE
+#     """
+#     return logic_data_generic(
+#         ws=ws,
+#         start_row=start_row,
+#         sheet_seq=sheet_seq,
+#         parent_seq_value=seq_re_value,
+#         logic_columns_info=re_logic_columns_info,
+#         table_name='T_KIHON_PJ_KOUMOKU_RE_LOGIC',
+#         column_value_processor=re_set_value,
+#         seq_counter_name='SEQ_RE_L',
+#         cell_b_value=cell_b_value
+#     )
 
 
-def ipo_row(
-    sheet_idx, 
-    sheet_seq, 
-    stop_values=None,
-    cell_b_value='【IPO定義】'
-):
-    """
-    Process IPO data for a single sheet - special case with custom logic
-    Returns list of INSERT statements for T_KIHON_PJ_IPO
-    Uses global wb, sheetnames, and table_info instead of loading files
-    """
-    if stop_values is None:
-        stop_values = STOP_VALUES
-
-    global wb, sheetnames, table_info
-    ipo_columns_info = table_info.get('T_KIHON_PJ_IPO', [])
-
-    if sheet_idx >= len(sheetnames):
-        return []
-
-    ws = wb[sheetnames[sheet_idx]]
-    insert_statements = []
-    seq_ipo_counter = 1
-
-    print(f"  Processing IPO data for sheet {sheet_idx}: {sheetnames[sheet_idx]}")
-    
-    # Scan from top to bottom for cell_b_value
-    for row_num in range(1, ws.max_row + 1):
-        cell_b = ws[f"B{row_num}"]
-        if cell_b.value == cell_b_value:
-            # Check subsequent rows
-            for check_row in range(row_num + 1, ws.max_row + 1):
-                cell_b_check = ws[f"B{check_row}"].value
-                # Skip if value is cell_b_value, break if in stop_values
-                if cell_b_check == cell_b_value:
-                    continue
-                if cell_b_check in stop_values:
-                    break
-                
-                # Check if B and C are merged and have value != '画面' and != '番号'
-                merged_bc = False
-                for merged_range in ws.merged_cells.ranges:
-                    if f"B{check_row}" in merged_range and f"C{check_row}" in merged_range:
-                        merged_bc = True
-                        break
-                
-                if merged_bc:
-                    cell_b_val = ws[f"B{check_row}"].value
-                    if cell_b_val and cell_b_val != '画面' and cell_b_val != '番号':
-                        # Create IPO insert
-                        current_seq_ipo = seq_ipo_counter
-                        
-                        row_data = {}
-                        for col_info in ipo_columns_info:
-                            col_name = col_info.get('COLUMN_NAME', '')
-                            val = ipo_set_value(col_info, ws, check_row, sheet_seq, current_seq_ipo)
-                            row_data[col_name] = val
-                        
-                        columns_str = ", ".join(row_data.keys())
-                        values_str = ", ".join(row_data.values())
-                        sql = f"INSERT INTO T_KIHON_PJ_IPO ({columns_str}) VALUES ({values_str});"
-                        insert_statements.append(sql)
-                        
-                        print(f"    Created IPO with SEQ_IPO {current_seq_ipo} at row {check_row}")
-                        
-                        seq_ipo_counter += 1
-    
-    return insert_statements
-
-
-# Example usage:
 if __name__ == "__main__":
     print("Starting processing all tables in sequence...")
-    all_inserts = all_tables_in_sequence('doc_gamen.xlsx', 'table_info.txt', 'insert_all.sql')
+    all_inserts = all_tables_in_sequence('doc_re.xlsx', 'table_info.txt', 'insert_all.sql')
     print(f"Generated {len(all_inserts)} INSERT statements in total.")
 
 
