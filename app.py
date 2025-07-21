@@ -4,6 +4,33 @@ import json
 import datetime
 from openpyxl import load_workbook
 from run_insert_sql import read_connect_string, run_sql_file
+import datetime
+import json
+import re
+import pandas as pd
+
+def join_sql_values(values):
+    """
+    Join SQL values, handling both tuples and strings.
+    Also checks for consecutive commas (,,) and replaces with ,'',
+    """
+    result_values = []
+    for val in values:
+        if isinstance(val, tuple):
+            # If it's a tuple, take the first element (the value)
+            result_values.append(str(val[0]) if val[0] is not None else "''")
+        else:
+            # If it's a string, use it directly
+            result_values.append(str(val) if val is not None else "''")
+    
+    # Join values with commas
+    joined = ", ".join(result_values)
+    
+    # Check for consecutive commas and replace with ,'',
+    while ",," in joined:
+        joined = joined.replace(",,", ",'',")
+    
+    return joined
 
 
 # Global variables for system id, date, and SEQ per sheet
@@ -48,7 +75,7 @@ def create_insert_statement_batch(table_name, columns, values_list):
     insert_statements = []
     
     for values in values_list:
-        values_str = ", ".join(val[0] for val in values)
+        values_str = ", ".join(str(v) for v in values)
         sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
         insert_statements.append(sql)
     
@@ -512,12 +539,14 @@ def set_value_generic(
     """
     Refactored generic function to process column values for all table types.
     This version improves readability and manageability by modularizing logic.
+    Returns tuple (value, aoji) where aoji indicates font color status.
     """
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
     col_logic = col_info.get('CELL_LOGIC', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
     data_type = col_info.get('DATA_TYPE', '').lower()
+    aoji = False
 
     def get_seq_value():
         if seq_mappings and col_name in seq_mappings:
@@ -532,13 +561,28 @@ def set_value_generic(
         return None
 
     def handle_mapping():
+        nonlocal aoji
         mapped_val = ''
         if cell_fix:
             cell_ref = f"{cell_fix}{row_num}"
             cell_value = ws[cell_ref].value if ws[cell_ref].value else None
+            # Extract font color for aoji
+            try:
+                cell = ws[cell_ref]
+                font_rgb = get_font_rgb(cell)
+                aoji = is_aoji(font_rgb)
+            except Exception:
+                pass
         else:
             cell_ref = f"{col_logic}{row_num}"
             cell_value = get_cell_value_with_merged(ws, cell_ref)
+            # Extract font color for aoji
+            try:
+                cell = ws[cell_ref]
+                font_rgb = get_font_rgb(cell)
+                aoji = is_aoji(font_rgb)
+            except Exception:
+                pass
             if col_name == 'KOUMOKU_SYURUI_CD' and isinstance(cell_value, str):
                 if table_name == 'T_KIHON_PJ_KOUMOKU':
                     mapped_val = KOUMOKU_TYPE_MAPPING.get(cell_value, '')
@@ -546,6 +590,86 @@ def set_value_generic(
                     mapped_val = KOUMOKU_TYPE_MAPPING_RE.get(cell_value, '')
 
         return f"'{mapped_val}'" if mapped_val else "''"
+
+    def get_font_rgb(cell):
+        # openpyxl >= 2.5: cell.font.color is a Color object, .rgb is a string or None
+        if cell.font and cell.font.color:
+            rgb = getattr(cell.font.color, 'rgb', None)
+            # Only accept if rgb is a string of length 6 or 8 (hex color)
+            if isinstance(rgb, str) and (len(rgb) == 6 or len(rgb) == 8):
+                return rgb.upper()
+        return None
+
+    def is_aoji(font_rgb):
+        # Nếu font_rgb là None (mặc định, không tô màu), coi là đen (aoji=False)
+        black_colors = {None, '000000', 'FF000000'}
+        if font_rgb is None:
+            return False
+        return font_rgb not in black_colors
+
+    # Handle AUTO_ID cases with sequence mappings
+    if val_rule == 'AUTO_ID':
+        seq_val = get_seq_value()
+        if seq_val is not None:
+            return seq_val, aoji
+
+    # Handle specific reference mappings
+    ref_val = get_seq_reference_value()
+    if ref_val is not None:
+        return ref_val, aoji
+
+    # Handle MAPPING case
+    if val_rule == 'MAPPING':
+        return handle_mapping(), aoji
+
+    # Handle empty value rule (direct cell reading)
+    if val_rule == '':
+        try:
+            if cell_fix:
+                cell_ref = f"{cell_fix}{row_num}"
+                cell = ws[cell_ref]
+                cell_value = get_cell_value_with_merged(ws, cell_ref)
+                font_rgb = get_font_rgb(cell)
+                aoji = is_aoji(font_rgb)
+            elif col_logic:
+                cell_ref = f"{col_logic}{row_num}"
+                cell = ws[cell_ref]
+                cell_value = get_cell_value_with_merged(ws, cell_ref)
+                font_rgb = get_font_rgb(cell)
+                aoji = is_aoji(font_rgb)
+                # Special case for YOUKEN_NO pattern extraction
+                if col_name == 'YOUKEN_NO':
+                    extracted_value = _extract_youken_no(cell_value)
+                    if extracted_value:
+                        cell_value = extracted_value
+                    else:
+                        return "''", aoji
+                # Special case for MIDASHI: if B~BN is merged at this row, set cell_value = 'True'
+                if col_name == 'MIDASHI':
+                    if is_merged_from_to(ws, row_num, 2, 66):  # B=2, BN=66
+                        cell_value = 'True'
+                    else:
+                        cell_value = 'False'
+            else:
+                cell_value = None
+            return _format_cell_value_by_type(cell_value, data_type, col_name, table_name), aoji
+        except Exception:
+            return "''", aoji
+
+    # Handle T_KIHON_PJ_GAMEN.SEQ reference
+    if val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
+        return str(sheet_seq) if sheet_seq is not None else "''", aoji
+
+    val = "''"
+    if val_rule == 'BLANK':
+        val = "''"
+    elif val_rule == 'NULL':
+        val = "NULL"
+    elif val_rule == 'SYSTEMID':
+        val = f"'{systemid_value}'"
+    elif val_rule == 'T_KIHON_PJ.SYSTEM_ID':
+        val = f"'{systemid_value}'"
+    return val if val else "''", aoji
 
 def _format_cell_value_by_type(cell_value, data_type, col_name=None, table_name=None):
     """Format cell value based on data type"""
@@ -592,147 +716,7 @@ def _extract_youken_no(cell_value):
             return m.group(1)
     return None
 
-def set_value_generic(
-    col_info,
-    ws,
-    row_num,
-    sheet_seq,
-    primary_seq_value,
-    secondary_seq_value=None,
-    seq_mappings=None,
-    reference_mappings=None,
-    fallback_processor=None,
-    table_name=None
-):
-    """
-    Refactored generic function to process column values for all table types.
-    This version improves readability and manageability by modularizing logic.
-    """
-    val_rule = col_info.get('VALUE', '')
-    cell_fix = col_info.get('CELL_FIX', '').strip()
-    col_logic = col_info.get('CELL_LOGIC', '').strip()
-    col_name = col_info.get('COLUMN_NAME', '')
-    data_type = col_info.get('DATA_TYPE', '').lower()
-    aoji = False
-    
-    def get_seq_value():
-        if seq_mappings and col_name in seq_mappings:
-            seq_val = seq_mappings[col_name]
-            return str(seq_val) if seq_val is not None else "''"
-        return None
 
-    def get_seq_reference_value():
-        if reference_mappings and val_rule in reference_mappings:
-            ref_val = reference_mappings[val_rule]
-            return str(ref_val) if ref_val is not None else "''"
-        return None
-
-    def handle_mapping():
-        mapped_val = ''
-        if cell_fix:
-            cell_ref = f"{cell_fix}{row_num}"
-            cell_value = ws[cell_ref].value if ws[cell_ref].value else None
-        else:
-            cell_ref = f"{col_logic}{row_num}"
-            cell_value = get_cell_value_with_merged(ws, cell_ref)
-            if col_name == 'KOUMOKU_SYURUI_CD' and isinstance(cell_value, str):
-                if table_name == 'T_KIHON_PJ_KOUMOKU':
-                    mapped_val = KOUMOKU_TYPE_MAPPING.get(cell_value, '')
-                elif table_name == 'T_KIHON_PJ_KOUMOKU_RE':
-                    mapped_val = KOUMOKU_TYPE_MAPPING_RE.get(cell_value, '')
-
-        return f"'{mapped_val}'" if mapped_val else "''"
-
-    def handle_empty_value():
-        cell_value = None
-          # Biến lưu trạng thái: True nếu font_color khác đen, False nếu đen hoặc không có
-        black_colors = {None, '000000', 'FF000000'}  # openpyxl thường trả về 'FF000000' cho đen
-        def get_font_rgb(cell):
-            # openpyxl >= 2.5: cell.font.color is a Color object, .rgb is a string or None
-            if cell.font and cell.font.color:
-                rgb = getattr(cell.font.color, 'rgb', None)
-                # Only accept if rgb is a string of length 6 or 8 (hex color)
-                if isinstance(rgb, str) and (len(rgb) == 6 or len(rgb) == 8):
-                    return rgb.upper()
-            return None
-
-        def is_aoji(font_rgb):
-            # Nếu font_rgb là None (mặc định, không tô màu), coi là đen (aoji=False)
-            if font_rgb is None:
-                return False
-            return font_rgb not in black_colors
-
-        # Try CELL_FIX first
-        if cell_fix:
-            try:
-                cell_ref = f"{cell_fix}{row_num}"
-                cell = ws[cell_ref]
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                font_rgb = get_font_rgb(cell)
-                aoji = is_aoji(font_rgb)
-            except Exception:
-                return "''"
-        # If no value from CELL_FIX, try CELL_LOGIC
-        if (cell_value is None or cell_value == '') and col_logic:
-            try:
-                cell_ref = f"{col_logic}{row_num}"
-                cell = ws[cell_ref]
-                cell_value = get_cell_value_with_merged(ws, cell_ref)
-                font_rgb = get_font_rgb(cell)
-                aoji = is_aoji(font_rgb)
-                # Special case for YOUKEN_NO pattern extraction
-                if col_name == 'YOUKEN_NO':
-                    extracted_value = _extract_youken_no(cell_value)
-                    if extracted_value:
-                        cell_value = extracted_value
-                    else:
-                        return "''"
-                # Special case for MIDASHI: if B~BN is merged at this row, set cell_value = 'True'
-                if col_name == 'MIDASHI':
-                    if is_merged_from_to(ws, row_num, 2, 66):  # B=2, BN=66
-                        cell_value = 'True'
-                    else:
-                        cell_value = 'False'
-            except Exception:
-                return "''"
-        # Biến aoji: True nếu font_color khác đen, False nếu đen hoặc không có
-        # Bạn có thể sử dụng aoji ở đây nếu cần
-        return _format_cell_value_by_type(cell_value, data_type, col_name, table_name)
-
-    # Main logic starts here
-    # Handle AUTO_ID cases with sequence mappings
-    if val_rule == 'AUTO_ID':
-        seq_val = get_seq_value()
-        if seq_val is not None:
-            return seq_val, aoji
-
-    # Handle specific reference mappings
-    ref_val = get_seq_reference_value()
-    if ref_val is not None:
-        return ref_val, aoji
-
-    # Handle MAPPING case
-    if val_rule == 'MAPPING':
-        return handle_mapping(), aoji
-
-    # Handle empty value rule (direct cell reading)
-    if val_rule == '':
-        return handle_empty_value(), aoji
-
-    # Handle T_KIHON_PJ_GAMEN.SEQ reference
-    if val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        return str(sheet_seq) if sheet_seq is not None else "''", aoji
-
-    val = "''"
-    if val_rule == 'BLANK':
-        val = "''"
-    elif val_rule == 'NULL':
-        val = "NULL"
-    elif val_rule == 'SYSTEMID':
-        val = f"'{systemid_value}'"
-    elif val_rule == 'T_KIHON_PJ.SYSTEM_ID':
-        val = f"'{systemid_value}'"
-    return val if val else "''", aoji
 
 
 def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
@@ -1072,29 +1056,20 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
-    try:
-        cell = ws[cell_fix]
-        font_rgb = get_font_rgb(cell)
-        aoji = is_aoji(font_rgb)
-    except Exception:
-        aoji = False
+    aoji = False  # Default font color status
     
-    black_colors = {None, '000000', 'FF000000'}  # openpyxl thường trả về 'FF000000' cho đen
-    def get_font_rgb(cell):
-        # openpyxl >= 2.5: cell.font.color is a Color object, .rgb is a string or None
-        if cell.font and cell.font.color:
-            rgb = getattr(cell.font.color, 'rgb', None)
-            # Only accept if rgb is a string of length 6 or 8 (hex color)
-            if isinstance(rgb, str) and (len(rgb) == 6 or len(rgb) == 8):
-                return rgb.upper()
-        return None
-
-    def is_aoji(font_rgb):
-        # Nếu font_rgb là None (mặc định, không tô màu), coi là đen (aoji=False)
-        if font_rgb is None:
-            return False
-        return font_rgb not in black_colors
-        
+    # Extract font color if cell_fix is available
+    if cell_fix:
+        try:
+            cell = ws[cell_fix]
+            if cell.font and cell.font.color:
+                rgb = getattr(cell.font.color, 'rgb', None)
+                if isinstance(rgb, str) and (len(rgb) == 6 or len(rgb) == 8):
+                    black_colors = {None, '000000', 'FF000000'}
+                    aoji = rgb.upper() not in black_colors
+        except Exception:
+            pass
+    
     if val_rule == 'BLANK':
         val = "''"
     elif val_rule == 'NULL':
@@ -1213,12 +1188,20 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
             seq_value = seq_per_sheet
             jyun_value = seq_value
             seq_per_sheet_dict[sheet_idx] = seq_value
+            aoji_values = []
             for col_info in columns_info:
                 col_name = col_info.get('COLUMN_NAME', '')
-                val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
+                val, aoji = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
                 row_data[col_name] = val
+                aoji_values.append(aoji)
+            
+            # Set AOJI column based on collected aoji values
+            final_aoji = '1' if any(aoji_values) else '0'
+            if 'AOJI' in row_data:
+                row_data['AOJI'] = f"'{final_aoji}'"
+            
             columns_str = ", ".join(row_data.keys())
-            values_str = ", ".join(val[0] for val in row_data.values())
+            values_str = join_sql_values(row_data.values())
             sql = f"INSERT INTO {table_key} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
             seq_per_sheet += 1
@@ -1231,15 +1214,22 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
         
         cols = []
         vals = []
+        aoji_values = []
         for col_info in columns_info:
             col_name = col_info['COLUMN_NAME']
             cols.append(col_name)
-            val = column_value(col_info, ws, systemid_value, system_date_value)
+            val, aoji = column_value(col_info, ws, systemid_value, system_date_value)
             vals.append(val)
+            aoji_values.append(aoji)
+
+        # Set AOJI column based on collected aoji values
+        final_aoji = '1' if any(aoji_values) else '0'
+        if 'AOJI' in cols:
+            aoji_index = cols.index('AOJI')
+            vals[aoji_index] = f"'{final_aoji}'"
 
         columns_str = ", ".join(cols)
-        print(vals)
-        values_str = ", ".join(val[0] for val in vals)
+        values_str = join_sql_values(vals)
         sql = f"INSERT INTO {table_key} ({columns_str}) VALUES ({values_str});"
         insert_statements.append(sql)
     
@@ -1253,13 +1243,22 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
         for _, row in df.iterrows():
             cols = []
             vals = []
+            aoji_values = []
             for col_info in columns_info:
                 col_name = col_info['COLUMN_NAME']
                 cols.append(col_name)
-                val = column_value(col_info, ws, systemid_value, system_date_value)
+                val, aoji = column_value(col_info, ws, systemid_value, system_date_value)
                 vals.append(val)
+                aoji_values.append(aoji)
+            
+            # Set AOJI column based on collected aoji values
+            final_aoji = '1' if any(aoji_values) else '0'
+            if 'AOJI' in cols:
+                aoji_index = cols.index('AOJI')
+                vals[aoji_index] = f"'{final_aoji}'"
+            
             columns_str = ", ".join(cols)
-            values_str = ", ".join(val[0] for val in vals)
+            values_str = join_sql_values(vals)
             sql = f"INSERT INTO {table_key} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
@@ -1313,12 +1312,20 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
         seq_value = seq_per_sheet
         jyun_value = seq_value
         seq_per_sheet_dict[sheet_idx] = seq_value
+        aoji_values = []
         for col_info in gamen_columns_info:
             col_name = col_info.get('COLUMN_NAME', '')
-            val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value, sheet_check_value)
+            val, aoji = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value, sheet_check_value)
             row_data[col_name] = val
+            aoji_values.append(aoji)
+        
+        # Set AOJI column based on collected aoji values
+        final_aoji = '1' if any(aoji_values) else '0'
+        if 'AOJI' in row_data:
+            row_data['AOJI'] = f"'{final_aoji}'"
+        
         columns_str = ", ".join(row_data.keys())
-        values_str = ", ".join(val[0] for val in row_data.values())
+        values_str = join_sql_values(row_data.values())
         sql = f"INSERT INTO T_KIHON_PJ_GAMEN ({columns_str}) VALUES ({values_str});"
         all_insert_statements.append(sql)
         print(f"Processing sheet {sheet_idx}: {sheet_name} with SEQ {seq_value}")
@@ -1460,16 +1467,24 @@ def gen_row_single_sheet(
                     check_row += 1
                     continue
                 elif should_stop == 'continue':
-                    aoji = False
                     current_seq = seq_counter
                     row_values = []
+                    aoji_values = []  # Collect aoji values from all columns
                     
                     for col_info in columns_info:
                         if column_value_processor:
                             val, aoji = column_value_processor(col_info, ws, check_row, sheet_seq, current_seq)
                         else:
-                            val, aoji = column_value(col_info, ws, systemid_value, system_date_value)
+                            val, aoji = set_value_generic(col_info, ws, check_row, sheet_seq, current_seq)
                         row_values.append(val)
+                        aoji_values.append(aoji)
+                    
+                    # Check if there's an AOJI column and set its value based on collected aoji values
+                    final_aoji = any(aoji_values)  # True if any column has non-black font
+                    for i, col_name in enumerate(column_names):
+                        if col_name == 'AOJI':
+                            row_values[i] = "'1'" if final_aoji else "'0'"
+                            break
                     
                     # Handle MIDASHI special case
                     if len(row_values) > 0:
@@ -1481,10 +1496,7 @@ def gen_row_single_sheet(
                                 midashi_idx = i
                             elif col_name in ['IN_GAMEN_ID', 'IN_GAMEN_NAME', 'IN_BUHIN_CD', 'IN_BUHIN_NAME', 'OUT_BUHIN_CD', 'OUT_BUHIN_NAME', 'BIKOU']:
                                 special_cols_indices.append(i)
-                            elif col_name == 'AOJI':
-                                # Set AOJI column value based on aoji variable
-                                row_values[i] = "'True'" if aoji else "'False'"
-                            
+                        
                         if midashi_idx is not None and row_values[midashi_idx] == "'True'":
                             for idx in special_cols_indices:
                                 row_values[idx] = 'NULL'
@@ -1515,7 +1527,7 @@ def gen_row_single_sheet(
     # Create INSERT statements from remaining batch data
     if batch_data:
         for values in batch_data:
-            values_str = ", ".join(val[0] for val in values)
+            values_str = join_sql_values(values)
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
@@ -1657,7 +1669,7 @@ def logic_data_generic(
             # Process remaining batch
             if batch_data:
                 for values in batch_data:
-                    values_str = ", ".join(val[0] for val in values)
+                    values_str = join_sql_values(values)
                     sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
                     insert_statements.append(sql)
             return insert_statements, check_row
@@ -1666,9 +1678,18 @@ def logic_data_generic(
         elif should_stop == 'continue':
             # Collect row data
             row_values = []
+            aoji_values = []
             for col_info in logic_columns_info:
-                val = column_value_processor(col_info, ws, check_row, sheet_seq, parent_seq_value, seq_counter)
+                val, aoji = column_value_processor(col_info, ws, check_row, sheet_seq, parent_seq_value, seq_counter)
                 row_values.append(val)
+                aoji_values.append(aoji)
+            
+            # Check if there's an AOJI column and set its value based on collected aoji values
+            final_aoji = any(aoji_values)  # True if any column has non-black font
+            for i, col_name in enumerate(column_names):
+                if col_name == 'AOJI':
+                    row_values[i] = "'1'" if final_aoji else "'0'"
+                    break
             
             # Handle YOUKEN_NO special case
             if len(row_values) > 0:
@@ -1692,7 +1713,7 @@ def logic_data_generic(
     # Process remaining batch
     if batch_data:
         for values in batch_data:
-            values_str = ", ".join(val[0] for val in values)
+            values_str = join_sql_values(values)
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
