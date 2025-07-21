@@ -48,7 +48,7 @@ def create_insert_statement_batch(table_name, columns, values_list):
     insert_statements = []
     
     for values in values_list:
-        values_str = ", ".join(str(v) for v in values)
+        values_str = ", ".join(val[0] for val in values)
         sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
         insert_statements.append(sql)
     
@@ -613,7 +613,8 @@ def set_value_generic(
     col_logic = col_info.get('CELL_LOGIC', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
     data_type = col_info.get('DATA_TYPE', '').lower()
-
+    aoji = False
+    
     def get_seq_value():
         if seq_mappings and col_name in seq_mappings:
             seq_val = seq_mappings[col_name]
@@ -644,18 +645,41 @@ def set_value_generic(
 
     def handle_empty_value():
         cell_value = None
+          # Biến lưu trạng thái: True nếu font_color khác đen, False nếu đen hoặc không có
+        black_colors = {None, '000000', 'FF000000'}  # openpyxl thường trả về 'FF000000' cho đen
+        def get_font_rgb(cell):
+            # openpyxl >= 2.5: cell.font.color is a Color object, .rgb is a string or None
+            if cell.font and cell.font.color:
+                rgb = getattr(cell.font.color, 'rgb', None)
+                # Only accept if rgb is a string of length 6 or 8 (hex color)
+                if isinstance(rgb, str) and (len(rgb) == 6 or len(rgb) == 8):
+                    return rgb.upper()
+            return None
+
+        def is_aoji(font_rgb):
+            # Nếu font_rgb là None (mặc định, không tô màu), coi là đen (aoji=False)
+            if font_rgb is None:
+                return False
+            return font_rgb not in black_colors
+
         # Try CELL_FIX first
         if cell_fix:
             try:
                 cell_ref = f"{cell_fix}{row_num}"
+                cell = ws[cell_ref]
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
+                font_rgb = get_font_rgb(cell)
+                aoji = is_aoji(font_rgb)
             except Exception:
                 return "''"
         # If no value from CELL_FIX, try CELL_LOGIC
         if (cell_value is None or cell_value == '') and col_logic:
             try:
                 cell_ref = f"{col_logic}{row_num}"
+                cell = ws[cell_ref]
                 cell_value = get_cell_value_with_merged(ws, cell_ref)
+                font_rgb = get_font_rgb(cell)
+                aoji = is_aoji(font_rgb)
                 # Special case for YOUKEN_NO pattern extraction
                 if col_name == 'YOUKEN_NO':
                     extracted_value = _extract_youken_no(cell_value)
@@ -671,6 +695,8 @@ def set_value_generic(
                         cell_value = 'False'
             except Exception:
                 return "''"
+        # Biến aoji: True nếu font_color khác đen, False nếu đen hoặc không có
+        # Bạn có thể sử dụng aoji ở đây nếu cần
         return _format_cell_value_by_type(cell_value, data_type, col_name, table_name)
 
     # Main logic starts here
@@ -678,24 +704,24 @@ def set_value_generic(
     if val_rule == 'AUTO_ID':
         seq_val = get_seq_value()
         if seq_val is not None:
-            return seq_val
+            return seq_val, aoji
 
     # Handle specific reference mappings
     ref_val = get_seq_reference_value()
     if ref_val is not None:
-        return ref_val
+        return ref_val, aoji
 
     # Handle MAPPING case
     if val_rule == 'MAPPING':
-        return handle_mapping()
+        return handle_mapping(), aoji
 
     # Handle empty value rule (direct cell reading)
     if val_rule == '':
-        return handle_empty_value()
+        return handle_empty_value(), aoji
 
     # Handle T_KIHON_PJ_GAMEN.SEQ reference
     if val_rule == 'T_KIHON_PJ_GAMEN.SEQ':
-        return str(sheet_seq) if sheet_seq is not None else "''"
+        return str(sheet_seq) if sheet_seq is not None else "''", aoji
 
     val = "''"
     if val_rule == 'BLANK':
@@ -706,7 +732,7 @@ def set_value_generic(
         val = f"'{systemid_value}'"
     elif val_rule == 'T_KIHON_PJ.SYSTEM_ID':
         val = f"'{systemid_value}'"
-    return val if val else "''"
+    return val if val else "''", aoji
 
 
 def koumoku_set_value(col_info, ws, row_num, sheet_seq, seq_k_value, seq_k_l_value=None):
@@ -1046,7 +1072,29 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
     val_rule = col_info.get('VALUE', '')
     cell_fix = col_info.get('CELL_FIX', '').strip()
     col_name = col_info.get('COLUMN_NAME', '')
+    try:
+        cell = ws[cell_fix]
+        font_rgb = get_font_rgb(cell)
+        aoji = is_aoji(font_rgb)
+    except Exception:
+        aoji = False
     
+    black_colors = {None, '000000', 'FF000000'}  # openpyxl thường trả về 'FF000000' cho đen
+    def get_font_rgb(cell):
+        # openpyxl >= 2.5: cell.font.color is a Color object, .rgb is a string or None
+        if cell.font and cell.font.color:
+            rgb = getattr(cell.font.color, 'rgb', None)
+            # Only accept if rgb is a string of length 6 or 8 (hex color)
+            if isinstance(rgb, str) and (len(rgb) == 6 or len(rgb) == 8):
+                return rgb.upper()
+        return None
+
+    def is_aoji(font_rgb):
+        # Nếu font_rgb là None (mặc định, không tô màu), coi là đen (aoji=False)
+        if font_rgb is None:
+            return False
+        return font_rgb not in black_colors
+        
     if val_rule == 'BLANK':
         val = "''"
     elif val_rule == 'NULL':
@@ -1128,7 +1176,7 @@ def column_value(col_info, ws, systemid_value, system_date_value, seq_value=None
         else:
             val = f"'{val_rule}'"
     
-    return val
+    return val, aoji
   
 
 
@@ -1170,7 +1218,7 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
                 val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value)
                 row_data[col_name] = val
             columns_str = ", ".join(row_data.keys())
-            values_str = ", ".join(row_data.values())
+            values_str = ", ".join(val[0] for val in row_data.values())
             sql = f"INSERT INTO {table_key} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
             seq_per_sheet += 1
@@ -1190,7 +1238,8 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
             vals.append(val)
 
         columns_str = ", ".join(cols)
-        values_str = ", ".join(vals)
+        print(vals)
+        values_str = ", ".join(val[0] for val in vals)
         sql = f"INSERT INTO {table_key} ({columns_str}) VALUES ({values_str});"
         insert_statements.append(sql)
     
@@ -1210,7 +1259,7 @@ def generate_insert_statements_from_excel(sheet_index, table_key):
                 val = column_value(col_info, ws, systemid_value, system_date_value)
                 vals.append(val)
             columns_str = ", ".join(cols)
-            values_str = ", ".join(vals)
+            values_str = ", ".join(val[0] for val in vals)
             sql = f"INSERT INTO {table_key} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
@@ -1269,7 +1318,7 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
             val = column_value(col_info, ws, systemid_value, system_date_value, seq_value, jyun_value, sheet_check_value)
             row_data[col_name] = val
         columns_str = ", ".join(row_data.keys())
-        values_str = ", ".join(row_data.values())
+        values_str = ", ".join(val[0] for val in row_data.values())
         sql = f"INSERT INTO T_KIHON_PJ_GAMEN ({columns_str}) VALUES ({values_str});"
         all_insert_statements.append(sql)
         print(f"Processing sheet {sheet_idx}: {sheet_name} with SEQ {seq_value}")
@@ -1411,14 +1460,15 @@ def gen_row_single_sheet(
                     check_row += 1
                     continue
                 elif should_stop == 'continue':
+                    aoji = False
                     current_seq = seq_counter
                     row_values = []
                     
                     for col_info in columns_info:
                         if column_value_processor:
-                            val = column_value_processor(col_info, ws, check_row, sheet_seq, current_seq)
+                            val, aoji = column_value_processor(col_info, ws, check_row, sheet_seq, current_seq)
                         else:
-                            val = column_value(col_info, ws, systemid_value, system_date_value)
+                            val, aoji = column_value(col_info, ws, systemid_value, system_date_value)
                         row_values.append(val)
                     
                     # Handle MIDASHI special case
@@ -1431,7 +1481,10 @@ def gen_row_single_sheet(
                                 midashi_idx = i
                             elif col_name in ['IN_GAMEN_ID', 'IN_GAMEN_NAME', 'IN_BUHIN_CD', 'IN_BUHIN_NAME', 'OUT_BUHIN_CD', 'OUT_BUHIN_NAME', 'BIKOU']:
                                 special_cols_indices.append(i)
-                        
+                            elif col_name == 'AOJI':
+                                # Set AOJI column value based on aoji variable
+                                row_values[i] = "'True'" if aoji else "'False'"
+                            
                         if midashi_idx is not None and row_values[midashi_idx] == "'True'":
                             for idx in special_cols_indices:
                                 row_values[idx] = 'NULL'
@@ -1462,7 +1515,7 @@ def gen_row_single_sheet(
     # Create INSERT statements from remaining batch data
     if batch_data:
         for values in batch_data:
-            values_str = ", ".join(str(v) for v in values)
+            values_str = ", ".join(val[0] for val in values)
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
@@ -1604,7 +1657,7 @@ def logic_data_generic(
             # Process remaining batch
             if batch_data:
                 for values in batch_data:
-                    values_str = ", ".join(str(v) for v in values)
+                    values_str = ", ".join(val[0] for val in values)
                     sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
                     insert_statements.append(sql)
             return insert_statements, check_row
@@ -1639,7 +1692,7 @@ def logic_data_generic(
     # Process remaining batch
     if batch_data:
         for values in batch_data:
-            values_str = ", ".join(str(v) for v in values)
+            values_str = ", ".join(val[0] for val in values)
             sql = f"INSERT INTO {table_name} ({columns_str}) VALUES ({values_str});"
             insert_statements.append(sql)
     
