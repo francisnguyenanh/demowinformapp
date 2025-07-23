@@ -29,7 +29,7 @@ try:
             SELECT COLUMN_NAME 
             FROM INFORMATION_SCHEMA.COLUMNS 
             WHERE TABLE_NAME = ? AND (
-                COLUMN_NAME LIKE '%NAME%' OR
+                (COLUMN_NAME LIKE '%NAME%' OR
                 COLUMN_NAME LIKE '%TEL%' OR
                 COLUMN_NAME LIKE '%FAX%' OR
                 COLUMN_NAME LIKE '%POST%' OR
@@ -37,7 +37,8 @@ try:
                 COLUMN_NAME LIKE '%TANTOU%' OR
                 COLUMN_NAME LIKE '%CREATE_USER%' OR
                 COLUMN_NAME LIKE '%UPDATE_USER%' OR
-                COLUMN_NAME LIKE '%FURIGANA%'
+                COLUMN_NAME LIKE '%FURIGANA%')
+                AND COLUMN_NAME NOT LIKE '%CD%'
             )
         """, table_name)
         target_columns = [row[0] for row in cursor.fetchall()]
