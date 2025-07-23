@@ -13,11 +13,22 @@ rem the Python version (export_update_script.py). For complex data types
 rem and better error handling, use the Python script instead.
 rem =====================================================================
 
-rem SQL Server connection details (same as run_all_updates.bat)
-set SERVER=VJP-LAP0261\SQLSERVER2022
-set DATABASE=KankyouShougunR_demo
-set USER=sa
-set PASSWORD=Vti123456!
+
+
+rem === Read connection info from connect_string.txt using PowerShell ===
+powershell -Command "& { $conn = Get-Content 'connect_string.txt'; $conn -replace '.*SERVER=([^;]+).*','SERVER=$1' | Out-File temp_server.txt -Encoding ASCII; $conn -replace '.*DATABASE=([^;]+).*','DATABASE=$1' | Out-File temp_database.txt -Encoding ASCII; $conn -replace '.*UID=([^;]+).*','USER=$1' | Out-File temp_user.txt -Encoding ASCII; $conn -replace '.*PWD=([^;]+).*','PASSWORD=$1' | Out-File temp_password.txt -Encoding ASCII }"
+
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_server.txt") do set SERVER=%%B
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_database.txt") do set DATABASE=%%B  
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_user.txt") do set USER=%%B
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_password.txt") do set "PASSWORD=%%B"
+
+rem Clean up temp files
+del temp_server.txt temp_database.txt temp_user.txt temp_password.txt 2>nul
+
+rem Debug: echo loaded connection info
+echo SERVER=%SERVER% DATABASE=%DATABASE% USER=%USER% PASSWORD=%PASSWORD%
+echo Password length check: [%PASSWORD%]
 
 rem Output directory for update scripts
 set OUTPUT_DIR=output_scripts_update
@@ -38,7 +49,7 @@ echo Connecting to %SERVER%...
 
 rem Get list of tables starting with M_
 echo Getting list of tables... >> %LOG_FILE%
-sqlcmd -S %SERVER% -d %DATABASE% -U %USER% -P %PASSWORD% -Q "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME LIKE 'M_%%'" -h -1 -s "," -W -f 65001 > temp_tables.txt 2>> %LOG_FILE%
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME LIKE 'M_%%'" -h -1 -s "," -W -f 65001 > temp_tables.txt 2>> %LOG_FILE%
 
 if errorlevel 1 (
     echo Error: Could not connect to database or get table list
@@ -73,7 +84,7 @@ echo Processing table %TABLE_NAME%... >> %LOG_FILE%
 
 
 rem Get columns containing target keywords (NAME, TEL, FAX, POST, ADDRESS, TANTOU, CREATE_USER, UPDATE_USER, FURIGANA) and NOT containing 'CD'
-sqlcmd -S %SERVER% -d %DATABASE% -U %USER% -P %PASSWORD% -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%TABLE_NAME%' AND ((COLUMN_NAME LIKE '%%NAME%%' OR COLUMN_NAME LIKE '%%TEL%%' OR COLUMN_NAME LIKE '%%FAX%%' OR COLUMN_NAME LIKE '%%POST%%' OR COLUMN_NAME LIKE '%%ADDRESS%%' OR COLUMN_NAME LIKE '%%TANTOU%%' OR COLUMN_NAME LIKE '%%CREATE_USER%%' OR COLUMN_NAME LIKE '%%UPDATE_USER%%' OR COLUMN_NAME LIKE '%%FURIGANA%%') AND COLUMN_NAME NOT LIKE '%%CD%%')" -h -1 -s "," -W -f 65001 > temp_columns.txt 2>> %LOG_FILE%
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%TABLE_NAME%' AND ((COLUMN_NAME LIKE '%%NAME%%' OR COLUMN_NAME LIKE '%%TEL%%' OR COLUMN_NAME LIKE '%%FAX%%' OR COLUMN_NAME LIKE '%%POST%%' OR COLUMN_NAME LIKE '%%ADDRESS%%' OR COLUMN_NAME LIKE '%%TANTOU%%' OR COLUMN_NAME LIKE '%%CREATE_USER%%' OR COLUMN_NAME LIKE '%%UPDATE_USER%%' OR COLUMN_NAME LIKE '%%FURIGANA%%') AND COLUMN_NAME NOT LIKE '%%CD%%')" -h -1 -s "," -W -f 65001 > temp_columns.txt 2>> %LOG_FILE%
 
 if errorlevel 1 (
     echo Warning: Could not get columns for table %TABLE_NAME%
@@ -107,7 +118,7 @@ for /f "tokens=*" %%C in (temp_columns.txt) do (
 
 rem Get data from source table
 echo Getting data from %TABLE_NAME%... >> %LOG_FILE%
-sqlcmd -S %SERVER% -d %DATABASE% -U %USER% -P %PASSWORD% -Q "SELECT %COLUMN_LIST% FROM %TABLE_NAME%" -s "	" -W -f 65001 > temp_data.txt 2>> %LOG_FILE%
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT %COLUMN_LIST% FROM %TABLE_NAME%" -s "	" -W -f 65001 > temp_data.txt 2>> %LOG_FILE%
 
 if errorlevel 1 (
     echo Warning: Could not get data from table %TABLE_NAME%

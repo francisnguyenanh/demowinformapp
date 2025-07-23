@@ -1,0 +1,6 @@
+Starting update script generation... 
+Date: 2025/07/24  8:52:46.74 
+ 
+Getting list of tables... 
+Sqlcmd: Error: Microsoft ODBC Driver 17 for SQL Server : Login failed for user 'sa'..
+Error: Could not connect to database or get table list 
