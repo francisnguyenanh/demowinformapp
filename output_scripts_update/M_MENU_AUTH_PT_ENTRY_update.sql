@@ -1,0 +1,6 @@
+﻿-- UPDATE script for table M_MENU_AUTH_PT_ENTRY (columns containing NAME, TEL, FAX, POST, ADDRESS, TANTOU, CREATE_USER, UPDATE_USER, FURIGANA)
+-- Số dòng dữ liệu: 1
+
+;WITH T AS (SELECT *, ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS rn FROM M_MENU_AUTH_PT_ENTRY)
+UPDATE T SET PATTERN_NAME = N'譛ｬ驛ｨ蝟ｶ讌ｭ繝代ち繝ｼ繝ｳ', PATTERN_FURIGANA = N'ホンブエイギョウパターン', CREATE_USER = N'鈴木　次郎', UPDATE_USER = N'鈴木　次郎' WHERE rn = 1;
+
