@@ -1,10 +1,19 @@
 @echo off
 
-rem SQL Server connection details
-set SERVER=VJP-LAP0261\SQLSERVER2022
-set DATABASE=KankyouShougunR_demo
-set USER=sa
-set PASSWORD=Vti123456!
+rem === Read connection info from connect_string.txt using PowerShell ===
+powershell -Command "& { $conn = Get-Content 'connect_string.txt'; $conn -replace '.*SERVER=([^;]+).*','SERVER=$1' | Out-File temp_server.txt -Encoding ASCII; $conn -replace '.*DATABASE=([^;]+).*','DATABASE=$1' | Out-File temp_database.txt -Encoding ASCII; $conn -replace '.*UID=([^;]+).*','USER=$1' | Out-File temp_user.txt -Encoding ASCII; $conn -replace '.*PWD=([^;]+).*','PASSWORD=$1' | Out-File temp_password.txt -Encoding ASCII }"
+
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_server.txt") do set SERVER=%%B
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_database.txt") do set DATABASE=%%B  
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_user.txt") do set USER=%%B
+for /f "usebackq tokens=1,2 delims==" %%A in ("temp_password.txt") do set "PASSWORD=%%B"
+
+rem Clean up temp files
+del temp_server.txt temp_database.txt temp_user.txt temp_password.txt 2>nul
+
+rem Debug: echo loaded connection info
+echo SERVER=%SERVER% DATABASE=%DATABASE% USER=%USER% PASSWORD=%PASSWORD%
+echo Password length check: [%PASSWORD%]
 
 rem Directory containing SQL scripts
 set SCRIPT_DIR=output_scripts_update

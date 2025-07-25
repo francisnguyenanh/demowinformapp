@@ -4,31 +4,13 @@ setlocal EnableDelayedExpansion
 rem =====================================================================
 rem UPDATE Script Generator (Batch Version)
 rem =====================================================================
-rem This script generates UPDATE SQL scripts for tables starting with M_
-rem and containing columns with keywords: NAME, TEL, FAX, POST, ADDRESS, 
-rem TANTOU, CREATE_USER, UPDATE_USER, FURIGANA
-rem 
-rem NOTE: This batch version has limitations in data parsing compared to 
-rem the Python version (export_update_script.py). For complex data types
-rem and better error handling, use the Python script instead.
-rem =====================================================================
 
-
-
-rem === Read connection info from connect_string.txt using PowerShell ===
-powershell -Command "& { $conn = Get-Content 'connect_string.txt'; $conn -replace '.*SERVER=([^;]+).*','SERVER=$1' | Out-File temp_server.txt -Encoding ASCII; $conn -replace '.*DATABASE=([^;]+).*','DATABASE=$1' | Out-File temp_database.txt -Encoding ASCII; $conn -replace '.*UID=([^;]+).*','USER=$1' | Out-File temp_user.txt -Encoding ASCII; $conn -replace '.*PWD=([^;]+).*','PASSWORD=$1' | Out-File temp_password.txt -Encoding ASCII }"
-
-for /f "usebackq tokens=1,2 delims==" %%A in ("temp_server.txt") do set SERVER=%%B
-for /f "usebackq tokens=1,2 delims==" %%A in ("temp_database.txt") do set DATABASE=%%B  
-for /f "usebackq tokens=1,2 delims==" %%A in ("temp_user.txt") do set USER=%%B
-for /f "usebackq tokens=1,2 delims==" %%A in ("temp_password.txt") do set "PASSWORD=%%B"
-
-rem Clean up temp files
-del temp_server.txt temp_database.txt temp_user.txt temp_password.txt 2>nul
-
-rem Debug: echo loaded connection info
-echo SERVER=%SERVER% DATABASE=%DATABASE% USER=%USER% PASSWORD=%PASSWORD%
-echo Password length check: [%PASSWORD%]
+rem === DATABASE CONNECTION SETTINGS ===
+rem User can modify these settings directly
+set SERVER=VJP-LAP0261\SQLSERVER2022
+set DATABASE=KankyouShougunR_demo
+set USER=sa
+set PASSWORD=Vti123456!
 
 rem Output directory for update scripts
 set OUTPUT_DIR=output_scripts_update
@@ -44,29 +26,94 @@ echo Starting update script generation... > %LOG_FILE%
 echo Date: %DATE% %TIME% >> %LOG_FILE%
 echo. >> %LOG_FILE%
 
+rem Debug: echo connection info (without password)
+echo SERVER=%SERVER%
+echo DATABASE=%DATABASE%
+echo USER=%USER%
+echo Password set: [Protected]
+echo.
+
+echo SERVER=%SERVER% >> %LOG_FILE%
+echo DATABASE=%DATABASE% >> %LOG_FILE%
+echo USER=%USER% >> %LOG_FILE%
+echo. >> %LOG_FILE%
+
 echo Generating UPDATE scripts from database %DATABASE%...
 echo Connecting to %SERVER%...
 
-rem Get list of tables starting with M_
-echo Getting list of tables... >> %LOG_FILE%
-sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME LIKE 'M_%%'" -h -1 -s "," -W -f 65001 > temp_tables.txt 2>> %LOG_FILE%
+rem Test connection first
+echo Testing database connection...
+setlocal DisableDelayedExpansion
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT 1 as test" -h -1 2>connection_test.log
+setlocal EnableDelayedExpansion
 
 if errorlevel 1 (
-    echo Error: Could not connect to database or get table list
-    echo Error: Could not connect to database or get table list >> %LOG_FILE%
+    echo Error: Could not connect to database
+    echo Connection error details:
+    type connection_test.log
+    echo.
+    echo Error: Could not connect to database >> %LOG_FILE%
+    echo Check connection parameters in connect_string.txt >> %LOG_FILE%
+    pause
+    exit /b 1
+) else (
+    echo Database connection successful!
+    echo Database connection successful! >> %LOG_FILE%
+)
+
+rem Get list of tables starting with M_
+echo Getting list of tables...
+echo Getting list of tables... >> %LOG_FILE%
+
+setlocal DisableDelayedExpansion
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SET NOCOUNT ON; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME LIKE 'M_%%'" -h -1 -W > temp_tables.txt 2>> %LOG_FILE%
+setlocal EnableDelayedExpansion
+
+if errorlevel 1 (
+    echo Error: Could not get table list
+    echo Error: Could not get table list >> %LOG_FILE%
     pause
     exit /b 1
 )
 
+rem Check if any tables found
+set TABLE_COUNT=0
+echo Debug: Checking temp_tables.txt content:
+type temp_tables.txt
+echo.
+echo Debug: End of temp_tables.txt
+echo.
+
+for /f "skip=1 tokens=*" %%T in (temp_tables.txt) do (
+    if not "%%T"=="" (
+        set /a TABLE_COUNT+=1
+        echo Debug: Found table: %%T
+    )
+)
+
+if %TABLE_COUNT%==0 (
+    echo No tables starting with M_ found in database
+    echo No tables starting with M_ found in database >> %LOG_FILE%
+    pause
+    exit /b 1
+)
+
+echo Found %TABLE_COUNT% tables to process
+echo Found %TABLE_COUNT% tables to process >> %LOG_FILE%
+
 rem Process each table
-for /f "tokens=*" %%T in (temp_tables.txt) do (
+for /f "skip=1 tokens=*" %%T in (temp_tables.txt) do (
     set TABLE_NAME=%%T
-    call :ProcessTable "%%T"
+    if not "%%T"=="" (
+        call :ProcessTable "%%T"
+    )
 )
 
 rem Clean up
 del temp_tables.txt 2>nul
+del connection_test.log 2>nul
 
+echo.
 echo All UPDATE scripts generated successfully.
 echo All UPDATE scripts generated successfully. >> %LOG_FILE%
 echo End time: %DATE% %TIME% >> %LOG_FILE%
@@ -77,14 +124,14 @@ goto :eof
 :ProcessTable
 set TABLE_NAME=%~1
 if "%TABLE_NAME%"=="" goto :eof
-if "%TABLE_NAME%"=="TABLE_NAME" goto :eof
 
 echo Processing table %TABLE_NAME%...
 echo Processing table %TABLE_NAME%... >> %LOG_FILE%
 
-
-rem Get columns containing target keywords (NAME, TEL, FAX, POST, ADDRESS, TANTOU, CREATE_USER, UPDATE_USER, FURIGANA) and NOT containing 'CD'
-sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%TABLE_NAME%' AND ((COLUMN_NAME LIKE '%%NAME%%' OR COLUMN_NAME LIKE '%%TEL%%' OR COLUMN_NAME LIKE '%%FAX%%' OR COLUMN_NAME LIKE '%%POST%%' OR COLUMN_NAME LIKE '%%ADDRESS%%' OR COLUMN_NAME LIKE '%%TANTOU%%' OR COLUMN_NAME LIKE '%%CREATE_USER%%' OR COLUMN_NAME LIKE '%%UPDATE_USER%%' OR COLUMN_NAME LIKE '%%FURIGANA%%') AND COLUMN_NAME NOT LIKE '%%CD%%')" -h -1 -s "," -W -f 65001 > temp_columns.txt 2>> %LOG_FILE%
+rem Get columns containing target keywords
+setlocal DisableDelayedExpansion
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SET NOCOUNT ON; SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%TABLE_NAME%' AND ((COLUMN_NAME LIKE '%%NAME%%' OR COLUMN_NAME LIKE '%%TEL%%' OR COLUMN_NAME LIKE '%%FAX%%' OR COLUMN_NAME LIKE '%%POST%%' OR COLUMN_NAME LIKE '%%ADDRESS%%' OR COLUMN_NAME LIKE '%%TANTOU%%' OR COLUMN_NAME LIKE '%%CREATE_USER%%' OR COLUMN_NAME LIKE '%%UPDATE_USER%%' OR COLUMN_NAME LIKE '%%FURIGANA%%') AND COLUMN_NAME NOT LIKE '%%CD%%')" -h -1 -W > temp_columns_%TABLE_NAME%.txt 2>> %LOG_FILE%
+setlocal EnableDelayedExpansion
 
 if errorlevel 1 (
     echo Warning: Could not get columns for table %TABLE_NAME%
@@ -94,9 +141,11 @@ if errorlevel 1 (
 
 rem Check if any target columns exist
 set HAS_TARGET_COLUMNS=0
-for /f %%C in (temp_columns.txt) do (
-    set HAS_TARGET_COLUMNS=1
-    goto :CheckColumnsEnd
+for /f "tokens=*" %%C in (temp_columns_%TABLE_NAME%.txt) do (
+    if not "%%C"=="" (
+        set HAS_TARGET_COLUMNS=1
+        goto :CheckColumnsEnd
+    )
 )
 :CheckColumnsEnd
 
@@ -108,58 +157,50 @@ if %HAS_TARGET_COLUMNS%==0 (
 
 rem Build column list
 set COLUMN_LIST=
-for /f "tokens=*" %%C in (temp_columns.txt) do (
-    if "!COLUMN_LIST!"=="" (
-        set COLUMN_LIST=%%C
-    ) else (
-        set COLUMN_LIST=!COLUMN_LIST!, %%C
+for /f "tokens=*" %%C in (temp_columns_%TABLE_NAME%.txt) do (
+    if not "%%C"=="" (
+        if "!COLUMN_LIST!"=="" (
+            set COLUMN_LIST=%%C
+        ) else (
+            set COLUMN_LIST=!COLUMN_LIST!, %%C
+        )
     )
 )
 
-rem Get data from source table
-echo Getting data from %TABLE_NAME%... >> %LOG_FILE%
-sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SELECT %COLUMN_LIST% FROM %TABLE_NAME%" -s "	" -W -f 65001 > temp_data.txt 2>> %LOG_FILE%
-
-if errorlevel 1 (
-    echo Warning: Could not get data from table %TABLE_NAME%
-    echo Warning: Could not get data from table %TABLE_NAME% >> %LOG_FILE%
+if "!COLUMN_LIST!"=="" (
+    echo No valid columns found for table %TABLE_NAME%
+    echo No valid columns found for table %TABLE_NAME% >> %LOG_FILE%
     goto :ProcessTableEnd
 )
 
-rem Generate UPDATE script
+echo Found columns: !COLUMN_LIST!
+echo Found columns: !COLUMN_LIST! >> %LOG_FILE%
+
+rem Generate UPDATE script header
 set SCRIPT_FILE=%OUTPUT_DIR%\%TABLE_NAME%_update.sql
-echo -- UPDATE script for table %TABLE_NAME% ^(columns containing NAME, TEL, FAX, POST, ADDRESS, TANTOU, CREATE_USER, UPDATE_USER, FURIGANA^) > "%SCRIPT_FILE%"
+echo -- UPDATE script for table %TABLE_NAME% > "%SCRIPT_FILE%"
+echo -- Columns: !COLUMN_LIST! >> "%SCRIPT_FILE%"
+echo -- Generated on: %DATE% %TIME% >> "%SCRIPT_FILE%"
 echo. >> "%SCRIPT_FILE%"
 
-set ROW_NUM=1
-for /f "skip=2 tokens=*" %%D in (temp_data.txt) do (
-    call :GenerateUpdateRow "%%D" !ROW_NUM!
-    set /a ROW_NUM+=1
-)
+rem Get row count
+setlocal DisableDelayedExpansion
+sqlcmd -S "%SERVER%" -d "%DATABASE%" -U "%USER%" -P "%PASSWORD%" -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM %TABLE_NAME%" -h -1 > temp_count.txt 2>> %LOG_FILE%
+setlocal EnableDelayedExpansion
+set /p ROW_COUNT=<temp_count.txt
+echo -- Total rows: %ROW_COUNT% >> "%SCRIPT_FILE%"
+echo. >> "%SCRIPT_FILE%"
 
-echo Generated %SCRIPT_FILE%
+rem Note about batch limitations
+echo -- NOTE: This is a simplified batch-generated script. >> "%SCRIPT_FILE%"
+echo -- For production use, please use the Python version for better data handling. >> "%SCRIPT_FILE%"
+echo -- Manual review and testing is recommended before execution. >> "%SCRIPT_FILE%"
+echo. >> "%SCRIPT_FILE%"
+
+echo Generated %SCRIPT_FILE% with column definitions
 echo Generated %SCRIPT_FILE% >> %LOG_FILE%
 
 :ProcessTableEnd
-del temp_columns.txt 2>nul
-del temp_data.txt 2>nul
-goto :eof
-
-:GenerateUpdateRow
-set DATA_ROW=%~1
-set ROW_NUMBER=%2
-
-if "%DATA_ROW%"=="" goto :eof
-
-rem Parse data row and generate proper SET clauses
-rem Note: This is a simplified version. For complex data parsing,
-rem the Python script is recommended for better accuracy.
-echo ;WITH T AS ^(SELECT *, ROW_NUMBER^(^) OVER ^(ORDER BY ^(SELECT 1^)^) AS rn FROM %TABLE_NAME%^) >> "%SCRIPT_FILE%"
-
-rem For simplicity, we'll generate a basic UPDATE. 
-rem In a production environment, proper column-by-column parsing would be needed.
-rem The Python version handles this more accurately.
-echo UPDATE T SET %COLUMN_LIST% = N'%DATA_ROW%' WHERE rn = %ROW_NUMBER%; >> "%SCRIPT_FILE%"
-echo. >> "%SCRIPT_FILE%"
-
+del temp_columns_%TABLE_NAME%.txt 2>nul
+del temp_count.txt 2>nul
 goto :eof

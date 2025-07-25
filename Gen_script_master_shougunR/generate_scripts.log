@@ -1,6 +1,11 @@
 Starting update script generation... 
-Date: 2025/07/24  8:52:46.74 
+Date: 2025/07/24 17:51:00.53 
  
+SERVER=VJP-LAP0261\SQLSERVER2022 
+DATABASE=KankyouShougunR_demo 
+USER=sa 
+ 
+Database connection successful 
 Getting list of tables... 
 Sqlcmd: Error: Microsoft ODBC Driver 17 for SQL Server : Login failed for user 'sa'..
-Error: Could not connect to database or get table list 
+No tables starting with M_ found in database 
