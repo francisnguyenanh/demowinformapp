@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>コース入力インターフェース</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- XLSX for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .table-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+      font-size: 0.85rem;
+    }
+    .action-buttons button {
+      margin-right: 5px;
+    }
+    .form-control-sm, .form-select-sm {
+      padding: 0.2rem 0.4rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <h1 class="mb-4 text-center">コース入力</h1>
+
+    <!-- 一般情報 (Thông tin chung) -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2 class="h5 mb-0">一般情報</h2>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="seriesName" class="form-label">シリーズ名</label>
+            <input type="text" class="form-control" id="seriesName" placeholder="環境将軍R(A1)" />
+          </div>
+          <div class="col-md-6">
+            <label for="projectNumber" class="form-label">案件番号</label>
+            <input type="text" class="form-control" id="projectNumber" placeholder="20230927" />
+          </div>
+          <div class="col-md-6">
+            <label for="customerName" class="form-label">顧客名</label>
+            <input type="text" class="form-control" id="customerName" placeholder="株式会社ISC 様" />
+          </div>
+          <div class="col-md-6">
+            <label for="version" class="form-label">版数</label>
+            <input type="text" class="form-control" id="version" placeholder="1.0" />
+          </div>
+          <div class="col-md-6">
+            <label for="createDate" class="form-label">作成日</label>
+            <input type="text" class="form-control" id="createDate" placeholder="2023-09-25" />
+          </div>
+          <div class="col-md-6">
+            <label for="creator" class="form-label">作成者</label>
+            <input type="text" class="form-control" id="creator" />
+          </div>
+          <div class="col-md-6">
+            <label for="inspector" class="form-label">検収者</label>
+            <input type="text" class="form-control" id="inspector" />
+          </div>
+          <div class="col-md-6">
+            <label for="totalLabor" class="form-label">総工量</label>
+            <input type="text" class="form-control" id="totalLabor" />
+          </div>
+          <div class="col-md-6">
+            <label for="screenId" class="form-label">画面ID</label>
+            <input type="text" class="form-control" id="screenId" />
+          </div>
+          <div class="col-md-6">
+            <label for="screenName" class="form-label">画面名</label>
+            <input type="text" class="form-control" id="screenName" />
+          </div>
+          <div class="col-md-6">
+            <label for="requirements" class="form-label">要件概要</label>
+            <textarea class="form-control" id="requirements" rows="3"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="screenVersion" class="form-label">画面Ver</label)</label>
+            <input type="text" class="form-control" id="screenVersion" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 項目定義 (Item Definition) -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">項目定義</h2>
+        <button class="btn btn-primary btn-sm" onclick="addItemRow()">行追加</button>
+      </div>
+      <div class="card-body table-container">
+        <table class="table table-bordered table-hover" id="itemTable">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">画面</th>
+              <th scope="col">番号</th>
+              <th scope="col">項目名</th>
+              <th scope="col">項目種類</th>
+              <th scope="col">編集</th>
+              <th scope="col">文字種</th>
+              <th scope="col">全角</th>
+              <th scope="col">半角</th>
+              <th scope="col">整数</th>
+              <th scope="col">小数</th>
+              <th scope="col">ﾁｪｯｸ</th>
+              <th scope="col">IME</th>
+              <th scope="col">入力文字数</th>
+              <th scope="col">表示文字数</th>
+              <th scope="col">重複</th>
+              <th scope="col">初期表示</th>
+              <th scope="col">書式</th>
+              <th scope="col">変更</th>
+              <th scope="col">参照先</th>
+              <th scope="col">アクション</th>
+            </tr>
+          </thead>
+          <tbody id="itemBody">
+            <tr>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="①" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="項目サンプル" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="テキストボックス" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="可" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="英数字" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="○" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="半角英数" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="10" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="10" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="－" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="blank" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="－" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="追加" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="－" /></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn btn-warning btn-sm" onclick="updateItemRow(this)">更新</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteItemRow(this)">削除</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ファンクション定義 (Function Definition) -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">ファンクション定義</h2>
+        <button class="btn btn-primary btn-sm" onclick="addFunctionRow()">行追加</button>
+      </div>
+      <div class="card-body table-container">
+        <table class="table table-bordered table-hover" id="functionTable">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">画面</th>
+              <th scope="col">番号</th>
+              <th scope="col">項目名</th>
+              <th scope="col">新規</th>
+              <th scope="col">修正</th>
+              <th scope="col">削除</th>
+              <th scope="col">参照</th>
+              <th scope="col">全て</th>
+              <th scope="col">その他条件</th>
+              <th scope="col">必須チェック</th>
+              <th scope="col">変更</th>
+              <th scope="col">画面遷移先</th>
+              <th scope="col">アクション</th>
+            </tr>
+          </thead>
+          <tbody id="functionBody">
+            <tr>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="1" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="[F9]登録" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="○" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="必須" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="追加" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="－" /></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn btn-warning btn-sm" onclick="updateFunctionRow(this)">更新</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteFunctionRow(this)">削除</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- メッセージ定義 (Message Definition) -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">メッセージ定義</h2>
+        <button class="btn btn-primary btn-sm" onclick="addMessageRow()">行追加</button>
+      </div>
+      <div class="card-body table-container">
+        <table class="table table-bordered table-hover" id="messageTable">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">ｺｰﾄﾞ</th>
+              <th scope="col">ﾒｯｾｰｼﾞ</th>
+              <th scope="col">アラート内容</th>
+              <th scope="col">アラート種類</th>
+              <th scope="col">備考</th>
+              <th scope="col">アクション</th>
+            </tr>
+          </thead>
+          <tbody id="messageBody">
+            <tr>
+              <td><input type="text" class="form-control form-control-sm" value="C" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="確認" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="変更内容が未登録です。画面を閉じますか？" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="確認" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn btn-warning btn-sm" onclick="updateMessageRow(this)">更新</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteMessageRow(this)">削除</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- タブインデックス定義 (Tab Index Definition) -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">タブインデックス定義</h2>
+        <button class="btn btn-primary btn-sm" onclick="addTabIndexRow()">行追加</button>
+      </div>
+      <div class="card-body table-container">
+        <table class="table table-bordered table-hover" id="tabIndexTable">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">定義場所</th>
+              <th scope="col">追加項目遷移順</th>
+              <th scope="col">アクション</th>
+            </tr>
+          </thead>
+          <tbody id="tabIndexBody">
+            <tr>
+              <td><input type="text" class="form-control form-control-sm" value="画面1" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="1" /></td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn btn-warning btn-sm" onclick="updateTabIndexRow(this)">更新</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteTabIndexRow(this)">削除</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- アクションボタン (Action Buttons) -->
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-success" onclick="saveData()">[F9]登録</button>
+      <button class="btn btn-danger" onclick="closeForm()">[F12]閉じる</button>
+      <button class="btn btn-primary" onclick="exportToExcel()">Excel出力</button>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+  <script>
+    // 項目定義の行追加 (Add row to Item Definition)
+    function addItemRow() {
+      const tbody = document.getElementById('itemBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-warning btn-sm" onclick="updateItemRow(this)">更新</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteItemRow(this)">削除</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    // ファンクション定義の行追加 (Add row to Function Definition)
+    function addFunctionRow() {
+      const tbody = document.getElementById('functionBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-warning btn-sm" onclick="updateFunctionRow(this)">更新</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteFunctionRow(this)">削除</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    // メッセージ定義の行追加 (Add row to Message Definition)
+    function addMessageRow() {
+      const tbody = document.getElementById('messageBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-warning btn-sm" onclick="updateMessageRow(this)">更新</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteMessageRow(this)">削除</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    // タブインデックス定義の行追加 (Add row to Tab Index Definition)
+    function addTabIndexRow() {
+      const tbody = document.getElementById('tabIndexBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-warning btn-sm" onclick="updateTabIndexRow(this)">更新</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteTabIndexRow(this)">削除</button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    // 行削除 (Delete rows)
+    function deleteItemRow(button) {
+      if (confirm('この行を削除しますか？')) {
+        button.closest('tr').remove();
+      }
+    }
+
+    function deleteFunctionRow(button) {
+      if (confirm('この行を削除しますか？')) {
+        button.closest('tr').remove();
+      }
+    }
+
+    function deleteMessageRow(button) {
+      if (confirm('この行を削除しますか？')) {
+        button.closest('tr').remove();
+      }
+    }
+
+    function deleteTabIndexRow(button) {
+      if (confirm('この行を削除しますか？')) {
+        button.closest('tr').remove();
+      }
+    }
+
+    // 行更新 (Update rows - placeholder)
+    function updateItemRow(button) {
+      alert('項目定義の行が更新されました！（保存機能は後で実装可能）');
+    }
+
+    function updateFunctionRow(button) {
+      alert('ファンクション定義の行が更新されました！（保存機能は後で実装可能）');
+    }
+
+    function updateMessageRow(button) {
+      alert('メッセージ定義の行が更新されました！（保存機能は後で実装可能）');
+    }
+
+    function updateTabIndexRow(button) {
+      alert('タブインデックス定義の行が更新されました！（保存機能は後で実装可能）');
+    }
+
+    // データ登録 (Save data - placeholder)
+    function saveData() {
+      alert('データが登録されました！（保存機能は後で実装可能）');
+    }
+
+    // フォーム閉じる (Close form with confirmation)
+    function closeForm() {
+      if (confirm('変更内容が未登録です。画面を閉じますか？')) {
+        alert('閉じました！');
+      }
+    }
+
+    // Excel出力 (Export to Excel)
+    function exportToExcel() {
+      const generalInfo = {
+        シリーズ名: document.getElementById('seriesName').value,
+        案件番号: document.getElementById('projectNumber').value,
+        顧客名: document.getElementById('customerName').value,
+        版数: document.getElementById('version').value,
+        作成日: document.getElementById('createDate').value,
+        作成者: document.getElementById('creator').value,
+        検収者: document.getElementById('inspector').value,
+        総工量: document.getElementById('totalLabor').value,
+        画面ID: document.getElementById('screenId').value,
+        画面名: document.getElementById('screenName').value,
+        要件概要: document.getElementById('requirements').value,
+        画面Ver: document.getElementById('screenVersion').value,
+      };
+
+      const itemData = Array.from(document.querySelectorAll('#itemBody tr')).map(row => ({
+        画面: row.cells[0].querySelector('input').value,
+        番号: row.cells[1].querySelector('input').value,
+        項目名: row.cells[2].querySelector('input').value,
+        項目種類: row.cells[3].querySelector('input').value,
+        編集: row.cells[4].querySelector('input').value,
+        文字種: row.cells[5].querySelector('input').value,
+        全角: row.cells[6].querySelector('input').value,
+        半角: row.cells[7].querySelector('input').value,
+        整数: row.cells[8].querySelector('input').value,
+        小数: row.cells[9].querySelector('input').value,
+        ﾁｪｯｸ: row.cells[10].querySelector('input').value,
+        IME: row.cells[11].querySelector('input').value,
+        入力文字数: row.cells[12].querySelector('input').value,
+        表示文字数: row.cells[13].querySelector('input').value,
+        重複: row.cells[14].querySelector('input').value,
+        初期表示: row.cells[15].querySelector('input').value,
+        書式: row.cells[16].querySelector('input').value,
+        変更: row.cells[17].querySelector('input').value,
+        参照先: row.cells[18].querySelector('input').value,
+      }));
+
+      const functionData = Array.from(document.querySelectorAll('#functionBody tr')).map(row => ({
+        画面: row.cells[0].querySelector('input').value,
+        番号: row.cells[1].querySelector('input').value,
+        項目名: row.cells[2].querySelector('input').value,
+        新規: row.cells[3].querySelector('input').value,
+        修正: row.cells[4].querySelector('input').value,
+        削除: row.cells[5].querySelector('input').value,
+        参照: row.cells[6].querySelector('input').value,
+        全て: row.cells[7].querySelector('input').value,
+        その他条件: row.cells[8].querySelector('input').value,
+        必須チェック: row.cells[9].querySelector('input').value,
+        変更: row.cells[10].querySelector('input').value,
+        画面遷移先: row.cells[11].querySelector('input').value,
+      }));
+
+      const messageData = Array.from(document.querySelectorAll('#messageBody tr')).map(row => ({
+        ｺｰﾄﾞ: row.cells[0].querySelector('input').value,
+        ﾒｯｾｰｼﾞ: row.cells[1].querySelector('input').value,
+        アラート内容: row.cells[2].querySelector('input').value,
+        アラート種類: row.cells[3].querySelector('input').value,
+        備考: row.cells[4].querySelector('input').value,
+      }));
+
+      const tabIndexData = Array.from(document.querySelectorAll('#tabIndexBody tr')).map(row => ({
+        定義場所: row.cells[0].querySelector('input').value,
+        追加項目遷移順: row.cells[1].querySelector('input').value,
+      }));
+
+      const wb = XLSX.utils.book_new();
+      const wsGeneral = XLSX.utils.json_to_sheet([generalInfo]);
+      const wsItems = XLSX.utils.json_to_sheet(itemData);
+      const wsFunctions = XLSX.utils.json_to_sheet(functionData);
+      const wsMessages = XLSX.utils.json_to_sheet(messageData);
+      const wsTabIndex = XLSX.utils.json_to_sheet(tabIndexData);
+      XLSX.utils.book_append_sheet(wb, wsGeneral, '一般情報');
+      XLSX.utils.book_append_sheet(wb, wsItems, '項目定義');
+      XLSX.utils.book_append_sheet(wb, wsFunctions, 'ファンクション定義');
+      XLSX.utils.book_append_sheet(wb, wsMessages, 'メッセージ定義');
+      XLSX.utils.book_append_sheet(wb, wsTabIndex, 'タブインデックス定義');
+      XLSX.write_file(wb, 'コース入力.xlsx');
+    }
+  </script>
+</body>
+</html>

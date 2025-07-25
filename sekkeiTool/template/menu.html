@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>メニュー</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { background-color: #f8f9fa; }
+    .table-container { max-height: 400px; overflow-y: auto; }
+    .table th, .table td { vertical-align: middle; font-size: 0.85rem; }
+    .action-buttons button { margin-right: 5px; }
+    .form-control-sm { padding: 0.2rem 0.4rem; }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <h1 class="mb-4 text-center">メニュー</h1>
+
+    <!-- 一般情報 -->
+    <div class="card mb-4">
+      <div class="card-header"><h2 class="h5 mb-0">一般情報</h2></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">シリーズ名</label><input type="text" class="form-control" id="seriesName" placeholder="環境将軍R(A1)" /></div>
+          <div class="col-md-6"><label class="form-label">案件番号</label><input type="text" class="form-control" id="projectNumber" placeholder="20230927" /></div>
+          <div class="col-md-6"><label class="form-label">顧客名</label><input type="text" class="form-control" id="customerName" placeholder="株式会社ISC 様" /></div>
+          <div class="col-md-6"><label class="form-label">版数</label><input type="text" class="form-control" id="version" placeholder="1.0" /></div>
+          <div class="col-md-6"><label class="form-label">作成日</label><input type="text" class="form-control" id="createDate" placeholder="2023-09-25" /></div>
+          <div class="col-md-6"><label class="form-label">作成者</label><input type="text" class="form-control" id="creator" /></div>
+          <div class="col-md-6"><label class="form-label">検収者</label><input type="text" class="form-control" id="inspector" /></div>
+          <div class="col-md-6"><label class="form-label">総工量</label><input type="text" class="form-control" id="totalLabor" /></div>
+          <div class="col-md-6"><label class="form-label">画面ID</label><input type="text" class="form-control" id="screenId" /></div>
+          <div class="col-md-6"><label class="form-label">画面名</label><input type="text" class="form-control" id="screenName" /></div>
+          <div class="col-md-6"><label class="form-label">要件概要</label><textarea class="form-control" id="requirements" rows="3"></textarea></div>
+          <div class="col-md-6"><label class="form-label">画面Ver</label><input type="text" class="form-control" id="screenVersion" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- メニュー定義 -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">メニュー定義</h2>
+        <button class="btn btn-primary btn-sm" onclick="addMenuRow()">行追加</button>
+      </div>
+      <div class="card-body table-container">
+        <table class="table table-bordered table-hover" id="menuTable">
+          <thead class="table-light">
+            <tr>
+              <th>画面</th>
+              <th>番号</th>
+              <th>アイコン№</th>
+              <th>権限</th>
+              <th>ﾘﾎﾟﾝ表示名</th>
+              <th>画面遷移先</th>
+              <th>大分類</th>
+              <th>中分類</th>
+              <th>ｸﾞﾙｰﾌﾟ名</th>
+              <th>アクション</th>
+            </tr>
+          </thead>
+          <tbody id="menuBody">
+            <tr>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="1" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="ICON001" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="管理者" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="メニューサンプル" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="画面1" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="大分類1" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="中分類1" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="グループ1" /></td>
+              <td><div class="action-buttons">
+                <button class="btn btn-warning btn-sm" onclick="updateMenuRow(this)">更新</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteMenuRow(this)">削除</button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-success" onclick="saveData()">[F9]登録</button>
+      <button class="btn btn-danger" onclick="closeForm()">[F12]閉じる</button>
+      <button class="btn btn-primary" onclick="exportToExcel()">Excel出力</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+  <script>
+    function addMenuRow() {
+      const tbody = document.getElementById('menuBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><div class="action-buttons">
+          <button class="btn btn-warning btn-sm" onclick="updateMenuRow(this)">更新</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMenuRow(this)">削除</button>
+        </div></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function deleteMenuRow(button) {
+      if (confirm('この行を削除しますか？')) {
+        button.closest('tr').remove();
+      }
+    }
+
+    function updateMenuRow(button) {
+      alert('メニュー定義の行が更新されました！（保存機能は後で実装可能）');
+    }
+
+    function saveData() {
+      alert('データが登録されました！（保存機能は後で実装可能）');
+    }
+
+    function closeForm() {
+      if (confirm('変更内容が未登録です。画面を閉じますか？')) {
+        alert('閉じました！');
+      }
+    }
+
+    function exportToExcel() {
+      const generalInfo = {
+        シリーズ名: document.getElementById('seriesName').value,
+        案件番号: document.getElementById('projectNumber').value,
+        顧客名: document.getElementById('customerName').value,
+        版数: document.getElementById('version').value,
+        作成日: document.getElementById('createDate').value,
+        作成者: document.getElementById('creator').value,
+        検収者: document.getElementById('inspector').value,
+        総工量: document.getElementById('totalLabor').value,
+        画面ID: document.getElementById('screenId').value,
+        画面名: document.getElementById('screenName').value,
+        要件概要: document.getElementById('requirements').value,
+        画面Ver: document.getElementById('screenVersion').value,
+      };
+
+      const menuData = Array.from(document.querySelectorAll('#menuBody tr')).map(row => ({
+        画面: row.cells[0].querySelector('input').value,
+        番号: row.cells[1].querySelector('input').value,
+        アイコン№: row.cells[2].querySelector('input').value,
+        権限: row.cells[3].querySelector('input').value,
+        ﾘﾎﾟﾝ表示名: row.cells[4].querySelector('input').value,
+        画面遷移先: row.cells[5].querySelector('input').value,
+        大分類: row.cells[6].querySelector('input').value,
+        中分類: row.cells[7].querySelector('input').value,
+        ｸﾞﾙｰﾌﾟ名: row.cells[8].querySelector('input').value,
+      }));
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([generalInfo]), '一般情報');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(menuData), 'メニュー定義');
+      XLSX.write_file(wb, 'メニュー.xlsx');
+    }
+  </script>
+</body>
+</html>

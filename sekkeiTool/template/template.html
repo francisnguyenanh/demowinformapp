@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TITLE}}</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- XLSX for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .table-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+      font-size: 0.85rem;
+    }
+    .action-buttons button {
+      margin-right: 5px;
+    }
+    .form-control-sm {
+      padding: 0.2rem 0.4rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <h1 class="mb-4 text-center">{{TITLE}}</h1>
+
+    <!-- 一般情報 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2 class="h5 mb-0">一般情報</h2>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="seriesName" class="form-label">シリーズ名</label>
+            <input type="text" class="form-control" id="seriesName" placeholder="環境将軍R(A1)" />
+          </div>
+          <div class="col-md-6">
+            <label for="projectNumber" class="form-label">案件番号</label>
+            <input type="text" class="form-control" id="projectNumber" placeholder="20230927" />
+          </div>
+          <div class="col-md-6">
+            <label for="customerName" class="form-label">顧客名</label>
+            <input type="text" class="form-control" id="customerName" placeholder="株式会社ISC 様" />
+          </div>
+          <div class="col-md-6">
+            <label for="version" class="form-label">版数</label>
+            <input type="text" class="form-control" id="version" placeholder="1.0" />
+          </div>
+          <div class="col-md-6">
+            <label for="createDate" class="form-label">作成日</label>
+            <input type="text" class="form-control" id="createDate" placeholder="2023-09-25" />
+          </div>
+          <div class="col-md-6">
+            <label for="creator" class="form-label">作成者</label>
+            <input type="text" class="form-control" id="creator" />
+          </div>
+          <div class="col-md-6">
+            <label for="inspector" class="form-label">検収者</label>
+            <input type="text" class="form-control" id="inspector" />
+          </div>
+          <div class="col-md-6">
+            <label for="totalLabor" class="form-label">総工量</label>
+            <input type="text" class="form-control" id="totalLabor" />
+          </div>
+          <div class="col-md-6">
+            <label for="screenId" class="form-label">画面ID</label>
+            <input type="text" class="form-control" id="screenId" />
+          </div>
+          <div class="col-md-6">
+            <label for="screenName" class="form-label">画面名</label>
+            <input type="text" class="form-control" id="screenName" />
+          </div>
+          <div class="col-md-6">
+            <label for="requirements" class="form-label">要件概要</label>
+            <textarea class="form-control" id="requirements" rows="3"></textarea>
+          </div>
+          <div class="col-md-6">
+            <label for="screenVersion" class="form-label">画面Ver</label>
+            <input type="text" class="form-control" id="screenVersion" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bảng dữ liệu -->
+    {{TABLE_SECTIONS}}
+
+    <!-- Phần dữ liệu bổ sung -->
+    {{ADDITIONAL_SECTIONS}}
+
+    <!-- Nút chức năng -->
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-success" onclick="saveData()">[F9]登録</button>
+      <button class="btn btn-danger" onclick="closeForm()">[F12]閉じる</button>
+      <button class="btn btn-primary" onclick="exportToExcel()">Excel出力</button>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+  <script>
+    // Hàm chung
+    function saveData() {
+      alert('データが登録されました！（保存機能は後で実装可能）');
+    }
+
+    function closeForm() {
+      if (confirm('変更内容が未登録です。画面を閉じますか？')) {
+        alert('閉じました！');
+      }
+    }
+
+    // Placeholder cho các hàm JavaScript cụ thể của bảng
+    {{TABLE_SPECIFIC_JS}}
+
+    // Hàm xuất Excel (cần được tùy chỉnh trong file cụ thể)
+    function exportToExcel() {
+      const generalInfo = {
+        シリーズ名: document.getElementById('seriesName').value,
+        案件番号: document.getElementById('projectNumber').value,
+        顧客名: document.getElementById('customerName').value,
+        版数: document.getElementById('version').value,
+        作成日: document.getElementById('createDate').value,
+        作成者: document.getElementById('creator').value,
+        検収者: document.getElementById('inspector').value,
+        総工量: document.getElementById('totalLabor').value,
+        画面ID: document.getElementById('screenId').value,
+        画面名: document.getElementById('screenName').value,
+        要件概要: document.getElementById('requirements').value,
+        画面Ver: document.getElementById('screenVersion').value,
+      };
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([generalInfo]), '一般情報');
+      // Placeholder cho dữ liệu bảng và phần bổ sung
+      {{EXPORT_EXCEL_LOGIC}}
+      XLSX.write_file(wb, '{{TITLE}}.xlsx');
+    }
+  </script>
+</body>
+</html>

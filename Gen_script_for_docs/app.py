@@ -3,7 +3,6 @@ import pandas as pd
 import json
 import datetime
 from openpyxl import load_workbook
-from run_insert_sql import read_connect_string, run_sql_file
 import datetime
 import json
 import re
@@ -1394,13 +1393,6 @@ def all_tables_in_sequence(excel_file, table_info_file, output_file='insert_all.
     
     # Clear caches after processing to free memory
     clear_performance_caches()
-            
-    try:
-        connect_string = read_connect_string('connect_string.txt')
-        run_sql_file(connect_string, 'insert_all.sql')
-        print(f"SQL file executed successfully. {systemid_value}")
-    except Exception as e:
-        print(f"Error running SQL file: {e}")
     
     print(f"All INSERT statements written to {output_file}")
     return all_insert_statements

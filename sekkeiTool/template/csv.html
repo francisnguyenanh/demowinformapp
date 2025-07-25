@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定期収集顧客一覧表_CSV</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { background-color: #f8f9fa; }
+    .table-container { max-height: 400px; overflow-y: auto; }
+    .table th, .table td { vertical-align: middle; font-size: 0.85rem; }
+    .action-buttons button { margin-right: 5px; }
+    .form-control-sm { padding: 0.2rem 0.4rem; }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <h1 class="mb-4 text-center">定期収集顧客一覧表_CSV</h1>
+
+    <!-- 一般情報 -->
+    <div class="card mb-4">
+      <div class="card-header"><h2 class="h5 mb-0">一般情報</h2></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">シリーズ名</label><input type="text" class="form-control" id="seriesName" placeholder="環境将軍R(A1)" /></div>
+          <div class="col-md-6"><label class="form-label">案件番号</label><input type="text" class="form-control" id="projectNumber" placeholder="20230927" /></div>
+          <div class="col-md-6"><label class="form-label">顧客名</label><input type="text" class="form-control" id="customerName" placeholder="株式会社ISC 様" /></div>
+          <div class="col-md-6"><label class="form-label">版数</label><input type="text" class="form-control" id="version" placeholder="1.0" /></div>
+          <div class="col-md-6"><label class="form-label">作成日</label><input type="text" class="form-control" id="createDate" placeholder="2023-09-25" /></div>
+          <div class="col-md-6"><label class="form-label">作成者</label><input type="text" class="form-control" id="creator" /></div>
+          <div class="col-md-6"><label class="form-label">検収者</label><input type="text" class="form-control" id="inspector" /></div>
+          <div class="col-md-6"><label class="form-label">総工量</label><input type="text" class="form-control" id="totalLabor" /></div>
+          <div class="col-md-6"><label class="form-label">画面ID</label><input type="text" class="form-control" id="screenId" /></div>
+          <div class="col-md-6"><label class="form-label">画面名</label><input type="text" class="form-control" id="screenName" /></div>
+          <div class="col-md-6"><label class="form-label">要件概要</label><textarea class="form-control" id="requirements" rows="3"></textarea></div>
+          <div class="col-md-6"><label class="form-label">画面Ver</label><input type="text" class="form-control" id="screenVersion" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 項目定義 -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">項目定義</h2>
+        <button class="btn btn-primary btn-sm" onclick="addItemRow()">行追加</button>
+      </div>
+      <div class="card-body table-container">
+        <table class="table table-bordered table-hover" id="itemTable">
+          <thead class="table-light">
+            <tr>
+              <th>画面</th>
+              <th>番号</th>
+              <th>帳票項目名</th>
+              <th>文字種</th>
+              <th>変更</th>
+              <th>出力元画面</th>
+              <th>出力元項目</th>
+              <th>アクション</th>
+            </tr>
+          </thead>
+          <tbody id="itemBody">
+            <tr>
+              <td><input type="text" class="form-control form-control-sm" value="" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="①" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="項目サンプル" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="英数字" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="追加" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="－" /></td>
+              <td><input type="text" class="form-control form-control-sm" value="－" /></td>
+              <td><div class="action-buttons">
+                <button class="btn btn-warning btn-sm" onclick="updateItemRow(this)">更新</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteItemRow(this)">削除</button>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CSVデータ -->
+    <div class="card mb-4">
+      <div class="card-header"><h2 class="h5 mb-0">CSVデータ</h2></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label">①出力ファイル名</label><input type="text" class="form-control" id="outputFileName" /></div>
+          <div class="col-12"><label class="form-label">②ラベル（ヘッダ行）</label><textarea class="form-control" id="headerRow" rows="2"></textarea></div>
+          <div class="col-12"><label class="form-label">③出力順</label><textarea class="form-control" id="outputOrder" rows="2"></textarea></div>
+          <div class="col-12"><label class="form-label">④発行画面</label><input type="text" class="form-control" id="issueScreen" /></div>
+          <div class="col-12"><label class="form-label">⑤文字コード</label><input type="text" class="form-control" id="charCode" /></div>
+          <div class="col-12"><label class="form-label">⑥区切文字</label><input type="text" class="form-control" id="delimiter" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div class="d-flex gap-2 justify-content-end">
+      <button class="btn btn-success" onclick="saveData()">[F9]登録</button>
+      <button class="btn btn-danger" onclick="closeForm()">[F12]閉じる</button>
+      <button class="btn btn-primary" onclick="exportToExcel()">Excel出力</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+  <script>
+    function addItemRow() {
+      const tbody = document.getElementById('itemBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><input type="text" class="form-control form-control-sm" value="" /></td>
+        <td><div class="action-buttons">
+          <button class="btn btn-warning btn-sm" onclick="updateItemRow(this)">更新</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItemRow(this)">削除</button>
+        </div></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function deleteItemRow(button) {
+      if (confirm('この行を削除しますか？')) {
+        button.closest('tr').remove();
+      }
+    }
+
+    function updateItemRow(button) {
+      alert('項目定義の行が更新されました！（保存機能は後で実装可能）');
+    }
+
+    function saveData() {
+      alert('データが登録されました！（保存機能は後で実装可能）');
+    }
+
+    function closeForm() {
+      if (confirm('変更内容が未登録です。画面を閉じますか？')) {
+        alert('閉じました！');
+      }
+    }
+
+    function exportToExcel() {
+      const generalInfo = {
+        シリーズ名: document.getElementById('seriesName').value,
+        案件番号: document.getElementById('projectNumber').value,
+        顧客名: document.getElementById('customerName').value,
+        版数: document.getElementById('version').value,
+        作成日: document.getElementById('createDate').value,
+        作成者: document.getElementById('creator').value,
+        検収者: document.getElementById('inspector').value,
+        総工量: document.getElementById('totalLabor').value,
+        画面ID: document.getElementById('screenId').value,
+        画面名: document.getElementById('screenName').value,
+        要件概要: document.getElementById('requirements').value,
+        画面Ver: document.getElementById('screenVersion').value,
+      };
+
+      const itemData = Array.from(document.querySelectorAll('#itemBody tr')).map(row => ({
+        画面: row.cells[0].querySelector('input').value,
+        番号: row.cells[1].querySelector('input').value,
+        帳票項目名: row.cells[2].querySelector('input').value,
+        文字種: row.cells[3].querySelector('input').value,
+        変更: row.cells[4].querySelector('input').value,
+        出力元画面: row.cells[5].querySelector('input').value,
+        出力元項目: row.cells[6].querySelector('input').value,
+      }));
+
+      const csvData = {
+        出力ファイル名: document.getElementById('outputFileName').value,
+        'ラベル（ヘッダ行）': document.getElementById('headerRow').value,
+        出力順: document.getElementById('outputOrder').value,
+        発行画面: document.getElementById('issueScreen').value,
+        文字コード: document.getElementById('charCode').value,
+        区切文字: document.getElementById('delimiter').value,
+      };
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([generalInfo]), '一般情報');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(itemData), '項目定義');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([csvData]), 'CSVデータ');
+      XLSX.write_file(wb, '定期収集顧客一覧表_CSV.xlsx');
+    }
+  </script>
+</body>
+</html>
