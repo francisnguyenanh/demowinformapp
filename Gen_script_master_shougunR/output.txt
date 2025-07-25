@@ -1,5 +1,0 @@
-Starting SQL script execution... 
-Date: 2025/07/24  8:46:31.20 
- 
-All scripts executed successfully. 
-End time: 2025/07/24  8:46:31.23 
